@@ -112,6 +112,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 		IHeadUpDisplayRendererProvider, ISendQueueContentRecieiver, IChassisPipe {
 
 	private final ChassisModule _module;
+	// FIXME: remove after 1.12
 	private final ItemIdentifierInventory _moduleInventory;
 	private final NonNullList<ModuleUpgradeManager> slotUpgradeManagers = NonNullList.create();
 	private boolean init = false;
@@ -238,6 +239,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 		}
 	}
 
+	// FIXME: remove after 1.12
 	private void updateModuleInventory() {
 		_module.slottedModules().forEach(slottedModule -> {
 			if (slottedModule.isEmpty()) {
@@ -300,7 +302,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 	public void readFromNBT(@Nonnull NBTTagCompound tag) {
 		super.readFromNBT(tag);
 		_moduleInventory.readFromNBT(tag, "chassi");
-		_module.readFromNBT(tag);
 		int tmp = tag.getInteger("Orientation");
 		if (tmp != -1) {
 			setPointedOrientation(EnumFacingUtil.getOrientation(tmp % 6));
@@ -346,7 +347,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 		super.writeToNBT(tag);
 		updateModuleInventory();
 		_moduleInventory.writeToNBT(tag, "chassi");
-		_module.writeToNBT(tag);
 		tag.setInteger("Orientation", pointedAdjacent == null ? -1 : pointedAdjacent.getDir().ordinal());
 		for (int i = 0; i < getChassisSize(); i++) {
 			slotUpgradeManagers.get(i).writeToNBT(tag, Integer.toString(i));
@@ -633,12 +633,6 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 	public void playerStopWatching(EntityPlayer player, int mode) {
 		super.playerStopWatching(player, mode);
 		localModeWatchers.remove(player);
-	}
-
-	@Override
-	public void finishInit() {
-		super.finishInit();
-		_module.finishInit();
 	}
 
 	public void handleModuleItemIdentifierList(Collection<ItemIdentifierStack> _allItems) {

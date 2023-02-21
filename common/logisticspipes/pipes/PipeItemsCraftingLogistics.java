@@ -16,7 +16,6 @@ import javax.annotation.Nonnull;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.gui.hud.HUDCrafting;
 import logisticspipes.interfaces.IChangeListener;
@@ -234,16 +233,6 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-	}
-
-	@Override
 	public void itemArrived(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		craftingModule.itemArrived(item, info);
 	}
@@ -264,11 +253,5 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void finishInit() {
-		super.finishInit();
-		craftingModule.finishInit();
 	}
 }

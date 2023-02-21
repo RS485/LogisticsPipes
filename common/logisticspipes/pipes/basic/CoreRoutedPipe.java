@@ -1694,4 +1694,12 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		Normal,
 		Fast
 	}
+
+	@Override
+	public void finishInit() {
+		super.finishInit();
+		if (getLogisticsModule() != null) {
+			getLogisticsModule().finishInit();
+		}
+	}
 }

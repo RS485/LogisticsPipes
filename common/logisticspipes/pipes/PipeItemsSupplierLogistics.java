@@ -11,7 +11,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
 import logisticspipes.interfaces.routing.IRequestItems;
@@ -56,18 +55,6 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		supplierModule.readFromNBT(nbttagcompound);
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		supplierModule.writeToNBT(nbttagcompound);
-	}
-
-	@Override
 	public void itemLost(ItemIdentifierStack item, IAdditionalTargetInformation info) {
 		supplierModule.itemLost(item, info);
 	}
@@ -81,11 +68,5 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	public void addStatusInformation(List<StatusEntry> status) {
 		super.addStatusInformation(status);
 		supplierModule.addStatusInformation(status);
-	}
-
-	@Override
-	public void finishInit() {
-		super.finishInit();
-		supplierModule.finishInit();
 	}
 }

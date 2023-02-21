@@ -276,10 +276,4 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public List<ItemIdentifierStack> getItemList() {
 		return itemList;
 	}
-
-	@Override
-	public void finishInit() {
-		super.finishInit();
-		moduleSatellite.finishInit();
-	}
 }

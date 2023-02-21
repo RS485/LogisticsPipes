@@ -166,10 +166,4 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	public double getLoadFactor() {
 		return (_orderItemManager.totalAmountCountInAllOrders() + 63) / 64.0;
 	}
-
-	@Override
-	public void finishInit() {
-		super.finishInit();
-		providerModule.finishInit();
-	}
 }

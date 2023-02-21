@@ -263,10 +263,4 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public List<ItemIdentifierStack> getItemList() {
 		return itemList;
 	}
-
-	@Override
-	public void finishInit() {
-		super.finishInit();
-		moduleSatellite.finishInit();
-	}
 }

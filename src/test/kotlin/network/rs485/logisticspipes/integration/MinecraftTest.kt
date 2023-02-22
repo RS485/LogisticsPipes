@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.integration
 
 import network.rs485.grow.Coroutines
+import network.rs485.util.checkBooleanProperty
 import logisticspipes.LogisticsPipes
 import net.minecraftforge.fml.common.FMLCommonHandler
 import net.minecraftforge.fml.common.event.FMLServerStartedEvent
@@ -56,9 +57,7 @@ object MinecraftTest {
     /**
      * If not debugging, the server watch dog is not disabled and the server is shut down after running the tests.
      */
-    private val DEBUGGING = System.getProperties().getProperty("logisticspipes.test.debug").let { prop ->
-        prop?.equals("true", ignoreCase = true) == true
-    }
+    private val isDebugging = checkBooleanProperty("logisticspipes.test.debug")
 
     private lateinit var world: WorldServer
     private lateinit var firstBlockPos: BlockPos
@@ -69,25 +68,35 @@ object MinecraftTest {
     fun serverStart(event: FMLServerStartedEvent) {
         assertTrue(message = "Test suite must run on the server") { event.side.isServer }
         val serverInstance = FMLCommonHandler.instance().minecraftServerInstance as DedicatedServer
-        if (DEBUGGING) {
+        world = serverInstance.worlds[0]
+        firstBlockPos = BlockPos(0, LEVEL, 0)
+        if (isDebugging) {
             serverInstance.setProperty("max-tick-time", 0L)
             serverInstance.saveProperties()
             val threadmxbean = ManagementFactory.getThreadMXBean()
             val athreadinfo = threadmxbean.dumpAllThreads(true, true)
             val watchdog = athreadinfo.find { it.threadName == "Server Watchdog" }
             if (watchdog != null) error("Watchdog already running! Set max-tick-time to 0, please restart the server!")
+
+            // set rules for spawning players without annoying stuff
+            world.spawnPoint = firstBlockPos
+            world.gameRules.setOrCreateGameRule("spawnRadius", "0")
+            world.gameRules.setOrCreateGameRule("doDaylightCycle", "false")
+            world.gameRules.setOrCreateGameRule("doWeatherCycle", "false")
+            world.worldTime = 5000
+            world.worldInfo.cleanWeatherTime = 15000
+            world.worldInfo.rainTime = 0
+            world.worldInfo.thunderTime = 0
+            world.worldInfo.isRaining = false
+            world.worldInfo.isThundering = false
         }
-        world = serverInstance.worlds[0]
-        firstBlockPos = BlockPos(0, LEVEL, 0)
-        world.spawnPoint = firstBlockPos
-        world.gameRules.setOrCreateGameRule("spawnRadius", "0")
         val task = startTests(LogisticsPipes.log::info)
         task.invokeOnCompletion {
             if (it != null) throw it
             repeat(3) {
                 println("All Tests done.")
             }
-            if (!DEBUGGING) serverInstance.initiateShutdown()
+            if (!isDebugging) serverInstance.initiateShutdown()
         }
     }
 

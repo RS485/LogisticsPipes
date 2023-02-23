@@ -65,7 +65,7 @@ class BitSetProperty(private val bitset: BitSet, override val tagKey: String) : 
 
     override fun copyValue(): BitSet = bitset.clone() as BitSet
 
-    override fun clear() = bitset.clear()
+    override fun clear() = bitset.clear().alsoIChanged()
 
     fun copyValue(startIdx: Int, endIdx: Int): BitSet = bitset.get(startIdx, endIdx + 1)
 

@@ -198,6 +198,7 @@ public class PacketHandler extends MessageToMessageCodec<FMLProxyPacket, ModernP
 		ctx.channel().attr(INBOUNDPACKETTRACKER).get().set(new WeakReference<>(msg));
 
 		LPDataIOWrapper.provideData(payload.slice(), packet::readData);
+		payload.release();
 
 		EntityPlayer player = MainProxy.proxy.getEntityPlayerFromNetHandler(msg.handler());
 

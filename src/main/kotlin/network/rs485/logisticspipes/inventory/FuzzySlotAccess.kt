@@ -42,7 +42,7 @@ import network.rs485.logisticspipes.property.IBitSet
 
 class FuzzySlotAccess(
     private val slotAccess: SlotAccess, private val fuzzyFlags: BitSetProperty
-) : SlotAccess by slotAccess {
+) : SlotAccess {
 
     private fun bitsForSlot(idx: Int): IBitSet =
         (idx * 4).let { fuzzyFlags.get(it, it + 3) }
@@ -56,5 +56,7 @@ class FuzzySlotAccess(
     override fun canMerge(intoSlot: Int, fromSlot: Int): Boolean =
         slotAccess.canMerge(intoSlot, fromSlot)
                 && (isSlotEmpty(intoSlot) || bitsForSlot(intoSlot) == bitsForSlot(fromSlot))
+
+    override fun isSlotEmpty(idx: Int): Boolean = slotAccess.isSlotEmpty(idx)
 
 }

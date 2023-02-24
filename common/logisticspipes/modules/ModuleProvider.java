@@ -236,7 +236,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 			canProvide -= root.getAllPromissesFor((IProvideItems) _service, item);
 			canProvide = Math.min(canProvide, tree.getMissingAmount());
 			if (canProvide < 1) {
-				return;
+				continue;
 			}
 			LogisticsPromise promise = new LogisticsPromise(item, canProvide, (IProvideItems) _service,
 					ResourceType.PROVIDER);

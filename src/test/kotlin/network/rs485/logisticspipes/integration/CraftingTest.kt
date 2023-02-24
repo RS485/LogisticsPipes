@@ -38,6 +38,7 @@
 package network.rs485.logisticspipes.integration
 
 import network.rs485.logisticspipes.integration.MinecraftTest.TIMEOUT_MODIFIER
+import network.rs485.logisticspipes.integration.MinecraftTest.regularTest
 import network.rs485.logisticspipes.integration.MinecraftTest.skippedTest
 import network.rs485.logisticspipes.util.FuzzyFlag
 import network.rs485.logisticspipes.util.FuzzyUtil
@@ -237,7 +238,7 @@ object CraftingTest {
     suspend fun `test split fuzzy ingredients crafting succeeds with mixed OreDict input`(
         loggerIn: (Any) -> Unit,
         selector: BlockPosSelector,
-    ) = skippedTest(loggerIn, selector) {
+    ) = regularTest(loggerIn, selector) {
         val setup = `setup fuzzy crafting chest`(
             selector = selector,
             providerStacks = arrayOf(
@@ -266,7 +267,7 @@ object CraftingTest {
     suspend fun `test split fuzzy ingredients crafting succeeds multi-request with mixed OreDict input`(
         loggerIn: (Any) -> Unit,
         selector: BlockPosSelector,
-    ) = skippedTest(loggerIn, selector) {
+    ) = regularTest(loggerIn, selector) {
         val setup = `setup fuzzy crafting chest`(
             selector = selector,
             providerStacks = arrayOf(
@@ -299,7 +300,7 @@ object CraftingTest {
     suspend fun `test split fuzzy ingredients crafting succeeds with leftover mixed OreDict input`(
         loggerIn: (Any) -> Unit,
         selector: BlockPosSelector,
-    ) = skippedTest(loggerIn, selector) {
+    ) = regularTest(loggerIn, selector) {
         val oakPlanksStack = ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.OAK.metadata)
         val oakPlankItemIdent = ItemIdentifier.get(oakPlanksStack)
         val darkOakPlanksStack = ItemStack(Blocks.PLANKS, 8, BlockPlanks.EnumType.DARK_OAK.metadata)
@@ -331,7 +332,7 @@ object CraftingTest {
     suspend fun `test split fuzzy ingredients crafting succeeds multi-request with leftover mixed OreDict input`(
         loggerIn: (Any) -> Unit,
         selector: BlockPosSelector,
-    ) = skippedTest(loggerIn, selector) {
+    ) = regularTest(loggerIn, selector) {
         val oakPlanksStack = ItemStack(Blocks.PLANKS, 4, BlockPlanks.EnumType.OAK.metadata)
         val oakPlankItemIdent = ItemIdentifier.get(oakPlanksStack)
         val darkOakPlanksStack = ItemStack(Blocks.PLANKS, 8, BlockPlanks.EnumType.DARK_OAK.metadata)

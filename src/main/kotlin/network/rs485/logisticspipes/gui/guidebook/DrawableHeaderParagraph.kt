@@ -37,13 +37,14 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 /**
  * Header token, stores all the tokens that are apart of the header.
  */
 class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
-    override var relativeBody: Rectangle = Rectangle()
+    override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
 
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
@@ -52,12 +53,12 @@ class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableP
         words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
             ?: false
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         (this.words + horizontalLine).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
     }
 
@@ -66,7 +67,7 @@ class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableP
 
     override fun setChildrenPos(): Int {
         var currentY = splitAndInitialize(words, 0, 0, width, true)
-        currentY += horizontalLine.setPos(0, currentY)
+        currentY += horizontalLine.setPos(0, currentY).y
         return currentY
     }
 }

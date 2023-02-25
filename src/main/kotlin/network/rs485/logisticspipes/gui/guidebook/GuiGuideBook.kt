@@ -58,7 +58,7 @@ import network.rs485.logisticspipes.guidebook.BookContents.MAIN_MENU_FILE
 import network.rs485.logisticspipes.guidebook.DebugPage
 import network.rs485.logisticspipes.guidebook.ItemGuideBook
 import network.rs485.logisticspipes.util.cycleMinecraftColorId
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import network.rs485.markdown.TextFormat
 import org.lwjgl.input.Mouse
 import org.lwjgl.opengl.GL11
@@ -108,10 +108,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     private val maxTabs = 100
 
     // Gui constrains
-    private val innerGui = Rectangle()
-    private val outerGui = Rectangle()
-    private val sliderSeparator = Rectangle()
-    private val visibleArea = Rectangle()
+    private val innerGui = MutableRectangle()
+    private val outerGui = MutableRectangle()
+    private val sliderSeparator = MutableRectangle()
+    private val visibleArea = MutableRectangle()
 
     // Drawing vars
     private var guiSliderX = 0

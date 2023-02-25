@@ -42,7 +42,7 @@ import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.Rectangle
 
 interface TabButtonReturn {
     fun onLeftClick(): Boolean
@@ -123,5 +123,8 @@ class TabButton(
     }
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean =
-        bodyTrigger.translated(body).translated(0, if (whisky.isPageActive()) -3 else 0).contains(mouseX, mouseY)
+        bodyTrigger
+            .translated(body)
+            .translated(0, if (whisky.isPageActive()) -3 else 0)
+            .contains(mouseX, mouseY)
 }

@@ -38,55 +38,69 @@
 package network.rs485.logisticspipes.gui.widget
 
 import net.minecraft.client.renderer.GlStateManager
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
+import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
-import network.rs485.logisticspipes.util.math.Rectangle
 import kotlin.math.roundToInt
 
 open class TextButton(
-        parent: Drawable,
-        xPosition: HorizontalPosition,
-        yPosition: VerticalPosition,
-        xSize: HorizontalSize,
-        ySize: VerticalSize,
-        private val textGetter: () -> String,
-        onClickAction: (Int) -> Boolean
-) : LPGuiButton(parent, xPosition, yPosition, xSize, ySize, onClickAction), Tooltipped {
+    parent: Drawable,
+    xPosition: HorizontalAlignment,
+    yPosition: VerticalAlignment,
+    xSize: Size,
+    ySize: Size,
+    margin: Margin,
+    text: String,
+    onClickAction: (Int) -> Boolean
+) : LPGuiButton(
+    parent = parent,
+    xPosition = xPosition,
+    yPosition = yPosition,
+    xSize = xSize,
+    ySize = ySize,
+    margin = margin,
+    onClickAction = onClickAction
+), Tooltipped {
 
-    var text: String = ""
-        set(value){
-            field = TextUtil.getTrimmedString(value, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
+    override val minHeight: Int = 20
+
+    var text: String = text
+        set(value) {
+            field = value
+            trimmedText = trimText(value)
         }
+    private var trimmedText: String = trimText(text)
     val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
     private val centerX: Float
         get() = relativeBody.width / 2
 
-    init {
-        updateText()
+    override fun setSize(newWidth: Int, newHeight: Int) {
+        super.setSize(newWidth, newHeight)
+        text = text
     }
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    private fun trimText(text: String): String {
+        return TextUtil.getTrimmedString(text, relativeBody.roundedWidth - 4, helper.mcFontRenderer)
+    }
+
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         val color = if (isMouseHovering(mouseX, mouseY)) {
             helper.TEXT_HOVERED
         } else {
             helper.TEXT_WHITE
         }
+        val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-        helper.drawCenteredString(text, (relativeBody.left + centerX).roundToInt(), relativeBody.roundedY + yOffset, color, true)
+        helper.drawCenteredString(trimmedText, (absoluteBody.left + centerX).roundToInt(), absoluteBody.roundedY + yOffset, color, true)
         GlStateManager.disableBlend()
     }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-            onClickAction.invoke(mouseButton).also {
-                text = textGetter()
-            }
+        onClickAction.invoke(mouseButton)
 
-    override fun getTooltipText(): List<String> = if(text != textGetter()) listOf(textGetter()) else emptyList()
-
-    fun updateText() {
-        text = textGetter()
-    }
+    override fun getTooltipText(): List<String> = if (trimmedText != text) listOf(text) else emptyList()
 }

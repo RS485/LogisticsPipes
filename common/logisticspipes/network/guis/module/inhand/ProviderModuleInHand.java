@@ -28,7 +28,7 @@ public class ProviderModuleInHand extends ModuleInHandGuiProvider {
 		ItemStack usedItemStack = (player.getHeldItemMainhand().getItem() instanceof ItemModule) ?
 				player.getHeldItemMainhand() : (player.getHeldItemOffhand().getItem() instanceof ItemModule) ?
 				player.getHeldItemOffhand() : ItemStack.EMPTY;
-		return new ProviderGui(player.inventory, (ModuleProvider) module, usedItemStack);
+		return ProviderGui.create(player.inventory, (ModuleProvider) module, usedItemStack);
 	}
 
 	@Override

@@ -39,9 +39,15 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
+import net.minecraft.client.audio.PositionedSoundRecord
+import net.minecraft.client.audio.SoundHandler
+import net.minecraft.init.SoundEvents
+import net.minecraft.util.SoundEvent
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 interface MouseHoverable {
     /**
@@ -61,6 +67,7 @@ interface MouseInteractable : MouseHoverable {
      * @param mouseY Y position of the mouse (absolute, screen)
      * @param mouseButton button of the mouse that was pressed.
      * @param guideActionListener actions to run from outside of this scope? (ben knows it best)
+     * @return true, if click was handled
      */
     fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean = false
 
@@ -80,6 +87,14 @@ interface MouseInteractable : MouseHoverable {
      */
     fun mouseReleased(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean = false
 
+    /**
+     * Always call this method when mouse clicked is successful.
+     * @param soundHandler minecraft's sound handler
+     */
+    fun playPressedSound(soundHandler: SoundHandler, sound: SoundEvent = SoundEvents.UI_BUTTON_CLICK) {
+        soundHandler.playSound(PositionedSoundRecord.getMasterRecord(sound, 1.0f))
+    }
+
 }
 
 interface Drawable {
@@ -88,25 +103,40 @@ interface Drawable {
          * Assigns the parent of all children to this.
          */
         fun <T : Drawable> List<Drawable>.createParent(parentGetter: () -> T) =
-                parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
+            parentGetter().also { parentDrawable -> this.forEach { it.parent = parentDrawable } }
     }
 
-    var relativeBody: Rectangle
+    val relativeBody: MutableRectangle
 
     var parent: Drawable?
 
-    // Relative positions/size accessors.
+    /** Relative x position. */
     val x: Float get() = relativeBody.x0
+
+    /** Relative y position. */
     val y: Float get() = relativeBody.y0
+
+    /** Drawable's width. */
     val width: Int get() = relativeBody.roundedWidth
+
+    /** Drawable's height */
     val height: Int get() = relativeBody.roundedHeight
 
-    // Absolute positions accessors.
+    /** Absolute left position. */
     val left: Float get() = (parent?.left ?: 0.0f) + x
+
+    /** Absolute right position. */
     val right: Float get() = left + width
+
+    /** Absolute top position. */
     val top: Float get() = (parent?.top ?: 0.0f) + y
+
+    /** Absolute bottom position. */
     val bottom: Float get() = top + height
-    val absoluteBody: Rectangle get() = Rectangle(left to top, right to bottom)
+
+    /** Absolute drawable body. */
+    val absoluteBody: Rectangle
+        get() = Rectangle(left to top, right to bottom)
 
     /**
      * Assigns a new child's parent to this.
@@ -120,23 +150,26 @@ interface Drawable {
      * @param delta         Timing floating value
      * @param visibleArea   used to avoid draw calls on non-visible children
      */
-    fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         if (DRAW_BODY_WIREFRAME) {
-            val visibleAbsoluteBody = visibleArea.translated(0, -5).grow(0, 10).overlap(absoluteBody)
+            val visibleAbsoluteBody = MutableRectangle.fromRectangle(visibleArea)
+                .translate(0, -5)
+                .grow(0, 10)
+                .overlap(absoluteBody)
             LPGuiDrawer.drawOutlineRect(visibleAbsoluteBody, MinecraftColor.WHITE.colorCode)
         }
     }
 
     /**
      * This function is responsible for updating the Drawable's position by giving it the exact X and Y where it
-     * should start and returning it's height as an offset for the next element.
+     * should start and returning the offset for the next element.
      * @param x         the X position of the Drawable.
      * @param y         the Y position of the Drawable.
-     * @return the input Y level plus the current element's height and a preset vertical spacer height.
+     * @return returns width and height of the drawable.
      */
-    fun setPos(x: Int, y: Int): Int {
+    fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
-        return relativeBody.roundedHeight
+        return relativeBody.roundedWidth to relativeBody.roundedHeight
     }
 
     /**
@@ -144,19 +177,19 @@ interface Drawable {
      * @param visibleArea   Desired visible area to check
      * @return true if within constraints false otherwise.
      */
-    fun visible(visibleArea: Rectangle): Boolean {
+    fun visible(visibleArea: IRectangle): Boolean {
         return visibleArea.intersects(absoluteBody)
     }
 }
 
 object Screen : Drawable {
-    val screen : Rectangle
-        get() = Rectangle(
-                Minecraft.getMinecraft().currentScreen?.width ?: Minecraft.getMinecraft().displayWidth,
-                Minecraft.getMinecraft().currentScreen?.height ?: Minecraft.getMinecraft().displayHeight
+    val screen: MutableRectangle
+        get() = MutableRectangle(
+            width = Minecraft.getMinecraft().currentScreen?.width ?: Minecraft.getMinecraft().displayWidth,
+            height = Minecraft.getMinecraft().currentScreen?.height ?: Minecraft.getMinecraft().displayHeight,
         )
 
-    override var relativeBody: Rectangle = screen
+    override val relativeBody: MutableRectangle
         get() = screen
 
     override var parent: Drawable? = null
@@ -166,3 +199,13 @@ object Screen : Drawable {
     val yCenter: Int
         get() = relativeBody.roundedHeight / 2
 }
+
+val <T> Pair<T, T>.x: T
+    get() = first
+
+val <T> Pair<T, T>.y: T
+    get() = second
+
+fun Pair<Int, Int>.plus() = Pair(this.x + x, this.y + y)
+
+fun Pair<Int, Int>.minus() = Pair(this.x - x, this.y - y)

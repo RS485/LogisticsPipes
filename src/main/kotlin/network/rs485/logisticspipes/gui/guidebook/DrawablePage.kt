@@ -37,47 +37,48 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 private const val PAGE_VERTICAL_PADDING = 5
 
 class DrawablePage(private val drawableParagraphs: List<DrawableParagraph>) : DrawableParagraph() {
-    override var relativeBody: Rectangle = Rectangle()
+    override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
 
-    fun setWidth(width: Int) =
-            relativeBody.setSize(width, relativeBody.roundedHeight)
+    fun setWidth(width: Int) = relativeBody.setSize(width, relativeBody.roundedHeight)
 
-    fun updateScrollPosition(visibleArea: Rectangle, progress: Float) {
+    fun updateScrollPosition(visibleArea: IRectangle, progress: Float) {
         relativeBody.setPos(relativeBody.x0, visibleArea.y0 - ((height - visibleArea.height) * progress))
     }
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
         relativeBody.setSize(relativeBody.roundedWidth, setChildrenPos())
-        return relativeBody.roundedHeight
+        return relativeBody.roundedWidth to relativeBody.roundedHeight
     }
 
     override fun setChildrenPos(): Int {
         var currentY = PAGE_VERTICAL_PADDING
         for (paragraph in drawableParagraphs) {
-            currentY += paragraph.setPos(0, currentY) + PAGE_VERTICAL_PADDING
+            currentY += paragraph.setPos(0, currentY).y + PAGE_VERTICAL_PADDING
         }
         return currentY
     }
 
-    override fun preRender(mouseX: Float, mouseY: Float, visibleArea: Rectangle) = getVisibleParagraphs(visibleArea).forEach {
-        it.preRender(mouseX, mouseY, visibleArea)
-    }
+    override fun preRender(mouseX: Float, mouseY: Float, visibleArea: IRectangle) =
+        getVisibleParagraphs(visibleArea).forEach {
+            it.preRender(mouseX, mouseY, visibleArea)
+        }
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) =
-            drawChildren(mouseX, mouseY, delta, visibleArea)
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) =
+        drawChildren(mouseX, mouseY, delta, visibleArea)
 
-    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) =
-            getVisibleParagraphs(visibleArea).forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) =
+        getVisibleParagraphs(visibleArea).forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
 
-    fun getVisibleParagraphs(visibleArea: Rectangle) =
-            drawableParagraphs.filter { it.visible(visibleArea) }
+    fun getVisibleParagraphs(visibleArea: IRectangle) =
+        drawableParagraphs.filter { it.visible(visibleArea) }
 
     override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
         drawableParagraphs.firstOrNull { it.isMouseHovering(mouseX, mouseY) }?.getHovered(mouseX, mouseY)

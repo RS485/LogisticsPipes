@@ -434,7 +434,7 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
                 if (!isModule) {
                     probeInfo.element(LPText("${prefix}module.provider.mode"))
                 }
-                probeInfo.element(LPText(module.providerMode.value.extractionModeTranslationKey).apply {
+                probeInfo.element(LPText(module.providerMode.value.modeTranslationKey).apply {
                     baseFormatting.addAll(italic(isModule))
                     prepend = prepend(isModule)
                 })

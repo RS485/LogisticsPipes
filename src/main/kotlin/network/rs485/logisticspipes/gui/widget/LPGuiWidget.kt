@@ -37,102 +37,36 @@
 
 package network.rs485.logisticspipes.gui.widget
 
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 interface Tooltipped : MouseHoverable {
     fun getTooltipText(): List<String>
 }
 
-open class LPGuiWidget(parent: Drawable, xPosition: HorizontalPosition, yPosition: VerticalPosition, xSize: HorizontalSize, ySize: VerticalSize) : Drawable {
+abstract class LPGuiWidget(
+    parent: Drawable,
+    val xPosition: HorizontalAlignment,
+    val yPosition: VerticalAlignment,
+    val xSize: Size,
+    val ySize: Size,
+    var margin: Margin,
+) : Drawable {
     override var parent: Drawable? = parent
 
-    final override var relativeBody: Rectangle = Rectangle()
+    final override val relativeBody: MutableRectangle = MutableRectangle()
 
-    val drawer = LPGuiDrawer
+    abstract val minWidth: Int
+    abstract val minHeight: Int
 
-    init {
-        relativeBody.setSize(
-                handleHorizontalSize(xSize),
-                handleVerticalSize(ySize)
-        )
-        relativeBody.setPos(
-                handleHorizontalPosition(xPosition),
-                handleVerticalPosition(yPosition)
-        )
-    }
+    abstract val maxWidth: Int
+    abstract val maxHeight: Int
 
-    private fun handleHorizontalPosition(pos: HorizontalPosition): Int = when (pos) {
-        Center -> {
-            (parent!!.width / 2) - (width / 2)
-        }
-        is Left -> {
-            pos.margin
-        }
-        is Right -> {
-            parent!!.width - width - pos.margin
-        }
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
-    }
+    abstract fun initWidget()
 
-    private fun handleVerticalPosition(pos: VerticalPosition): Int = when (pos) {
-        Center -> {
-            (parent!!.height / 2) - (height / 2)
-        }
-        is Top -> {
-            pos.margin
-        }
-        is Bottom -> {
-            parent!!.height - height - pos.margin
-        }
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
-    }
-
-    private fun handleHorizontalSize(size: HorizontalSize): Int = when (size) {
-        is FullSize -> {
-            parent!!.width - (2 * size.margin)
-        }
-        is AbsoluteSize -> {
-            size.size
-        }
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
-    }
-
-    private fun handleVerticalSize(size: VerticalSize): Int = when (size) {
-        is FullSize -> {
-            parent!!.height - (2 * size.margin)
-        }
-        is AbsoluteSize -> {
-            size.size
-        }
-        else -> {
-            error("This should never happen the devs forgot to implement something!")
-        }
+    open fun setSize(newWidth: Int = relativeBody.roundedWidth, newHeight: Int = relativeBody.roundedHeight) {
+        relativeBody.setSize(newWidth, newHeight)
     }
 }
-
-// TODO positions and sizes relative to siblings.
-
-interface HorizontalPosition
-data class Left(val margin: Int = 0) : HorizontalPosition
-data class Right(val margin: Int = 0) : HorizontalPosition
-
-interface VerticalPosition
-data class Top(val margin: Int = 0) : VerticalPosition
-data class Bottom(val margin: Int = 0) : VerticalPosition
-
-object Center : HorizontalPosition, VerticalPosition
-
-interface HorizontalSize
-interface VerticalSize
-
-data class FullSize(val margin: Int) : HorizontalSize, VerticalSize
-data class AbsoluteSize(val size: Int) : HorizontalSize, VerticalSize

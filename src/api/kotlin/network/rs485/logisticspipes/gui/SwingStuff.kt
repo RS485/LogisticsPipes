@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,61 +35,66 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.widget
+package network.rs485.logisticspipes.gui
 
-import network.rs485.logisticspipes.gui.*
-import network.rs485.logisticspipes.gui.guidebook.Drawable
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
-import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.util.IRectangle
+import java.awt.Container
+import javax.swing.*
 
-abstract class LPGuiButton(
-    parent: Drawable,
-    xPosition: HorizontalAlignment,
-    yPosition: VerticalAlignment,
-    xSize: Size,
-    ySize: Size,
-    margin: Margin,
-    val onClickAction: ((Int) -> Boolean)
-) : LPGuiWidget(
-    parent = parent,
-    xPosition = xPosition,
-    yPosition = yPosition,
-    xSize = xSize,
-    ySize = ySize,
-    margin = margin,
-), MouseInteractable {
+interface WidgetRenderer<T : Any> {
+    fun render(componentContainer: ComponentContainer, body: IRectangle): T
+}
 
-    var visible: Boolean = true
-    var enabled: Boolean = true
+object SwingRenderer : WidgetRenderer<JPanel> {
+    fun Container.addContainer(container: ComponentContainer) {
+        container.children.forEach { child ->
+            when (child) {
+                is PropertyLabel<*, *> -> JLabel().apply {
+                    text = child.text
+                    child.onPropertyUpdate { newText ->
+                        text = newText
+                    }
+                }
 
-    val helper = LPGuiDrawer
+                is PropertyButton<*, *> -> JButton().apply {
+                    text = child.text
+                    addActionListener { child.action.invoke() }
+                    child.onPropertyUpdate { newText ->
+                        text = newText
+                    }
+                }
 
-    final override val minWidth: Int = 20
-    override val minHeight: Int = 20
+                is Label -> JLabel().apply {
+                    text = child.text
+                }
 
-    override val maxHeight: Int = 20
-    override val maxWidth: Int = 100
+                is Button -> JButton().apply {
+                    text = child.text
+                    addActionListener { child.action.invoke() }
+                }
 
-    override fun initWidget() {
-        setSize(minWidth, minHeight)
-    }
+                is ComponentContainer -> JPanel().apply {
+                    addContainer(child)
+                }
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
-        super.draw(mouseX, mouseY, delta, visibleArea)
-        if (visible) {
-            helper.drawBorderedTile(
-                rect = absoluteBody,
-                hovered = isMouseHovering(mouseX, mouseY),
-                enabled = enabled,
-                light = false,
-                thickerBottomBorder = true
-            )
+                else -> null
+            }?.also(::add)
         }
     }
 
-    override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean = absoluteBody.contains(mouseX, mouseY)
-
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-        onClickAction.invoke(mouseButton)
+    override fun render(componentContainer: ComponentContainer, body: IRectangle): JPanel {
+        return JPanel().apply {
+            addContainer(componentContainer)
+        }
+    }
 }
+
+//fun main() {
+//    SwingUtilities.invokeAndWait {
+//        val frame = JFrame()
+//        val gui = ProviderGui()
+//        frame.add(SwingRenderer.render(gui.widgets))
+//        frame.pack()
+//        frame.isVisible = true
+//    }
+//}

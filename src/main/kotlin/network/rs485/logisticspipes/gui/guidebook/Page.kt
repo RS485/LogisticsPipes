@@ -39,11 +39,7 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.nbt.NBTTagCompound
 import network.rs485.logisticspipes.guidebook.BookContents
-import network.rs485.logisticspipes.util.LPDataInput
-import network.rs485.logisticspipes.util.LPDataOutput
-import network.rs485.logisticspipes.util.LPSerializable
-import network.rs485.logisticspipes.util.cycleMinecraftColorId
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.*
 
 
 interface IPageData : LPSerializable {
@@ -113,17 +109,17 @@ class Page(data: PageData) : IPageData by data {
     val title: String
         get() = infoProvider.metadata.title
 
-    fun updateScrollPosition(visibleArea: Rectangle, currentProgress: Float) =
+    fun updateScrollPosition(visibleArea: IRectangle, currentProgress: Float) =
         drawable.updateScrollPosition(visibleArea, currentProgress)
 
-    fun getExtraHeight(visibleArea: Rectangle): Int =
+    fun getExtraHeight(visibleArea: IRectangle): Int =
         if (visibleArea.roundedHeight < drawable.height) drawable.height - visibleArea.roundedHeight else 0
 
     fun mouseClicked(
         mouseX: Float,
         mouseY: Float,
         mouseButton: Int,
-        visibleArea: Rectangle,
+        visibleArea: IRectangle,
         guideActionListener: GuiGuideBook.ActionListener,
     ) {
         drawable.getVisibleParagraphs(visibleArea)
@@ -131,7 +127,7 @@ class Page(data: PageData) : IPageData by data {
             ?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
     }
 
-    fun setDrawablesPosition(area: Rectangle) {
+    fun setDrawablesPosition(area: IRectangle) {
         drawable.setWidth(area.roundedWidth)
         drawable.setPos(area.roundedX, area.roundedY)
     }
@@ -143,7 +139,7 @@ class Page(data: PageData) : IPageData by data {
     fun cycleColor(inverted: Boolean = false) =
         cycleMinecraftColorId((color ?: 0), inverted).also { color = it }
 
-    fun draw(visibleArea: Rectangle, mouseX: Float, mouseY: Float, partialTicks: Float) {
+    fun draw(visibleArea: IRectangle, mouseX: Float, mouseY: Float, partialTicks: Float) {
         drawable.preRender(mouseX, mouseY, visibleArea)
         drawable.draw(mouseX, mouseY, partialTicks, visibleArea)
     }

@@ -38,34 +38,48 @@
 package network.rs485.logisticspipes.gui.widget
 
 import net.minecraft.inventory.Slot
+import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 
 class SlotGroup(
-        parent: Drawable,
-        xPosition: HorizontalPosition,
-        yPosition: VerticalPosition,
-        slots: List<Slot>,
-        columns: Int,
-        rows: Int) : LPGuiWidget
-(
-        parent,
-        xPosition,
-        yPosition,
-        AbsoluteSize(18 * columns),
-        AbsoluteSize(18 * rows)
+    parent: Drawable,
+    xPosition: HorizontalAlignment,
+    yPosition: VerticalAlignment,
+    margin: Margin,
+    val slots: List<Slot>,
+    val columns: Int,
+    val rows: Int
+) : LPGuiWidget(
+    parent = parent,
+    xPosition = xPosition,
+    yPosition = yPosition,
+    xSize = Size.FIXED,
+    ySize = Size.FIXED,
+    margin = margin,
 ) {
-    init {
+    override val minWidth: Int = columns * 18
+    override val minHeight: Int = rows * 18
+    override val maxWidth: Int = minWidth
+    override val maxHeight: Int = minHeight
+
+    override fun initWidget() {
         assert(slots.size == columns * rows)
-        val startX = relativeBody.roundedX + 1
-        val startY = relativeBody.roundedY + 1
+        setSize(minWidth, minHeight)
+    }
+
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
+        super.setPos(x, y)
+        val startX = absoluteBody.roundedX + 1
+        val startY = absoluteBody.roundedY + 1
         val slotSize = 18
-        for (row in 0..2) {
-            for (column in 0..2) {
+        for (row in 0 until rows) {
+            for (column in 0 until columns) {
                 slots[column + row * rows].apply {
                     xPos = startX + column * slotSize
                     yPos = startY + row * slotSize
                 }
             }
         }
+        return width to height
     }
 }

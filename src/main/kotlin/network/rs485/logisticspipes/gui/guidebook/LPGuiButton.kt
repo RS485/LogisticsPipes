@@ -42,13 +42,14 @@ import net.minecraft.client.gui.GuiButton
 import network.rs485.logisticspipes.gui.HorizontalAlignment
 import network.rs485.logisticspipes.gui.LPGuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.Rectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiButton(id, 24, 24, "") {
-    val body = Rectangle(x, y, width, height)
+    val body = MutableRectangle(x, y, width, height)
 
     // Position relative to body.
-    open val bodyTrigger = Rectangle(width, height)
+    open val bodyTrigger: Rectangle = Rectangle(width = width, height = height)
     private var onClickAction: ((Int) -> Boolean)? = null
 
     override fun mousePressed(mc: Minecraft, mouseX: Int, mouseY: Int): Boolean = isHovered(mouseX, mouseY)

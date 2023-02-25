@@ -37,16 +37,17 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 
 /**
  * Stores groups of ITokenText tokens to more easily translate Tokens to Drawable elements
  */
 class DrawableRegularParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
-    override var relativeBody: Rectangle = Rectangle()
+    override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
         relativeBody.setSize(parent!!.width, setChildrenPos())
         return super.setPos(x, y)
@@ -57,15 +58,15 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
     }
 
     override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-            words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
-                    ?: false
+        words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+            ?: false
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
         drawChildren(mouseX, mouseY, delta, visibleArea)
     }
 
-    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val lines = words.groupBy { it.top }.values
         // Split by lines
         for (line in lines) {
@@ -79,7 +80,7 @@ class DrawableRegularParagraph(private val words: List<DrawableWord>) : Drawable
     }
 
     override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
-            words.firstOrNull {
-                it.isMouseHovering(mouseX, mouseY)
-            }
+        words.firstOrNull {
+            it.isMouseHovering(mouseX, mouseY)
+        }
 }

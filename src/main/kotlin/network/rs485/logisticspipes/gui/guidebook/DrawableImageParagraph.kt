@@ -47,20 +47,21 @@ import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
 import network.rs485.logisticspipes.gui.LPGuiDrawer
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import java.io.IOException
 import kotlin.math.min
 
 class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, val image: DrawableImage) : DrawableParagraph() {
-    override var relativeBody = Rectangle()
+    override val relativeBody = MutableRectangle()
     override var parent: Drawable? = null
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         relativeBody.setPos(x, y)
         // This has to be done in two steps because setChildrenPos() depends on the width already being set.
         relativeBody.setSize(parent!!.width, 0)
         relativeBody.setSize(relativeBody.roundedWidth, setChildrenPos())
-        return relativeBody.roundedHeight
+        return relativeBody.roundedWidth to relativeBody.roundedHeight
     }
 
     override fun setChildrenPos(): Int {
@@ -68,7 +69,7 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
         currentY += if (image.broken) {
             splitAndInitialize(alternativeText, 5, currentY, width - 10, false)
         } else {
-            image.setPos(0, currentY)
+            image.setPos(0, currentY).y
         }
         return currentY
     }
@@ -79,7 +80,7 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
         null
     }
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         if (image.broken) {
             super.draw(mouseX, mouseY, delta, visibleArea)
             for (drawableWord in alternativeText.filter { it.visible(visibleArea) }) {
@@ -94,7 +95,7 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
 
 class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
 
-    override var relativeBody: Rectangle = Rectangle()
+    override var relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
 
     private var imageSize: PngSizeInfo? = try {
@@ -107,7 +108,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
     val broken: Boolean get() = imageSize == null
 
 
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: Rectangle) {
+    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         if (imageSize != null) {
             drawImage(absoluteBody, visibleArea, imageResource)
         } else {
@@ -140,13 +141,11 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         bufferBuilder.pos(x0, y0, 0f).tex(u0S, v0S).endVertex()
     }
 
-    fun drawImage(imageBody: Rectangle, visibleArea: Rectangle, image: ResourceLocation) {
+    fun drawImage(imageBody: IRectangle, visibleArea: IRectangle, image: ResourceLocation) {
         val visibleImageBody = imageBody.overlap(visibleArea)
         val xOffset = min(imageBody.x0 - visibleArea.x0, 0f)
         val yOffset = min(imageBody.y0 - visibleArea.y0, 0f)
-        val visibleImageTexture = Rectangle.fromRectangle(visibleImageBody)
-            .resetPos()
-            .translate(xOffset, -yOffset)
+        val visibleImageTexture = MutableRectangle.fromRectangle(visibleImageBody).setPos(xOffset, -yOffset)
         GlStateManager.pushMatrix()
         Minecraft.getMinecraft().textureManager.bindTexture(image)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -170,7 +169,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         GlStateManager.popMatrix()
     }
 
-    override fun setPos(x: Int, y: Int): Int {
+    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
         if (imageSize != null) {
             // Checks width of image to scale down to a size that fits on the page
             relativeBody.setSize(imageSize!!.pngWidth, imageSize!!.pngHeight)

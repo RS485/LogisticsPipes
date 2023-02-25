@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,33 +35,21 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.guidebook
+package network.rs485.logisticspipes.gui
 
-import logisticspipes.utils.MinecraftColor
-import network.rs485.logisticspipes.gui.LPGuiDrawer
-import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
+import net.minecraft.inventory.Slot
 
-/**
- * This draws a line with a given thickness that will span the entire width of the page, minus padding.
- */
+abstract class InventorySlotsBase : GuiComponent() {
+    var slots: List<Slot> = emptyList()
+}
 
-private const val horizontalPadding: Int = 3
+class CustomSlots : InventorySlotsBase() {
+    var columns: Int = 1
+    var rows: Int = 1
+}
 
-class DrawableHorizontalLine(private val thickness: Int, private val padding: Int = 3, val color: Int = MinecraftColor.WHITE.colorCode) : DrawableParagraph() {
-    override val relativeBody: MutableRectangle = MutableRectangle()
-    override var parent: Drawable? = null
+fun ComponentContainer.customSlots(init: CustomSlots.() -> Unit) = initComponent(CustomSlots(), init)
 
-    override fun setPos(x: Int, y: Int): Pair<Int, Int> {
-        relativeBody.setPos(x, y + padding)
-        relativeBody.setSize(parent!!.width - 2 * horizontalPadding, padding + thickness)
-        return super.setPos(x, y)
-    }
+class PlayerSlots : InventorySlotsBase()
 
-    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? = null
-
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
-        super.draw(mouseX, mouseY, delta, visibleArea)
-        LPGuiDrawer.drawLine(absoluteBody.topLeft, absoluteBody.topRight, color, thickness.toFloat())
-    }
-}    
+fun ComponentContainer.playerSlots(init: PlayerSlots.() -> Unit) = initComponent(PlayerSlots(), init)

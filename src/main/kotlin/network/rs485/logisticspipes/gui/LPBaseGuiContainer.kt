@@ -45,45 +45,79 @@ import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.client.renderer.RenderHelper
 import net.minecraft.inventory.Container
 import network.rs485.logisticspipes.gui.guidebook.Drawable
+import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.gui.guidebook.Screen
-import network.rs485.logisticspipes.gui.widget.LPGuiWidget
 import network.rs485.logisticspipes.gui.widget.Tooltipped
-import network.rs485.logisticspipes.util.math.Rectangle
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import kotlin.math.roundToInt
 
 @ModDependentInterface(modId = [LPConstants.neiModID], interfacePath = ["codechicken.nei.api.INEIGuiHandler"])
-abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, heightIn: Int, private val xOffset: Int = 0, private val yOffset: Int = 0) : GuiContainer(inventorySlotsIn), Drawable {
+abstract class LPBaseGuiContainer(
+    inventorySlotsIn: Container,
+    private val xOffset: Int = 0,
+    private val yOffset: Int = 0
+) : GuiContainer(inventorySlotsIn), Drawable {
 
-    override var parent: Drawable? = Screen
-    override var relativeBody = Rectangle((width - widthIn) / 2, (height - heightIn) / 2, widthIn, heightIn)
-    private var hoveredWidget: Tooltipped? = null
+    final override var parent: Drawable? = Screen
+    final override val relativeBody = MutableRectangle()
+    private var hoveredWidget: MouseHoverable? = null
 
-    val widgetList: MutableList<LPGuiWidget> = mutableListOf()
+    protected abstract val widgets: ComponentContainer
+    private var widgetContainer: WidgetContainer = VerticalWidgetContainer(emptyList(), parent, Margin.DEFAULT, 0)
 
-    val guiWidth: Int get() = relativeBody.roundedWidth
-    val guiHeight: Int get() = relativeBody.roundedHeight
 
     override fun initGui() {
         // In case the screen size has changed.
         Screen.relativeBody.setSize(width, height)
+
+        // Create gui widgets from dls components.
+        widgetContainer = GuiRenderer.render(widgets, relativeBody).also {
+            it.parent = this@LPBaseGuiContainer
+        }
+
+        // Set position back to 0 before placing children to respect minecraft's gui translation.
+        widgetContainer.relativeBody.resetPos()
+        relativeBody.resetPos()
+
+        // Initialize every widget and place it relative to its parent.
+        widgetContainer.apply {
+            initWidget()
+            placeChildren()
+        }
+
+        // Set size of the main container to the minimum necessary size to fit all children.
+        widgetContainer.relativeBody.setSize(
+            widgetContainer.minWidth,
+            widgetContainer.minHeight,
+        ).translate(
+            widgetContainer.margin.left,
+            widgetContainer.margin.top,
+        )
+
+        // Set the root body of the gui based on the size of the first container
+        // and taking into account it's margin.
+        relativeBody.setSizeFromRectangle(
+            widgetContainer.relativeBody.copy().grow(
+                widgetContainer.margin.horizontal,
+                widgetContainer.margin.vertical,
+            )
+        )
+
         // Center gui with possible offsets
         relativeBody.setPos(
-                newX = (Screen.xCenter - guiWidth / 2) + xOffset,
-                newY = (Screen.yCenter - guiHeight / 2) + yOffset
+            newX = (Screen.xCenter - relativeBody.width / 2) + xOffset,
+            newY = (Screen.yCenter - relativeBody.height / 2) + yOffset
         )
+
         // To use minecraft's slot and item rendering. Might remove later.
-        guiLeft = relativeBody.roundedLeft
-        guiTop = relativeBody.roundedTop
+        guiLeft = widgetContainer.absoluteBody.roundedLeft
+        guiTop = widgetContainer.absoluteBody.roundedTop
+
         // Clear button and widget lists
         buttonList.clear()
-        widgetList.clear()
         mc.player.openContainer = inventorySlots
-    }
-
-    fun addWidget(widget: LPGuiWidget): Drawable {
-        widgetList.add(widget)
-        return widget
     }
 
     /**
@@ -95,7 +129,7 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
      */
     open fun drawBackgroundLayer(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-        helper.drawGuiBackground(absoluteBody, inventorySlots)
+        helper.drawGuiBackground(absoluteBody, guiLeft to guiTop, inventorySlots)
     }
 
     /**
@@ -115,31 +149,28 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
      * @param partialTicks time so animations don't have to depend on game ticks which can be unstable.
      */
     open fun drawForegroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {
-        widgetList.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
-        hoveredWidget?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
+        widgetContainer.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
+        (hoveredWidget as? Tooltipped)?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
             drawHoveringText(it, mouseX.roundToInt(), mouseY.roundToInt())
         } ?: renderHoveredToolTip(mouseX.roundToInt(), mouseY.roundToInt())
     }
 
-    private fun getHovered(mouseX: Float, mouseY: Float): MouseInteractable? = widgetList.filterIsInstance<MouseInteractable>().firstOrNull { it.isMouseHovering(mouseX, mouseY) }
+    private fun getHovered(mouseX: Float, mouseY: Float): MouseHoverable? =
+        widgetContainer.getHovered(mouseX, mouseY)
 
     // Call super and call all the normally used methods.
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
         super.drawScreen(mouseX, mouseY, partialTicks)
-        var currentMouseX: Float = mouseX.toFloat()
-        var currentMouseY: Float = mouseY.toFloat()
+        val floatMouseX: Float = mouseX.toFloat()
+        val floatMouseY: Float = mouseY.toFloat()
         GlStateManager.pushMatrix()
         GlStateManager.disableLighting()
         GlStateManager.disableDepth()
-        GlStateManager.translate(absoluteBody.left, absoluteBody.top, 0.0f)
-        currentMouseX -= absoluteBody.left
-        currentMouseY -= absoluteBody.top
-        drawFocalgroundLayer(currentMouseX, currentMouseY, partialTicks)
+        drawFocalgroundLayer(floatMouseX, floatMouseY, partialTicks)
         GlStateManager.translate(0.0f, 0.0f, 10.0f)
         RenderHelper.disableStandardItemLighting()
-        hoveredWidget = widgetList.filterIsInstance<Tooltipped>().firstOrNull { it.isMouseHovering(currentMouseX, currentMouseY) }
-        drawForegroundLayer(currentMouseX, currentMouseY, partialTicks)
-        GlStateManager.translate(-absoluteBody.left, -absoluteBody.top, -10.0f)
+        hoveredWidget = getHovered(floatMouseX, floatMouseY)
+        drawForegroundLayer(floatMouseX, floatMouseY, partialTicks)
         RenderHelper.enableStandardItemLighting()
         GlStateManager.enableLighting()
         GlStateManager.enableDepth()
@@ -147,11 +178,17 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
     }
 
     override fun mouseClicked(mouseX: Int, mouseY: Int, mouseButton: Int) {
-        val currentMouseX: Float = mouseX - absoluteBody.left
-        val currentMouseY: Float = mouseY - absoluteBody.top
-        if (getHovered(currentMouseX, currentMouseY)?.mouseClicked(mouseX.toFloat(), mouseY.toFloat(), mouseButton, null) == true) {
-            // Todo button sound if applicable
-            return
+        val currentHovered = hoveredWidget
+        if (currentHovered is MouseInteractable) {
+            if (currentHovered.mouseClicked(
+                    mouseX = mouseX.toFloat(),
+                    mouseY = mouseY.toFloat(),
+                    mouseButton = mouseButton,
+                    guideActionListener = null
+                )
+            ) {
+                currentHovered.playPressedSound(mc.soundHandler)
+            }
         }
         super.mouseClicked(mouseX, mouseY, mouseButton)
     }
@@ -170,7 +207,10 @@ abstract class LPBaseGuiContainer(inventorySlotsIn: Container, widthIn: Int, hei
         val helper = LPGuiDrawer
     }
 
-    // TODO add NEI impl
+    fun List<Drawable>.draw(mouseX: Float, mouseY: Float, partialTicks: Float, visibleArea: IRectangle) =
+        forEach {
+            it.draw(mouseX, mouseY, partialTicks, visibleArea)
+        }
 
-    fun List<Drawable>.draw(mouseX: Float, mouseY: Float, partialTicks: Float, visibleArea: Rectangle) = forEach { it.draw(mouseX, mouseY, partialTicks, visibleArea) }
+
 }

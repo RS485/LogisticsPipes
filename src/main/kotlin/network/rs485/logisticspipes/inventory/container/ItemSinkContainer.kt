@@ -35,9 +35,8 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.widget.module
+package network.rs485.logisticspipes.inventory.container
 
-import network.rs485.logisticspipes.gui.LPBaseContainer
 import network.rs485.logisticspipes.gui.widget.FuzzyItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot

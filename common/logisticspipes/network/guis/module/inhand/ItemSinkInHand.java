@@ -11,7 +11,7 @@ import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
-import network.rs485.logisticspipes.gui.widget.module.ItemSinkGui;
+import network.rs485.logisticspipes.gui.module.ItemSinkGui;
 
 @StaticResolve
 public class ItemSinkInHand extends ModuleInHandGuiProvider {

@@ -10,7 +10,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.DummyModuleContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import network.rs485.logisticspipes.gui.widget.module.ProviderGui;
+import network.rs485.logisticspipes.gui.module.ProviderGui;
 
 @StaticResolve
 public class ProviderModuleInHand extends ModuleInHandGuiProvider {

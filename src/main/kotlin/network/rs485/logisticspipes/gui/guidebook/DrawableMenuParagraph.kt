@@ -42,7 +42,7 @@ import logisticspipes.utils.MinecraftColor
 import logisticspipes.utils.item.ItemStackRenderer
 import net.minecraft.item.Item
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.gui.widget.Tooltipped
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
@@ -160,7 +160,7 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovered = isMouseHovering(mouseX, mouseY)
-        LPGuiDrawer.drawBorderedTile(
+        GuiDrawer.drawBorderedTile(
             rect = absoluteBody,
             hovered = hovered,
             enabled = true,
@@ -168,7 +168,7 @@ class DrawableMenuTile(private val linkedPage: String, private val pageName: Str
             thickerBottomBorder = false
         )
         if (hovered) {
-            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
+            GuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
         val itemRect = iconBody.translated(absoluteBody)
         if (visibleArea.intersects(itemRect)) {
@@ -199,7 +199,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
     }
 
     init {
-        relativeBody.setSize(4 * itemOffset + iconSize + LPGuiDrawer.lpFontRenderer.getStringWidth(pageName), listEntryHeight)
+        relativeBody.setSize(4 * itemOffset + iconSize + GuiDrawer.lpFontRenderer.getStringWidth(pageName), listEntryHeight)
         itemRect.setSize(iconSize, iconSize)
     }
 
@@ -210,7 +210,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         val hovered = visibleArea.contains(mouseX, mouseY) && isMouseHovering(mouseX, mouseY)
-        LPGuiDrawer.drawBorderedTile(
+        GuiDrawer.drawBorderedTile(
             rect = absoluteBody,
             hovered = hovered,
             enabled = true,
@@ -220,8 +220,8 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
         itemRect.setPos(left + itemOffset, top + itemOffset)
         if (itemRect.intersects(visibleArea)) {
             val textColor: Int = if (!hovered) MinecraftColor.WHITE.colorCode else 0xffffffa0.toInt()
-            val textVerticalOffset = (height - LPGuiDrawer.lpFontRenderer.getFontHeight(1.0f)) / 2
-            LPGuiDrawer.lpFontRenderer.drawString(
+            val textVerticalOffset = (height - GuiDrawer.lpFontRenderer.getFontHeight(1.0f)) / 2
+            GuiDrawer.lpFontRenderer.drawString(
                 string = pageName,
                 x = itemRect.right + itemOffset,
                 y = top + textVerticalOffset,
@@ -233,7 +233,7 @@ class DrawableMenuListEntry(private val linkedPage: String, private val pageName
             itemStackRenderer.renderItemInGui(itemRect.left, itemRect.top, item, 0.0f, iconScale)
         }
         if (hovered) {
-            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
+            GuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
     }
 

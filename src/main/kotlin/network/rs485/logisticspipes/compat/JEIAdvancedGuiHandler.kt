@@ -37,15 +37,15 @@
 
 package network.rs485.logisticspipes.compat
 
-import network.rs485.logisticspipes.gui.LPBaseGuiContainer
+import network.rs485.logisticspipes.gui.BaseGuiContainer
 import mezz.jei.api.gui.IAdvancedGuiHandler
 import java.awt.Rectangle
 
-class JEIAdvancedGuiHandler : IAdvancedGuiHandler<LPBaseGuiContainer> {
+class JEIAdvancedGuiHandler : IAdvancedGuiHandler<BaseGuiContainer> {
 
-    override fun getGuiContainerClass(): Class<LPBaseGuiContainer> = LPBaseGuiContainer::class.java
+    override fun getGuiContainerClass(): Class<BaseGuiContainer> = BaseGuiContainer::class.java
 
-    override fun getGuiExtraAreas(guiContainer: LPBaseGuiContainer): MutableList<Rectangle> =
+    override fun getGuiExtraAreas(guiContainer: BaseGuiContainer): MutableList<Rectangle> =
         guiContainer.getExtraGuiAreas().map { rect ->
             Rectangle(rect.roundedLeft, rect.roundedTop, rect.roundedWidth, rect.roundedHeight)
         }.toMutableList()

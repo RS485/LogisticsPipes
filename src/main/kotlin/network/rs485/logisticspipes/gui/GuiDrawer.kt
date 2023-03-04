@@ -69,7 +69,7 @@ import kotlin.math.abs
 /**
  * Drawing methods to help with Guis
  */
-object LPGuiDrawer {
+object GuiDrawer {
 
     private const val BORDER: Int = 4
     private const val NORMAL_SLOT_SIZE = 18

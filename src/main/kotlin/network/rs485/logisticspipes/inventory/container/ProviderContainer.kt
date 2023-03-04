@@ -35,13 +35,12 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.widget.module
+package network.rs485.logisticspipes.inventory.container
 
 import logisticspipes.modules.ModuleProvider
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.LPBaseContainer
 import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
 

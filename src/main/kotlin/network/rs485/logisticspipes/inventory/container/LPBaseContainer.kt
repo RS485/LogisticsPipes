@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.inventory.container
 
 import network.rs485.logisticspipes.gui.widget.*
 import network.rs485.logisticspipes.property.IBitSet

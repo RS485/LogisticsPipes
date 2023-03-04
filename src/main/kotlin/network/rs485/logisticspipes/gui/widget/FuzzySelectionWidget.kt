@@ -98,20 +98,20 @@ class FuzzySelectionWidget(
             if ((isMouseHovering(
                     mouseX,
                     mouseY,
-                ) || (Minecraft.getMinecraft().currentScreen as LPBaseGuiContainer).hoveredSlot == currentSlot) && currentSlot != null
+                ) || (Minecraft.getMinecraft().currentScreen as BaseGuiContainer).hoveredSlot == currentSlot) && currentSlot != null
             ) {
                 currentSlot?.let { slot ->
-                    LPGuiDrawer.drawGuiBackground(relativeBody)
+                    GuiDrawer.drawGuiBackground(relativeBody)
                     var yOffset = border
                     val flags = slot.flagGetter.invoke()
                     slot.usedFlags.forEach { flag: FuzzyFlag ->
                         val color = if (FuzzyUtil.get(flags, flag)) {
-                            LPGuiDrawer.getFuzzyColor(flag)
+                            GuiDrawer.getFuzzyColor(flag)
                         } else {
                             Color.TEXT_DARK.value
                         }
                         // TODO maybe draw string with shadow when hovered
-                        LPGuiDrawer.mcFontRenderer.drawString(
+                        GuiDrawer.mcFontRenderer.drawString(
                             TextUtil.translate(flagPrefix + flag.name.lowercase()),
                             relativeBody.roundedX + border,
                             relativeBody.roundedY + yOffset,

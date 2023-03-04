@@ -62,7 +62,7 @@ abstract class LPGuiButton(
     var visible: Boolean = true
     var enabled: Boolean = true
 
-    val helper = LPGuiDrawer
+    val helper = GuiDrawer
 
     final override val minWidth: Int = 20
     override val minHeight: Int = 20

@@ -35,10 +35,11 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.widget.module
+package network.rs485.logisticspipes.gui.module
 
 import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.inventory.ProviderMode
+import network.rs485.logisticspipes.inventory.container.ProviderContainer
 import network.rs485.logisticspipes.property.BooleanProperty
 import network.rs485.logisticspipes.property.EnumProperty
 import network.rs485.logisticspipes.property.PropertyLayer
@@ -52,13 +53,77 @@ import mezz.jei.api.gui.IGhostIngredientHandler
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import java.awt.Rectangle
+import java.util.concurrent.atomic.AtomicReference
+
+
+class ProviderWidgetScreen(private val guiReference: AtomicReference<ProviderGui>) : WidgetScreen() {
+    override fun constructWidgetContainer(): ComponentContainer = widgetContainer {
+        val gui = guiReference.get() ?: return@widgetContainer
+        margin = Margin.DEFAULT
+        staticLabel {
+            text = gui.providerModule.filterInventory.name
+            textAlignment = HorizontalAlignment.CENTER
+            textColor = Color.TEXT_DARK.value
+            extendable = true
+            backgroundColor = Color.BACKGROUND_LIGHT.value
+            horizontalSize = Size.GROW
+        }
+        horizontal {
+            gap = 6
+            button {
+                text = TextUtil.translate("${gui.prefix}Switch")
+                action = { gui.providerMode.write { it.next() } }
+                verticalAlignment = VerticalAlignment.CENTER
+            }
+            customSlots {
+                slots = gui.providerContainer.filterSlots
+                columns = 3
+                rows = 3
+                verticalAlignment = VerticalAlignment.CENTER
+            }
+            propertyButton<Boolean, BooleanProperty> {
+                property = gui.providerModule.isExclusionFilter
+                propertyLayer = gui.propertyLayer
+                propertyToText = { isExclude ->
+                    if (isExclude) {
+                        TextUtil.translate("${gui.prefix}Exclude")
+                    } else {
+                        TextUtil.translate("${gui.prefix}Include")
+                    }
+                }
+                text = propertyToText(gui.isExclusionFilter.get())
+                action = { gui.isExclusionFilter.write { it.toggle() } }
+                verticalAlignment = VerticalAlignment.CENTER
+            }
+        }
+        staticLabel {
+            text = TextUtil.translate("${gui.prefix}ExcessInventory")
+            textAlignment = HorizontalAlignment.LEFT
+            textColor = Color.TEXT_DARK.value
+        }
+        label<ProviderMode, EnumProperty<ProviderMode>> {
+            property = gui.providerModule.providerMode
+            propertyLayer = gui.propertyLayer
+            textAlignment = HorizontalAlignment.LEFT
+            propertyToText = { providerMode ->
+                TextUtil.translate(providerMode.modeTranslationKey)
+            }
+            textColor = Color.TEXT_DARK.value
+            text = propertyToText(gui.providerMode.get())
+        }
+        playerSlots {
+            slots = gui.providerContainer.playerSlots
+        }
+    }
+}
 
 // TODO create different buttons.
 class ProviderGui private constructor(
-    private val providerModule: ModuleProvider,
-    private val providerContainer: ProviderContainer,
-    private val propertyLayer: PropertyLayer,
-) : LPBaseGuiContainer(providerContainer) {
+    internal val providerModule: ModuleProvider,
+    internal val providerContainer: ProviderContainer,
+    internal val propertyLayer: PropertyLayer,
+    guiReference: AtomicReference<ProviderGui> = AtomicReference(),
+) : BaseGuiContainer(providerContainer, widgetScreen = ProviderWidgetScreen(guiReference)) {
 
     companion object {
         @JvmStatic
@@ -82,67 +147,13 @@ class ProviderGui private constructor(
         }
     }
 
-    private val prefix: String = "gui.providerpipe."
+    internal val prefix: String = "gui.providerpipe."
 
-    private val providerMode = propertyLayer.overlay(providerModule.providerMode)
-    private val isExclusionFilter = propertyLayer.overlay(providerModule.isExclusionFilter)
+    internal val providerMode = propertyLayer.overlay(providerModule.providerMode)
+    internal val isExclusionFilter = propertyLayer.overlay(providerModule.isExclusionFilter)
 
-    override val widgets = widgetContainer {
-        margin = Margin.DEFAULT
-        staticLabel {
-            text = providerModule.filterInventory.name
-            textAlignment = HorizontalAlignment.CENTER
-            textColor = Color.TEXT_DARK.value
-            extendable = true
-            backgroundColor = Color.BACKGROUND_LIGHT.value
-            horizontalSize = Size.GROW
-        }
-        horizontal {
-            gap = 6
-            button {
-                text = TextUtil.translate("${prefix}Switch")
-                action = { providerMode.write { it.next() } }
-                verticalAlignment = VerticalAlignment.CENTER
-            }
-            customSlots {
-                slots = providerContainer.filterSlots
-                columns = 3
-                rows = 3
-                verticalAlignment = VerticalAlignment.CENTER
-            }
-            propertyButton<Boolean, BooleanProperty> {
-                property = providerModule.isExclusionFilter
-                propertyLayer = this@ProviderGui.propertyLayer
-                propertyToText = { isExclude ->
-                    if (isExclude) {
-                        TextUtil.translate("${prefix}Exclude")
-                    } else {
-                        TextUtil.translate("${prefix}Include")
-                    }
-                }
-                text = propertyToText(isExclusionFilter.get())
-                action = { isExclusionFilter.write { it.toggle() } }
-                verticalAlignment = VerticalAlignment.CENTER
-            }
-        }
-        staticLabel {
-            text = TextUtil.translate("${prefix}ExcessInventory")
-            textAlignment = HorizontalAlignment.LEFT
-            textColor = Color.TEXT_DARK.value
-        }
-        label<ProviderMode, EnumProperty<ProviderMode>> {
-            property = providerModule.providerMode
-            propertyLayer = this@ProviderGui.propertyLayer
-            textAlignment = HorizontalAlignment.LEFT
-            propertyToText = { providerMode ->
-                TextUtil.translate(providerMode.modeTranslationKey)
-            }
-            textColor = Color.TEXT_DARK.value
-            text = propertyToText(providerMode.get())
-        }
-        playerSlots {
-            slots = providerContainer.playerSlots
-        }
+    init {
+        guiReference.set(this)
     }
 
     override fun drawFocalgroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {
@@ -152,6 +163,7 @@ class ProviderGui private constructor(
     }
 
     override fun <I> getFilterSlots(): MutableList<IGhostIngredientHandler.Target<I>> {
+        // TODO create method to turn list of filter slots into list of Target<I>
         return (inventorySlots as ProviderContainer).filterSlots.map { slot ->
             object : IGhostIngredientHandler.Target<I> {
                 override fun accept(ingredient: I) {

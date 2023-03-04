@@ -35,10 +35,11 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.widget.module
+package network.rs485.logisticspipes.gui.module
 
 import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.widget.FuzzySelectionWidget
+import network.rs485.logisticspipes.inventory.container.ItemSinkContainer
 import network.rs485.logisticspipes.property.BooleanProperty
 import network.rs485.logisticspipes.property.InventoryProperty
 import network.rs485.logisticspipes.property.PropertyLayer
@@ -55,13 +56,70 @@ import mezz.jei.api.gui.IGhostIngredientHandler
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
 import java.awt.Rectangle
+import java.util.concurrent.atomic.AtomicReference
+
+class ItemSinkWidgetScreen(private val guiReference: AtomicReference<ItemSinkGui>) : WidgetScreen() {
+    override fun constructWidgetContainer() = widgetContainer {
+        val gui = guiReference.get() ?: return@widgetContainer
+        margin = Margin.DEFAULT
+        staticLabel {
+            text = gui.itemSinkModule.filterInventory.name
+            textAlignment = HorizontalAlignment.CENTER
+            textColor = Color.TEXT_DARK.value
+        }
+        customSlots {
+            slots = gui.itemSinkContainer.filterSlots
+            columns = 9
+            rows = 1
+        }
+        horizontal {
+            margin = Margin(top = 3, bottom = 3)
+            button {
+                text = TextUtil.translate("${gui.prefix}import")
+                action = {
+                    if (!gui.inHand) {
+                        MainProxy.sendPacketToServer(
+                            PacketHandler.getPacket(ItemSinkImportPacket::class.java).setModulePos(gui.itemSinkModule),
+                        )
+                    }
+                }
+                enabled = !gui.inHand // TODO disable button if there is no attached inventory!
+            }
+            staticLabel {
+                text = "${TextUtil.translate("${gui.prefix}Defaultroute")}:"
+                textColor = Color.TEXT_DARK.value
+                textAlignment = HorizontalAlignment.RIGHT
+                verticalAlignment = VerticalAlignment.CENTER
+                horizontalSize = Size.MIN
+            }
+            propertyButton<Boolean, BooleanProperty> {
+                property = gui.itemSinkModule.defaultRoute
+                propertyLayer = gui.propertyLayer
+                propertyToText = { isDefaultRoute ->
+                    if (isDefaultRoute) {
+                        TextUtil.translate("${gui.prefix}Yes")
+                    } else {
+                        TextUtil.translate("${gui.prefix}No")
+                    }
+                }
+                text = propertyToText(gui.defaultRouteOverlay.get())
+                action = { gui.defaultRouteOverlay.write { it.toggle() } }
+            }
+        }
+        playerSlots {
+            slots = gui.itemSinkContainer.playerSlots
+        }
+    }
+
+}
 
 class ItemSinkGui private constructor(
-    private val itemSinkModule: ModuleItemSink,
-    private val itemSinkContainer: ItemSinkContainer,
-    private val propertyLayer: PropertyLayer,
-    private val inHand: Boolean,
-) : LPBaseGuiContainer(itemSinkContainer) {
+    internal val itemSinkModule: ModuleItemSink,
+    internal val itemSinkContainer: ItemSinkContainer,
+    internal val propertyLayer: PropertyLayer,
+    internal val inHand: Boolean,
+    guiReference: AtomicReference<ItemSinkGui> = AtomicReference(),
+) : BaseGuiContainer(itemSinkContainer, widgetScreen = ItemSinkWidgetScreen(guiReference)) {
 
     companion object {
         @JvmStatic
@@ -94,63 +152,15 @@ class ItemSinkGui private constructor(
         }
     }
 
-    private val prefix: String = "gui.itemsink."
+    internal val prefix: String = "gui.itemsink."
 
-    private val defaultRouteOverlay = propertyLayer.overlay(itemSinkModule.defaultRoute)
-    private val fuzzyFlagsOverlay = itemSinkContainer.fuzzyFlagOverlay
+    internal val defaultRouteOverlay = propertyLayer.overlay(itemSinkModule.defaultRoute)
     private val filterInventoryOverlay = propertyLayer.overlay(itemSinkModule.filterInventory)
 
-    override val fuzzySelector = FuzzySelectionWidget(this, fuzzyFlagsOverlay)
+    override val fuzzySelector = FuzzySelectionWidget(this, itemSinkContainer.fuzzyFlagOverlay)
 
-    override val widgets = widgetContainer {
-        margin = Margin.DEFAULT
-        staticLabel {
-            text = itemSinkModule.filterInventory.name
-            textAlignment = HorizontalAlignment.CENTER
-            textColor = Color.TEXT_DARK.value
-        }
-        customSlots {
-            slots = itemSinkContainer.filterSlots
-            columns = 9
-            rows = 1
-        }
-        horizontal {
-            margin = Margin(top = 3, bottom = 3)
-            button {
-                text = TextUtil.translate("${prefix}import")
-                action = {
-                    if (!inHand) {
-                        MainProxy.sendPacketToServer(
-                            PacketHandler.getPacket(ItemSinkImportPacket::class.java).setModulePos(itemSinkModule),
-                        )
-                    }
-                }
-                enabled = !inHand
-            }
-            staticLabel {
-                text = "${TextUtil.translate("${prefix}Defaultroute")}:"
-                textColor = Color.TEXT_DARK.value
-                textAlignment = HorizontalAlignment.RIGHT
-                verticalAlignment = VerticalAlignment.CENTER
-                horizontalSize = Size.MIN
-            }
-            propertyButton<Boolean, BooleanProperty> {
-                property = itemSinkModule.defaultRoute
-                propertyLayer = this@ItemSinkGui.propertyLayer
-                propertyToText = { isDefaultRoute ->
-                    if (isDefaultRoute) {
-                        TextUtil.translate("${prefix}Yes")
-                    } else {
-                        TextUtil.translate("${prefix}No")
-                    }
-                }
-                text = propertyToText(defaultRouteOverlay.get())
-                action = { defaultRouteOverlay.write { it.toggle() } }
-            }
-        }
-        playerSlots {
-            slots = itemSinkContainer.playerSlots
-        }
+    init {
+        guiReference.set(this)
     }
 
     fun importFromInventory(importedItems: List<ItemIdentifier>) {

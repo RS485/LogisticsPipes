@@ -39,7 +39,6 @@ package network.rs485.logisticspipes.gui
 
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.widget.*
-import network.rs485.logisticspipes.util.IRectangle
 
 object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
@@ -74,7 +73,7 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             onClickAction = {
                 component.action.invoke()
                 return@TextButton true
-            }
+            },
         ).apply {
             component.onPropertyUpdate { newText ->
                 text = newText
@@ -108,7 +107,7 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
                 // FIXME: filter mouse button
                 component.action.invoke()
                 return@TextButton true
-            }
+            },
         )
 
         is CustomSlots -> SlotGroup(
@@ -153,6 +152,6 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
         return result
     }
 
-    override fun render(componentContainer: ComponentContainer, body: IRectangle): WidgetContainer =
+    override fun render(componentContainer: ComponentContainer): WidgetContainer =
         createContainer(componentContainer)
 }

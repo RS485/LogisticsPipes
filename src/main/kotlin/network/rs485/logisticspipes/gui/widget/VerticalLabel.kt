@@ -37,11 +37,10 @@
 
 package network.rs485.logisticspipes.gui.widget
 
-import logisticspipes.utils.gui.LogisticsBaseGuiScreen
-import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.widget.module.Label
 import network.rs485.logisticspipes.util.TextUtil
 import network.rs485.logisticspipes.util.opaque
+import logisticspipes.utils.gui.LogisticsBaseGuiScreen
+import net.minecraft.client.renderer.GlStateManager
 
 class VerticalLabel(fullText: String, x: Int, y: Int, maxLength: Int, textColor: Int, backgroundColor: Int) : Label(fullText, x, y, maxLength, textColor, backgroundColor) {
 

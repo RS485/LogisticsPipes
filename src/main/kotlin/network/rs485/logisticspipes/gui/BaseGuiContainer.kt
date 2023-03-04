@@ -38,15 +38,14 @@
 package network.rs485.logisticspipes.gui
 
 import network.rs485.logisticspipes.gui.guidebook.Drawable
-import network.rs485.logisticspipes.gui.guidebook.MouseHoverable
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.gui.guidebook.Screen
 import network.rs485.logisticspipes.gui.widget.FuzzyItemSlot
 import network.rs485.logisticspipes.gui.widget.FuzzySelectionWidget
 import network.rs485.logisticspipes.gui.widget.GhostSlot
 import network.rs485.logisticspipes.gui.widget.Tooltipped
+import network.rs485.logisticspipes.inventory.container.LPBaseContainer
 import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
 import logisticspipes.utils.gui.DummySlot
 import mezz.jei.api.gui.IGhostIngredientHandler
 import net.minecraft.client.Minecraft
@@ -57,76 +56,29 @@ import net.minecraft.inventory.ClickType
 import net.minecraft.inventory.Slot
 import kotlin.math.roundToInt
 
-abstract class LPBaseGuiContainer(
+abstract class BaseGuiContainer(
     private val baseContainer: LPBaseContainer,
-    private val xOffset: Int = 0,
-    private val yOffset: Int = 0,
-) : GuiContainer(baseContainer), Drawable {
+    val xOffset: Int = 0,
+    val yOffset: Int = 0,
+    private val widgetScreen: WidgetScreen,
+) : GuiContainer(baseContainer), Drawable by widgetScreen {
 
     // TODO
     // Make it so only the highest "z" widget can be drawn as hovered - hovered state should be managed by gui class.
 
-    final override var parent: Drawable? = Screen
-    final override val relativeBody = MutableRectangle()
-    private var hoveredWidget: MouseHoverable? = null
-
-    protected abstract val widgets: ComponentContainer
-    private var widgetContainer: WidgetContainer = VerticalWidgetContainer(emptyList(), parent, Margin.DEFAULT, 0)
-
     open val fuzzySelector: FuzzySelectionWidget? = null
 
     override fun initGui() {
-        // In case the screen size has changed.
-        Screen.relativeBody.setSize(width, height)
-
-        // Create gui widgets from dls components.
-        widgetContainer = GuiRenderer.render(widgets, relativeBody).also {
-            it.parent = this@LPBaseGuiContainer
-        }
-
-        // Set position back to 0 before placing children to respect minecraft's gui translation.
-        widgetContainer.relativeBody.resetPos()
-        relativeBody.resetPos()
-
-        // Initialize every widget and place it relative to its parent.
-        widgetContainer.apply {
-            initWidget()
-            placeChildren()
-        }
-
-        // Set size of the main container to the minimum necessary size to fit all children.
-        widgetContainer.relativeBody.setSize(
-            widgetContainer.minWidth,
-            widgetContainer.minHeight,
-        ).translate(
-            widgetContainer.margin.left,
-            widgetContainer.margin.top,
-        )
-
-        // Set the root body of the gui based on the size of the first container
-        // and taking into account it's margin.
-        relativeBody.setSizeFromRectangle(
-            widgetContainer.relativeBody.copy().grow(
-                widgetContainer.margin.horizontal,
-                widgetContainer.margin.vertical,
-            ),
-        )
-
-        // Center gui with possible offsets
-        relativeBody.setPos(
-            newX = (Screen.xCenter - relativeBody.width / 2) + xOffset,
-            newY = (Screen.yCenter - relativeBody.height / 2) + yOffset,
-        )
+        widgetScreen.initGuiWidget(this@BaseGuiContainer, super<GuiContainer>.width, super<GuiContainer>.height)
 
         // To use minecraft's slot and item rendering. Might remove later.
-        guiLeft = widgetContainer.absoluteBody.roundedLeft
-        guiTop = widgetContainer.absoluteBody.roundedTop
+        guiLeft = widgetScreen.widgetContainer.absoluteBody.roundedLeft
+        guiTop = widgetScreen.widgetContainer.absoluteBody.roundedTop
 
         // Clear button and widget lists
         buttonList.clear()
         mc.player.openContainer = inventorySlots
     }
-
     /**
      * Draw what is supposed to not be important to the gui and is behind everything else.
      * Origin is top left corner of the minecraft window.
@@ -136,7 +88,7 @@ abstract class LPBaseGuiContainer(
      */
     open fun drawBackgroundLayer(mouseX: Int, mouseY: Int, partialTicks: Float) {
         drawDefaultBackground()
-        helper.drawGuiContainerBackground(absoluteBody, guiLeft to guiTop, inventorySlots)
+        GuiDrawer.drawGuiContainerBackground(absoluteBody, guiLeft to guiTop, inventorySlots)
     }
 
     /**
@@ -156,14 +108,11 @@ abstract class LPBaseGuiContainer(
      * @param partialTicks time so animations don't have to depend on game ticks which can be unstable.
      */
     open fun drawForegroundLayer(mouseX: Float, mouseY: Float, partialTicks: Float) {
-        widgetContainer.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
-        (hoveredWidget as? Tooltipped)?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
+        widgetScreen.widgetContainer.draw(mouseX, mouseY, partialTicks, Screen.absoluteBody)
+        (widgetScreen.hoveredWidget as? Tooltipped)?.getTooltipText()?.takeIf { it.isNotEmpty() }?.also {
             drawHoveringText(it, mouseX.roundToInt(), mouseY.roundToInt())
         } ?: renderHoveredToolTip(mouseX.roundToInt(), mouseY.roundToInt())
     }
-
-    private fun getHovered(mouseX: Float, mouseY: Float): MouseHoverable? =
-        widgetContainer.getHovered(mouseX, mouseY)
 
     // Call super and call all the normally used methods.
     override fun drawScreen(mouseX: Int, mouseY: Int, partialTicks: Float) {
@@ -176,7 +125,7 @@ abstract class LPBaseGuiContainer(
         drawFocalgroundLayer(floatMouseX, floatMouseY, partialTicks)
         GlStateManager.translate(0.0f, 0.0f, 10.0f)
         RenderHelper.disableStandardItemLighting()
-        hoveredWidget = getHovered(floatMouseX, floatMouseY)
+        widgetScreen.updateHoveredState(floatMouseX, floatMouseY)
         drawForegroundLayer(floatMouseX, floatMouseY, partialTicks)
         RenderHelper.disableStandardItemLighting()
         fuzzySelector?.let { fuzzySelector ->
@@ -210,7 +159,7 @@ abstract class LPBaseGuiContainer(
         ) {
             return
         }
-        val currentHovered = hoveredWidget
+        val currentHovered = widgetScreen.hoveredWidget
         if (currentHovered is MouseInteractable) {
             if (currentHovered.mouseClicked(
                     mouseX = mouseX.toFloat(),
@@ -242,10 +191,6 @@ abstract class LPBaseGuiContainer(
     // Redirect vanilla background method to drawBackgroundLayer()
     override fun drawGuiContainerBackgroundLayer(partialTicks: Float, mouseX: Int, mouseY: Int) {
         drawBackgroundLayer(mouseX, mouseY, partialTicks)
-    }
-
-    companion object {
-        val helper = LPGuiDrawer
     }
 
     fun List<Drawable>.draw(mouseX: Float, mouseY: Float, partialTicks: Float, visibleArea: IRectangle) =

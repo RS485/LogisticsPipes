@@ -17,7 +17,7 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
-import network.rs485.logisticspipes.gui.widget.module.ItemSinkGui;
+import network.rs485.logisticspipes.gui.module.ItemSinkGui;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 

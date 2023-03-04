@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.HorizontalAlignment
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.Rectangle
 import network.rs485.logisticspipes.util.TextUtil
@@ -60,7 +60,7 @@ class BookmarkManagingButton(x: Int, y: Int, onClickAction: (ButtonState) -> Boo
         if (visible) {
             hovered = isHovered(mouseX, mouseY)
             val yOffset = getHoverState(hovered) * additionTexture.roundedHeight
-            LPGuiDrawer.drawGuiTexturedRect(body, (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), true, MinecraftColor.WHITE.colorCode)
+            GuiDrawer.drawGuiTexturedRect(body, (if (buttonState == ButtonState.ADD) additionTexture else subtractionTexture).translated(0, yOffset), true, MinecraftColor.WHITE.colorCode)
         }
     }
 

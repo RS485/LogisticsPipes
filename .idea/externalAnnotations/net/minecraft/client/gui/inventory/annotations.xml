@@ -1,6 +1,5 @@
 <root>
     <item name='net.minecraft.client.gui.inventory.GuiContainer void handleMouseClick(net.minecraft.inventory.Slot, int, int, net.minecraft.inventory.ClickType) 0'>
         <annotation name='javax.annotation.Nullable'/>
-        <annotation name='org.jetbrains.annotations.Nullable'/>
     </item>
 </root>

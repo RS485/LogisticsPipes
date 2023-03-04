@@ -43,7 +43,7 @@ import net.minecraft.client.audio.PositionedSoundRecord
 import net.minecraft.client.audio.SoundHandler
 import net.minecraft.init.SoundEvents
 import net.minecraft.util.SoundEvent
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.gui.guidebook.GuideBookConstants.DRAW_BODY_WIREFRAME
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.Rectangle
@@ -154,7 +154,7 @@ interface Drawable {
                 .translate(0, -5)
                 .grow(0, 10)
                 .overlap(absoluteBody)
-            LPGuiDrawer.drawOutlineRect(visibleAbsoluteBody, MinecraftColor.WHITE.colorCode)
+            GuiDrawer.drawOutlineRect(visibleAbsoluteBody, MinecraftColor.WHITE.colorCode)
         }
     }
 

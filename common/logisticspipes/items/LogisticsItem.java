@@ -35,7 +35,7 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 
 	@Override
 	public String getModelPath() {
-		String modelFile = getRegistryName().getResourcePath();
+		String modelFile = getRegistryName().getPath();
 		String dir = getModelSubdir();
 		if (!dir.isEmpty()) {
 			if (modelFile.startsWith(String.format("%s_", dir))) {
@@ -56,11 +56,11 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 
 	@Nonnull
 	@Override
-	public String getUnlocalizedName(@Nonnull ItemStack stack) {
+	public String getTranslationKey(@Nonnull ItemStack stack) {
 		if (getHasSubtypes()) {
-			return String.format("%s.%d", super.getUnlocalizedName(stack), stack.getMetadata());
+			return String.format("%s.%d", super.getTranslationKey(stack), stack.getMetadata());
 		}
-		return super.getUnlocalizedName(stack);
+		return super.getTranslationKey(stack);
 	}
 
 	/**
@@ -85,6 +85,6 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 	@Nonnull
 	@Override
 	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
-		return I18n.translateToLocal(getUnlocalizedName(itemstack) + ".name").trim();
+		return I18n.translateToLocal(getTranslationKey(itemstack) + ".name").trim();
 	}
 }

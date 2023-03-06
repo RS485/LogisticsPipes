@@ -41,7 +41,7 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 
 	@Override
 	@Nonnull
-	public String getUnlocalizedName(@Nonnull ItemStack stack) {
+	public String getTranslationKey(@Nonnull ItemStack stack) {
 		FluidIdentifierStack fluidStack = SimpleServiceLocator.logisticsFluidManager.getFluidFromContainer(ItemIdentifierStack.getFromStack(stack));
 		if (fluidStack != null) {
 			String s = fluidStack.makeFluidStack().getFluid().getUnlocalizedName();
@@ -49,15 +49,15 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 				return s;
 			}
 		}
-		return super.getUnlocalizedName(stack);
+		return super.getTranslationKey(stack);
 	}
 
 	@Override
 	@Nonnull
 	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
-		String unLocalizedName = getUnlocalizedName(itemstack);
-		String unLocalizedNameInefficiently = getUnlocalizedNameInefficiently(itemstack); // Fix for Logistics fluid container naming
-		return I18n.translateToLocal(unLocalizedName + (unLocalizedName.equals(unLocalizedNameInefficiently) ? ".name" : "")).trim();
+		String translationKey = getTranslationKey(itemstack);
+		String unlocalizedNameInefficiently = getUnlocalizedNameInefficiently(itemstack); // Fix for Logistics fluid container naming
+		return I18n.translateToLocal(translationKey + (translationKey.equals(unlocalizedNameInefficiently) ? ".name" : "")).trim();
 	}
 
 	@Override

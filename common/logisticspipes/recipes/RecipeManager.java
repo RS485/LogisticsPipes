@@ -167,9 +167,9 @@ public class RecipeManager {
 
 			String format;
 			if (result.getHasSubtypes()) {
-				format = String.format("generated_recipes/%s.%d.json", result.getItem().getRegistryName().getResourcePath(), result.getItemDamage());
+				format = String.format("generated_recipes/%s.%d.json", result.getItem().getRegistryName().getPath(), result.getItemDamage());
 			} else {
-				format = String.format("generated_recipes/%s.json", result.getItem().getRegistryName().getResourcePath());
+				format = String.format("generated_recipes/%s.json", result.getItem().getRegistryName().getPath());
 			}
 
 			File out = new File(format);
@@ -224,12 +224,12 @@ public class RecipeManager {
 	}
 
 	private static ResourceLocation getFreeRecipeResourceLocation(Item item) {
-		ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, item.getRegistryName().getResourcePath());
+		ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, item.getRegistryName().getPath());
 		ResourceLocation recipeLoc = baseLoc;
 		int index = 0;
 		while (CraftingManager.REGISTRY.containsKey(recipeLoc)) {
 			index++;
-			recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
+			recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getPath() + "_" + index);
 		}
 		return recipeLoc;
 	}

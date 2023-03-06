@@ -93,8 +93,8 @@ public final class TileBuffer {
 		TileBuffer[] buffer = new TileBuffer[6];
 
 		for (int i = 0; i < 6; i++) {
-			EnumFacing d = EnumFacing.getFront(i);
-			buffer[i] = new TileBuffer(world, pos.getX() + d.getFrontOffsetX(), pos.getY() + d.getFrontOffsetY(), pos.getZ() + d.getFrontOffsetZ(), loadUnloaded);
+			EnumFacing d = EnumFacing.byIndex(i);
+			buffer[i] = new TileBuffer(world, pos.getX() + d.getXOffset(), pos.getY() + d.getYOffset(), pos.getZ() + d.getZOffset(), loadUnloaded);
 		}
 
 		return buffer;

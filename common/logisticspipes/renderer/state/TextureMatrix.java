@@ -56,16 +56,16 @@ public class TextureMatrix {
 		if (isRouted) {
 			CoreRoutedPipe cPipe = (CoreRoutedPipe) pipe;
 			for (int i = 0; i < 6; i++) {
-				if (isRoutedInDir[i] != cPipe.getRouter().isRoutedExit(EnumFacing.getFront(i))) {
+				if (isRoutedInDir[i] != cPipe.getRouter().isRoutedExit(EnumFacing.byIndex(i))) {
 					dirty = true;
 				}
-				isRoutedInDir[i] = cPipe.getRouter().isRoutedExit(EnumFacing.getFront(i));
+				isRoutedInDir[i] = cPipe.getRouter().isRoutedExit(EnumFacing.byIndex(i));
 			}
 			for (int i = 0; i < 6; i++) {
-				if (isSubPowerInDir[i] != cPipe.getRouter().isSubPoweredExit(EnumFacing.getFront(i))) {
+				if (isSubPowerInDir[i] != cPipe.getRouter().isSubPoweredExit(EnumFacing.byIndex(i))) {
 					dirty = true;
 				}
-				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(EnumFacing.getFront(i));
+				isSubPowerInDir[i] = cPipe.getRouter().isSubPoweredExit(EnumFacing.byIndex(i));
 			}
 			if (hasPowerUpgrade != (cPipe.getUpgradeManager().hasRFPowerSupplierUpgrade() || cPipe.getUpgradeManager().getIC2PowerLevel() > 0)) {
 				dirty = true;

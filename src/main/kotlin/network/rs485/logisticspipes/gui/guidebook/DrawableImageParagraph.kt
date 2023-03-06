@@ -37,6 +37,9 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
+import network.rs485.logisticspipes.gui.GuiDrawer
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
 import logisticspipes.LogisticsPipes
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
@@ -46,9 +49,6 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.GuiDrawer
-import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
 import java.io.IOException
 import kotlin.math.min
 
@@ -102,7 +102,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         val resource = Minecraft.getMinecraft().resourceManager.getResource(imageResource)
         PngSizeInfo.makeFromResource(resource)
     } catch (e: IOException) {
-        LogisticsPipes.log.error("File not found: ${imageResource.resourcePath}")
+        LogisticsPipes.log.error("File not found: ${imageResource.path}")
         null
     }
     val broken: Boolean get() = imageSize == null

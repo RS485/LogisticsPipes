@@ -741,7 +741,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 
 		NBTTagCompound powerNBT = new NBTTagCompound();
 		powerHandler.writeToNBT(powerNBT);
-		if (!powerNBT.hasNoTags()) {
+		if (!powerNBT.isEmpty()) {
 			nbttagcompound.setTag("powerHandler", powerNBT);
 		}
 

@@ -37,8 +37,7 @@
 
 package network.rs485.logisticspipes.module
 
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import network.rs485.logisticspipes.property.Property
 import logisticspipes.interfaces.IClientInformationProvider
 import logisticspipes.interfaces.IModuleWatchReciver
 import logisticspipes.interfaces.IPipeServiceProvider
@@ -50,7 +49,8 @@ import logisticspipes.utils.PlayerCollectionList
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
-import network.rs485.logisticspipes.property.Property
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncResult?>(), Gui,
     IClientInformationProvider, IModuleWatchReciver {
@@ -122,14 +122,14 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
 
     override fun runSyncWork() = quicksort.runSyncWork()
 
-    override fun readFromNBT(nbttagcompound: NBTTagCompound) {
-        quicksort.readFromNBT(nbttagcompound)
-        timeout = nbttagcompound.getInteger("Timeout")
+    override fun readFromNBT(tag: NBTTagCompound) {
+        quicksort.readFromNBT(tag)
+        timeout = tag.getInteger("Timeout")
     }
 
-    override fun writeToNBT(nbttagcompound: NBTTagCompound) {
-        quicksort.writeToNBT(nbttagcompound)
-        nbttagcompound.setInteger("Timeout", timeout)
+    override fun writeToNBT(tag: NBTTagCompound) {
+        quicksort.writeToNBT(tag)
+        tag.setInteger("Timeout", timeout)
     }
 
     override fun receivePassive(): Boolean = false

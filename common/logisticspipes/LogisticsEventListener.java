@@ -29,7 +29,6 @@ import net.minecraftforge.client.event.GuiOpenEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.ChunkWatchEvent.UnWatch;
 import net.minecraftforge.event.world.ChunkWatchEvent.Watch;
 import net.minecraftforge.event.world.WorldEvent;
@@ -61,8 +60,6 @@ import logisticspipes.proxy.SimpleServiceLocator;
 import logisticspipes.renderer.GuiOverlay;
 import logisticspipes.renderer.LogisticsHUDRenderer;
 import logisticspipes.routing.ItemRoutingInformation;
-import logisticspipes.routing.pathfinder.changedetection.TEControl;
-import logisticspipes.ticks.LPTickHandler;
 import logisticspipes.ticks.VersionChecker;
 import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.PlayerIdentifier;
@@ -113,7 +110,7 @@ public class LogisticsEventListener {
 						World world = event.getEntityPlayer().world;
 						BlockPos pos = tile.getPos();
 						IBlockState state = world.getBlockState(pos);
-						world.markAndNotifyBlock(tile.getPos(), world.getChunkFromBlockCoords(pos), state, state, 2);
+						world.markAndNotifyBlock(tile.getPos(), world.getChunk(pos), state, state, 2);
 						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).delayTo = System.currentTimeMillis() + 200;
 						((CoreRoutedPipe) ((LogisticsTileGenericPipe) tile).pipe).repeatFor = 10;
 					} else {
@@ -315,7 +312,7 @@ public class LogisticsEventListener {
 	@SubscribeEvent
 	public void onItemCrafting(PlayerEvent.ItemCraftedEvent event) {
 		if (event.player.isServerWorld() && !event.crafting.isEmpty()) {
-			if (event.crafting.getItem().getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID)) {
+			if (event.crafting.getItem().getRegistryName().getNamespace().equals(LPConstants.LP_MOD_ID)) {
 				PlayerIdentifier identifier = PlayerIdentifier.get(event.player);
 				PlayerConfiguration config = LogisticsPipes.getServerConfigManager().getPlayerConfiguration(identifier);
 				if (!config.getHasCraftedLPItem() && !LogisticsPipes.isDEBUG()) {

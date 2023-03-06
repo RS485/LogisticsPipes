@@ -12,14 +12,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.ItemStack;
@@ -114,8 +112,8 @@ public final class GuiGraphics {
 
 		int x = (Integer) tooltip[0] - (forceAdd ? 0 : guiLeft) + 12;
 		int y = (Integer) tooltip[1] - (forceAdd ? 0 : guiTop) - 12;
-		if (!SimpleServiceLocator.neiProxy.renderItemToolTip(x, y, tooltipLines, stack.getRarity().rarityColor, stack)) {
-			GuiGraphics.drawToolTip(x, y, tooltipLines, stack.getRarity().rarityColor);
+		if (!SimpleServiceLocator.neiProxy.renderItemToolTip(x, y, tooltipLines, stack.getRarity().color, stack)) {
+			GuiGraphics.drawToolTip(x, y, tooltipLines, stack.getRarity().color);
 		}
 
 		GuiGraphics.zLevel = 0;

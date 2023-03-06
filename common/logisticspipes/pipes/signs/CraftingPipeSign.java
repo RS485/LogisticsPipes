@@ -101,7 +101,7 @@ public class CraftingPipeSign implements IPipeSign {
 					name = item.getItemStackDisplayName(itemstack.unsafeMakeNormalStack());
 				} catch (Exception e) {
 					try {
-						name = item.getUnlocalizedName();
+						name = item.getTranslationKey();
 					} catch (Exception ignored) {}
 				}
 

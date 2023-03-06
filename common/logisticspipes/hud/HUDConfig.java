@@ -22,7 +22,7 @@ public class HUDConfig implements IHUDConfig {
 			configTag = new NBTTagCompound();
 		}
 
-		if (configTag.hasNoTags()) {
+		if (configTag.isEmpty()) {
 			configTag.setBoolean("HUDChassie", true);
 			configTag.setBoolean("HUDCrafting", true);
 			configTag.setBoolean("HUDInvSysCon", true);

@@ -834,7 +834,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 				.forEach(objectsToRender::add);
 
 		for (int i = 0; i < 6; i += 2) {
-			EnumFacing dir = EnumFacing.getFront(i);
+			EnumFacing dir = EnumFacing.byIndex(i);
 			List<EnumFacing> list = new ArrayList<>(Arrays.asList(EnumFacing.VALUES));
 			list.remove(dir);
 			list.remove(dir.getOpposite());
@@ -1053,7 +1053,7 @@ public class LogisticsNewRenderPipe implements IHighlightPlacementRenderer {
 			sides[mount.dir.ordinal()] = true;
 		}
 		for (int i = 2; i < 6; i++) {
-			EnumFacing dir = EnumFacing.getFront(i);
+			EnumFacing dir = EnumFacing.byIndex(i);
 			EnumFacing rot = dir.rotateY();
 			if (sides[dir.ordinal()] && sides[rot.ordinal()]) {
 				reduceToOnePerSide(mountCanidates, dir, dir.rotateYCCW());

@@ -41,7 +41,7 @@ public class LPDuctUnitItem extends DuctUnitItem {
 	}
 
 	public boolean isLPBlockedSide(int paramInt, boolean ignoreSystemDisconnect) {
-		EnumFacing dir = EnumFacing.getFront(paramInt);
+		EnumFacing dir = EnumFacing.byIndex(paramInt);
 
 		AxisAlignedBB aabb = PIPE_CONN_BB.get(paramInt);
 		if (SimpleServiceLocator.mcmpProxy.checkIntersectionWith(pipe, aabb)) {
@@ -109,9 +109,9 @@ public class LPDuctUnitItem extends DuctUnitItem {
 			info.setItem(ItemIdentifierStack.getFromStack(item.stack));
 			LPTravelingItem.LPTravelingItemServer lpItem = new LPTravelingItem.LPTravelingItemServer(info);
 			lpItem.setSpeed(info._transportMode == IRoutedItem.TransportMode.Active ? 0.3F : 0.2F);
-			pipe.pipe.transport.injectItem(lpItem, EnumFacing.getFront(item.direction).getOpposite());
+			pipe.pipe.transport.injectItem(lpItem, EnumFacing.byIndex(item.direction).getOpposite());
 		} else if (item.stack != null) {
-			int consumed = pipe.injectItem(item.stack, true, EnumFacing.getFront(item.direction).getOpposite());
+			int consumed = pipe.injectItem(item.stack, true, EnumFacing.byIndex(item.direction).getOpposite());
 			item.stack.shrink(consumed);
 			if (item.stack.getCount() > 0) {
 				pipe.pipe.transport._itemBuffer.add(new Triplet<>(ItemIdentifierStack

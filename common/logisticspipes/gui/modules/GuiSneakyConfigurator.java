@@ -57,13 +57,13 @@ public class GuiSneakyConfigurator extends ModuleBaseGui {
 	private void refreshButtons() {
 		for (Object p : buttonList) {
 			GuiButton button = (GuiButton) p;
-			button.displayString = getButtonOrientationString(button.id == 6 ? null : EnumFacing.getFront(button.id));
+			button.displayString = getButtonOrientationString(button.id == 6 ? null : EnumFacing.byIndex(button.id));
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) throws IOException {
-		directionReceiver.setSneakyDirection(guibutton.id == 6 ? null : EnumFacing.getFront(guibutton.id));
+		directionReceiver.setSneakyDirection(guibutton.id == 6 ? null : EnumFacing.byIndex(guibutton.id));
 
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(SneakyModuleDirectionUpdate.class).setDirection(directionReceiver.getSneakyDirection()).setModulePos(module));
 

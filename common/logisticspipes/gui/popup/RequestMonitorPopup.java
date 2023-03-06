@@ -271,7 +271,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	}
 
 	private void saveImage(BufferedImage bufferedimage) {
-		File screenShotsFolder = new File(Minecraft.getMinecraft().mcDataDir, "screenshots");
+		File screenShotsFolder = new File(Minecraft.getMinecraft().gameDir, "screenshots");
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 		String s = dateFormat.format(new Date());
 		int i = 1;

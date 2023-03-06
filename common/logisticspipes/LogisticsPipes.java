@@ -312,7 +312,7 @@ public class LogisticsPipes {
 
 		@SideOnly(Side.CLIENT)
 		@Nonnull
-		public ItemStack getTabIconItem() {
+		public ItemStack createIcon() {
 			return new ItemStack(LPItems.pipeBasic);
 		}
 	};
@@ -577,14 +577,14 @@ public class LogisticsPipes {
 
 	public static <T extends Item> T setName(T item, String name, String modID) {
 		item.setRegistryName(modID, name);
-		item.setUnlocalizedName(String.format("%s.%s", modID, name));
+		item.setTranslationKey(String.format("%s.%s", modID, name));
 		return item;
 	}
 
 	// TODO move somewhere
 	public static <T extends Block> T setName(T block, String name) {
 		block.setRegistryName(LPConstants.LP_MOD_ID, name);
-		block.setUnlocalizedName(String.format("%s.%s", LPConstants.LP_MOD_ID, name));
+		block.setTranslationKey(String.format("%s.%s", LPConstants.LP_MOD_ID, name));
 		return block;
 	}
 
@@ -759,12 +759,12 @@ public class LogisticsPipes {
 
 		ItemStack output = new ItemStack(toItem, 1, 0);
 
-		ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, fromItem.getRegistryName().getResourcePath() + ".resetrecipe");
+		ResourceLocation baseLoc = new ResourceLocation(LPConstants.LP_MOD_ID, fromItem.getRegistryName().getPath() + ".resetrecipe");
 		ResourceLocation recipeLoc = baseLoc;
 		int index = 0;
 		while (CraftingManager.REGISTRY.containsKey(recipeLoc)) {
 			index++;
-			recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getResourcePath() + "_" + index);
+			recipeLoc = new ResourceLocation(LPConstants.LP_MOD_ID, baseLoc.getPath() + "_" + index);
 		}
 
 		ShapelessRecipes recipe = new ShapelessRecipes("logisticspipes.resetrecipe.pipe", output, list);

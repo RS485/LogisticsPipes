@@ -35,7 +35,7 @@ public class ItemAmountSignUpdatePacket extends Integer2CoordinatesPacket {
 			return;
 		}
 
-		IPipeSign sign = ((CoreRoutedPipe) pipe.pipe).getPipeSign(EnumFacing.getFront(getInteger()));
+		IPipeSign sign = ((CoreRoutedPipe) pipe.pipe).getPipeSign(EnumFacing.byIndex(getInteger()));
 		if (sign == null) {
 			return;
 		}

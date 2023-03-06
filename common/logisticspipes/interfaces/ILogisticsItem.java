@@ -7,7 +7,7 @@ import org.apache.commons.lang3.NotImplementedException;
 public interface ILogisticsItem {
 
 	default String getModelPath() {
-		return getItem().getRegistryName().getResourcePath();
+		return getItem().getRegistryName().getPath();
 	}
 
 	default int getModelCount() {

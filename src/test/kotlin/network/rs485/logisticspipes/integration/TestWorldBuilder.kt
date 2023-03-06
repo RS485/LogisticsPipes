@@ -134,7 +134,7 @@ private fun WorldServer.setBlocksToAir(start: BlockPos, end: BlockPos) =
     blocksIn(start, end).forEach(::setBlockToAir)
 
 private fun WorldServer.removeItemsOnGround(start: BlockPos, end: BlockPos) =
-    blocksIn(start, end).map { getChunkFromBlockCoords(it) }.distinct()
+    blocksIn(start, end).map { getChunk(it) }.distinct()
         .forEach { chunk ->
             chunk.entityLists.flatMap { it.getByClass(EntityItem::class.java) }.forEach { removeEntity(it) }
         }

@@ -97,7 +97,7 @@ public class PipeTransportLogistics {
 	public void initialize() {
 		if (MainProxy.isServer(getWorld())) {
 			// cache chunk for marking dirty
-			chunk = getWorld().getChunkFromBlockCoords(container.getPos());
+			chunk = getWorld().getChunk(container.getPos());
 			ItemBufferSyncPacket packet = PacketHandler.getPacket(ItemBufferSyncPacket.class);
 			packet.setTilePos(container);
 			_itemBuffer.setPacketType(packet, getWorld().provider.getDimension(), container.getX(), container.getZ());
@@ -112,7 +112,7 @@ public class PipeTransportLogistics {
 				if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe != null && ((LogisticsTileGenericPipe) tile).pipe.transport != null && ((LogisticsTileGenericPipe) tile).pipe.transport.chunk != null) {
 					((LogisticsTileGenericPipe) tile).pipe.transport.chunk.markDirty();
 				} else {
-					getWorld().getChunkFromBlockCoords(tile.getPos()).markDirty();
+					getWorld().getChunk(tile.getPos()).markDirty();
 				}
 			}
 		}

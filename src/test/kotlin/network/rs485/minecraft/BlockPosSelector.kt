@@ -37,9 +37,7 @@
 
 package network.rs485.minecraft
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
+import network.rs485.logisticspipes.integration.ONE_VECTOR
 import net.minecraft.block.BlockColored
 import net.minecraft.init.Blocks
 import net.minecraft.item.EnumDyeColor
@@ -47,9 +45,11 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import net.minecraft.util.math.Vec3i
 import net.minecraft.world.WorldServer
-import network.rs485.logisticspipes.integration.ONE_VECTOR
 import kotlin.math.max
 import kotlin.math.min
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 class BlockPosSelector(val worldBuilder: WorldBuilder) {
     private val placersToOffsets = ArrayList<Pair<Placer, Vec3i>>()
@@ -94,7 +94,7 @@ class BlockPosSelector(val worldBuilder: WorldBuilder) {
             val translated = worldBuilder.finalPosition(this@BlockPosSelector)
             val configurators = placersToOffsets.map {
                 (translated + it.second).let { pos ->
-                    worldBuilder.loadChunk(worldBuilder.world.getChunkFromBlockCoords(pos).pos)
+                    worldBuilder.loadChunk(worldBuilder.world.getChunk(pos).pos)
                     async {
                         it.first.place(worldBuilder.world, pos)
                     }

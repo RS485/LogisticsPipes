@@ -265,7 +265,7 @@ public class LogisticsTileGenericPipe extends LPDuctHolderTileEntity
 		}
 		// Pipe Textures
 		for (int i = 0; i < 7; i++) {
-			EnumFacing o = EnumFacing.getFront(i);
+			EnumFacing o = EnumFacing.byIndex(i);
 			renderState.textureMatrix.setIconIndex(o, pipe.getIconIndex(o));
 		}
 		//New Pipe Texture States

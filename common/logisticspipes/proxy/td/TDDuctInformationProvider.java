@@ -206,7 +206,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 				visited.add(pos);
 
 				double distance = lpDuct.pipe
-						.getDistanceTo(destinationint, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(),
+						.getDistanceTo(destinationint, EnumFacing.byIndex(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(),
 								ident, isActive, traveled + localRoute1.pathWeight, Math.min(max, closesedConnection), visited);
 
 				visited.remove(pos);
@@ -267,7 +267,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 						visited.add(pos);
 
 						double distance = lpDuct.pipe
-								.getDistanceTo(id, EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(),
+								.getDistanceTo(id, EnumFacing.byIndex(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1)).getOpposite(),
 										item.getItemIdentifierStack().getItem(), serverItem.getInfo()._transportMode == TransportMode.Active,
 										localRoute1.pathWeight, max,
 										visited);
@@ -325,7 +325,7 @@ public class TDDuctInformationProvider implements IPipeInformationProvider, IRou
 			if (localRoute1.endPoint instanceof LPDuctUnitItem) {
 				LPDuctUnitItem lpDuct = (LPDuctUnitItem) localRoute1.endPoint;
 				list.add(new RouteInfo(lpDuct.pipe, localRoute1.pathWeight,
-						EnumFacing.getFront(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
+						EnumFacing.byIndex(localRoute1.pathDirections.get(localRoute1.pathDirections.size() - 1))));
 			}
 		}
 		return list;

@@ -252,7 +252,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void registerModels() {
 		ForgeRegistries.ITEMS.getValuesCollection().stream()
-				.filter(item -> item.getRegistryName().getResourceDomain().equals(LPConstants.LP_MOD_ID))
+				.filter(item -> item.getRegistryName().getNamespace().equals(LPConstants.LP_MOD_ID))
 				.filter(item -> item instanceof ILogisticsItem)
 				.forEach(item -> registerModels((ILogisticsItem) item));
 	}
@@ -262,14 +262,14 @@ public class ClientProxy implements IProxy {
 		for (int i = 0; i < mc; i++) {
 			String modelPath = item.getModelPath();
 			if (mc > 1) {
-				String resourcePath = item.getItem().getRegistryName().getResourcePath();
+				String resourcePath = item.getItem().getRegistryName().getPath();
 				if (modelPath.matches(String.format(".*%s/%s", resourcePath, resourcePath))) {
 					modelPath = String.format("%s/%d", modelPath.substring(0, modelPath.length() - resourcePath.length() - 1), i);
 				} else {
 					modelPath = String.format("%s.%d", modelPath, i);
 				}
 			}
-			ModelLoader.setCustomModelResourceLocation(item.getItem(), i, new ModelResourceLocation(new ResourceLocation(item.getItem().getRegistryName().getResourceDomain(), modelPath), "inventory"));
+			ModelLoader.setCustomModelResourceLocation(item.getItem(), i, new ModelResourceLocation(new ResourceLocation(item.getItem().getRegistryName().getNamespace(), modelPath), "inventory"));
 		}
 	}
 

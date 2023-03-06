@@ -243,14 +243,14 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 								((LogisticsTileGenericSubMultiBlock) subTile).addSubTypeTo(pos.getType());
 							}
 						}
-						world.markAndNotifyBlock(pos.getBlockPos(), world.getChunkFromBlockCoords(pos.getBlockPos()), oldSubBlockState, world.getBlockState(pos.getBlockPos()), 3);
+						world.markAndNotifyBlock(pos.getBlockPos(), world.getChunk(pos.getBlockPos()), oldSubBlockState, world.getBlockState(pos.getBlockPos()), 3);
 					}
 					LogisticsBlockGenericSubMultiBlock.currentCreatedMultiBlock = null;
 				}
 				tilePipe.initialize(pipe);
 				//				tilePipe.sendUpdateToClient();
 			}
-			world.markAndNotifyBlock(blockPos, world.getChunkFromBlockCoords(blockPos), oldBlockState, world.getBlockState(blockPos), 3);
+			world.markAndNotifyBlock(blockPos, world.getChunk(blockPos), oldBlockState, world.getBlockState(blockPos), 3);
 		}
 
 		return placed;
@@ -294,7 +294,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 				changed = true;
 			}
 			if (changed) {
-				worldCache.markAndNotifyBlock(posCache, worldCache.getChunkFromBlockCoords(posCache), worldCache.getBlockState(posCache), worldCache.getBlockState(posCache), 3);
+				worldCache.markAndNotifyBlock(posCache, worldCache.getChunk(posCache), worldCache.getBlockState(posCache), worldCache.getBlockState(posCache), 3);
 			}
 			fPipe.setPreventRemove(false);
 			return null;
@@ -393,7 +393,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 			Vec3d vec3d = start.subtract(pos.getX(), pos.getY(), pos.getZ());
 			Vec3d vec3d1 = end.subtract(pos.getX(), pos.getY(), pos.getZ());
 			RayTraceResult raytraceresult = FULL_BLOCK_AABB.calculateIntercept(vec3d, vec3d1);
-			return raytraceresult == null ? null : new RayTraceResult(raytraceresult.hitVec.addVector(pos.getX(), pos.getY(), pos.getZ()), raytraceresult.sideHit, pos);
+			return raytraceresult == null ? null : new RayTraceResult(raytraceresult.hitVec.add(pos.getX(), pos.getY(), pos.getZ()), raytraceresult.sideHit, pos);
 		}
 		if (tile instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) tile).pipe == null) { // Fallback for defect pipe
 			return rayTrace(pos, start, end, Block.FULL_BLOCK_AABB);
@@ -424,7 +424,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		double eyeHeight = player.getEyeHeight();
 		Vec3d lookVec = player.getLookVec();
 		Vec3d start = new Vec3d(player.posX, player.posY + eyeHeight, player.posZ);
-		Vec3d end = start.addVector(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance);
+		Vec3d end = start.add(lookVec.x * reachDistance, lookVec.y * reachDistance, lookVec.z * reachDistance);
 
 		return doRayTrace(world, pos, start, end);
 	}
@@ -591,7 +591,7 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 
 	@Nonnull
 	@Override
-	public BlockRenderLayer getBlockLayer() {
+	public BlockRenderLayer getRenderLayer() {
 		return BlockRenderLayer.CUTOUT;
 	}
 
@@ -767,17 +767,6 @@ public class LogisticsBlockGenericPipe extends LPMicroblockBlock {
 		}
 
 		return false;
-	}
-
-	@Override
-	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
-		super.onEntityCollidedWithBlock(world, pos, state, entity);
-
-		CoreUnroutedPipe pipe = LogisticsBlockGenericPipe.getPipe(world, pos);
-
-		if (LogisticsBlockGenericPipe.isValid(pipe)) {
-			pipe.onEntityCollidedWithBlock(entity);
-		}
 	}
 
 	@Override

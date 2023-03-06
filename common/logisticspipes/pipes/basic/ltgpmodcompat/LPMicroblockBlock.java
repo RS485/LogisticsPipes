@@ -129,12 +129,12 @@ public abstract class LPMicroblockBlock extends BlockContainer implements IMulti
 
 	@Override
 	@ModDependentMethod(modId = LPConstants.mcmpModID)
-	public void onEntityCollidedWithBlock(World world, BlockPos pos, IBlockState state, Entity entity) {
+	public void onEntityCollision(World worldIn, BlockPos pos, IBlockState state, Entity entityIn) {
 		Block block = mcmpBlockAccess.getBlock();
 		if (block != null) {
-			block.onEntityCollidedWithBlock(world, pos, state, entity);
+			block.onEntityCollision(worldIn, pos, state, entityIn);
 		} else {
-			super.onEntityCollidedWithBlock(world, pos, state, entity);
+			super.onEntityCollision(worldIn, pos, state, entityIn);
 		}
 	}
 

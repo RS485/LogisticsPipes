@@ -77,7 +77,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 						.filter(it -> StreamSupport.stream(list.spliterator(), false).noneMatch(nbtBase -> ((NBTTagString) nbtBase).getString().equals(it.toString())))
 						.skip(index)
 						.findFirst()
-						.map(it -> String.format("%s.%s", it.getResourceDomain(), it.getResourcePath()))
+						.map(it -> String.format("%s.%s", it.getNamespace(), it.getPath()))
 						.orElse(null));
 			}
 
@@ -110,7 +110,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 
 				Item selItem = Item.REGISTRY.getObject(sel);
 				if (selItem != null) {
-					return TextUtil.translate(selItem.getUnlocalizedName() + ".name");
+					return TextUtil.translate(selItem.getTranslationKey() + ".name");
 				}
 				return "UNDEFINED";
 			}
@@ -222,7 +222,7 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 			String name;
 			Item item = Item.REGISTRY.getObject(compiler.getCurrentTask());
 			if (item != null) {
-				name = item.getUnlocalizedName() + ".name";
+				name = item.getTranslationKey() + ".name";
 			} else {
 				name = "gui.compiler." + compiler.getCurrentTask().toString().replace(':', '.');
 			}
@@ -277,9 +277,9 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 		return StreamSupport.stream(list.spliterator(), false).flatMap(
 				nbtBase -> LogisticsProgramCompilerTileEntity.programByCategory.get(new ResourceLocation(((NBTTagString) nbtBase).getString()))
 						.stream())
-				.filter(it -> TextUtil.translate(Item.REGISTRY.getObject(it).getUnlocalizedName() + ".name").toLowerCase().contains(search.getText().toLowerCase()))
+				.filter(it -> TextUtil.translate(Item.REGISTRY.getObject(it).getTranslationKey() + ".name").toLowerCase().contains(search.getText().toLowerCase()))
 				.sorted(Comparator.comparing(o -> getSortingClass(Item.REGISTRY.getObject((ResourceLocation) o)))
-						.thenComparing(o -> TextUtil.translate(Item.REGISTRY.getObject((ResourceLocation) o).getUnlocalizedName() + ".name").toLowerCase())
+						.thenComparing(o -> TextUtil.translate(Item.REGISTRY.getObject((ResourceLocation) o).getTranslationKey() + ".name").toLowerCase())
 				)
 				.collect(Collectors.toList());
 	}

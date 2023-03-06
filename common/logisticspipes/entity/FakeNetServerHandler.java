@@ -118,7 +118,7 @@ public class FakeNetServerHandler extends NetHandlerPlayServer {
 		public void disableAutoRead() { }
 
 		@Override
-		public void checkDisconnected() { }
+		public void handleDisconnection() { }
 
 		@Nonnull
 		@Override

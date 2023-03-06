@@ -45,13 +45,13 @@ public class ItemLogisticsProgrammer extends LogisticsItem {
 					Item targetItem = REGISTRY.getObject(new ResourceLocation(target));
 					if (targetItem instanceof ItemModule) {
 						tooltip.add(TextUtil.translate("tooltip.programmerForModule"));
-						tooltip.add(TextUtil.translate(targetItem.getUnlocalizedName() + ".name"));
+						tooltip.add(TextUtil.translate(targetItem.getTranslationKey() + ".name"));
 					} else if (targetItem instanceof ItemUpgrade) {
 						tooltip.add(TextUtil.translate("tooltip.programmerForUpgrade"));
-						tooltip.add(TextUtil.translate(targetItem.getUnlocalizedName() + ".name"));
+						tooltip.add(TextUtil.translate(targetItem.getTranslationKey() + ".name"));
 					} else if (targetItem instanceof ItemLogisticsPipe) {
 						tooltip.add(TextUtil.translate("tooltip.programmerForPipe"));
-						tooltip.add(TextUtil.translate(targetItem.getUnlocalizedName() + ".name"));
+						tooltip.add(TextUtil.translate(targetItem.getTranslationKey() + ".name"));
 					} else {
 						tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.1"));
 						tooltip.add(TextUtil.translate("tooltip.programmerForUnknown.2"));

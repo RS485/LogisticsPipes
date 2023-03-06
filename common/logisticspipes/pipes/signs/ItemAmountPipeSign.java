@@ -178,7 +178,7 @@ public class ItemAmountPipeSign implements IPipeSign, ISimpleInventoryEventHandl
 					name = item.getItemStackDisplayName(itemstack);
 				} catch (Exception e) {
 					try {
-						name = item.getUnlocalizedName();
+						name = item.getTranslationKey();
 					} catch (Exception ignored) {}
 				}
 

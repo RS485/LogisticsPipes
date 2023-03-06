@@ -211,7 +211,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	}
 
 	/*public TextureAtlasSprite getTextureFor(int l) {
-		EnumFacing dir = EnumFacing.getFront(l);
+		EnumFacing dir = EnumFacing.byIndex(l);
 		//if (LogisticsPipes.getClientPlayerConfig().isUseNewRenderer()) {
 			switch (dir) {
 				case UP:

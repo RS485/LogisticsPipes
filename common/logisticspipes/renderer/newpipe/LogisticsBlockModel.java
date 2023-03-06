@@ -53,14 +53,14 @@ public class LogisticsBlockModel implements IModel {
 		@Override
 		@Nonnull
 		public IModel loadModel(@Nonnull ResourceLocation modelLocation) {
-			ResourceLocation baseTex = new ResourceLocation(modelLocation.getResourceDomain(), "solid_block/" + modelLocation.getResourcePath());
+			ResourceLocation baseTex = new ResourceLocation(modelLocation.getNamespace(), "solid_block/" + modelLocation.getPath());
 			return new LogisticsBlockModel(baseTex, Objects.requireNonNull(getType(modelLocation)));
 		}
 
 		@Nullable
 		private Type getType(ResourceLocation modelLocation) {
 			if (!(modelLocation instanceof ModelResourceLocation)) return null;
-			ResourceLocation clean = new ResourceLocation(modelLocation.getResourceDomain(), modelLocation.getResourcePath());
+			ResourceLocation clean = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
 			String variant = ((ModelResourceLocation) modelLocation).getVariant();
 
 			if (variant.equals("inventory")) {
@@ -87,7 +87,7 @@ public class LogisticsBlockModel implements IModel {
 	public LogisticsBlockModel(ResourceLocation texture, Type type) {
 		this.inactive = texture;
 		if (type.isHasActiveTexture()) {
-			this.active = new ResourceLocation(texture.getResourceDomain(), texture.getResourcePath() + "_active");
+			this.active = new ResourceLocation(texture.getNamespace(), texture.getPath() + "_active");
 		} else {
 			this.active = texture;
 		}

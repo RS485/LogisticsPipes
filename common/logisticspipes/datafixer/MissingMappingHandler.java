@@ -141,7 +141,7 @@ public class MissingMappingHandler {
 	@SubscribeEvent
 	public void onMissingBlocks(RegistryEvent.MissingMappings<Block> e) {
 		for (RegistryEvent.MissingMappings.Mapping<Block> m : e.getMappings()) {
-			String entry = blockIDMap.get(m.key.getResourcePath());
+			String entry = blockIDMap.get(m.key.getPath());
 			if (entry == null) continue;
 			Block value = ForgeRegistries.BLOCKS.getValue(new ResourceLocation(LPConstants.LP_MOD_ID, entry));
 			if (value == null) continue;
@@ -152,7 +152,7 @@ public class MissingMappingHandler {
 	@SubscribeEvent
 	public void onMissingItems(RegistryEvent.MissingMappings<Item> e) {
 		for (RegistryEvent.MissingMappings.Mapping<Item> m : e.getMappings()) {
-			String old = m.key.getResourcePath();
+			String old = m.key.getPath();
 			if (ignoreItems.contains(old)) {
 				m.ignore();
 				continue;

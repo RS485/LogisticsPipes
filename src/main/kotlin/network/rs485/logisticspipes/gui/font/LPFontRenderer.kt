@@ -37,16 +37,6 @@
 
 package network.rs485.logisticspipes.gui.font
 
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import logisticspipes.LPConstants
-import logisticspipes.LogisticsPipes
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.GlStateManager
-import net.minecraft.client.renderer.Tessellator
-import net.minecraft.client.renderer.vertex.DefaultVertexFormats
-import net.minecraft.util.ResourceLocation
 import network.rs485.grow.Coroutines
 import network.rs485.logisticspipes.gui.guidebook.pos
 import network.rs485.logisticspipes.gui.guidebook.tex
@@ -55,11 +45,21 @@ import network.rs485.logisticspipes.util.blue
 import network.rs485.logisticspipes.util.green
 import network.rs485.logisticspipes.util.red
 import network.rs485.markdown.*
+import logisticspipes.LPConstants
+import logisticspipes.LogisticsPipes
 import org.lwjgl.opengl.GL11
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.GlStateManager
+import net.minecraft.client.renderer.Tessellator
+import net.minecraft.client.renderer.vertex.DefaultVertexFormats
+import net.minecraft.util.ResourceLocation
 import java.io.IOException
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.math.ceil
 import kotlin.math.tan
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 
 class LPFontRenderer(private val fontName: String) {
     companion object Factory {
@@ -95,7 +95,7 @@ class LPFontRenderer(private val fontName: String) {
     private val fontPlain: IFont by lazy {
         val initialTime = System.currentTimeMillis()
         val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
-        FontParser.read(fontResourcePlain).also {  LogisticsPipes.log.info("Elapsed time parsing font: ${System.currentTimeMillis() - initialTime}ms") } ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
+        FontParser.read(fontResourcePlain).also {  LogisticsPipes.log.info("Elapsed time parsing font: ${System.currentTimeMillis() - initialTime}ms") } ?: throw IOException("Failed to load ${fontResourcePlain.path}, this is not tolerated.")
     }
 
     private val wrapperPlain: FontWrapper by lazy {

@@ -4,7 +4,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -165,10 +164,6 @@ public abstract class CoreUnroutedPipe implements IClientState, ILPPipe, ILPCCTy
 	public World getWorld() {
 		if (container == null) return null;
 		return container.getWorld();
-	}
-
-	public void onEntityCollidedWithBlock(Entity entity) {
-
 	}
 
 	public boolean canPipeConnect(TileEntity tile, EnumFacing direction, boolean flag) {

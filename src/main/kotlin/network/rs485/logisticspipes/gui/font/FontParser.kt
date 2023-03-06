@@ -49,7 +49,7 @@ object FontParser {
         return try {
             read(Minecraft.getMinecraft().resourceManager.getResource(resourceLocation).inputStream.bufferedReader().use { it.readLines() })
         } catch (e: IOException) {
-            LogisticsPipes.log.error("Font ${resourceLocation.resourcePath} not found, and will not be rendered.", e)
+            LogisticsPipes.log.error("Font ${resourceLocation.path} not found, and will not be rendered.", e)
             null
         }
     }

@@ -432,7 +432,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 	}
 
 	public String getDebugName() {
-		return item.getUnlocalizedName() + "(ID: " + Item.getIdFromItem(item) + ", Damage: " + itemDamage + ")";
+		return item.getTranslationKey() + "(ID: " + Item.getIdFromItem(item) + ", Damage: " + itemDamage + ")";
 	}
 
 	@Nonnull
@@ -454,7 +454,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			ResourceLocation rl = item.getRegistryName();
 			assert rl != null;
 			Map<String, ModContainer> modList = Loader.instance().getIndexedModList();
-			ModContainer mc = modList.get(rl.getResourceDomain());
+			ModContainer mc = modList.get(rl.getNamespace());
 			if (mc == null) {
 				// get mod that really registered this item
 				Map<ResourceLocation, String> map = ReflectionHelper.invokePrivateMethod(ForgeRegistry.class, ForgeRegistries.ITEMS, "getOverrideOwners", "getOverrideOwners", new Class[0], new Object[0]);
@@ -476,7 +476,7 @@ public final class ItemIdentifier implements Comparable<ItemIdentifier>, ILPCCTy
 			if (tab == null && item instanceof ItemBlock) {
 				Block block = Block.getBlockFromItem(item);
 				if (block != Blocks.AIR) {
-					tab = block.getCreativeTabToDisplayOn();
+					tab = block.getCreativeTab();
 				}
 			}
 

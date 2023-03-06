@@ -45,7 +45,7 @@ public class CraftingRecipes implements IRecipeProvider {
 				if (module == null) continue;
 				NBTTagCompound tag = new NBTTagCompound();
 				module.writeToNBT(tag);
-				if (!tag.hasNoTags()) {
+				if (!tag.isEmpty()) {
 					RecipeManager.craftingManager.addShapelessResetRecipe(item, 0);
 				}
 			}

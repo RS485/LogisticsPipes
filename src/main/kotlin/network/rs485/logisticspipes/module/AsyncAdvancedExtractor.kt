@@ -141,7 +141,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
     @ExperimentalCoroutinesApi
     override fun tickSetup(): Channel<Pair<Int, ItemStack>>? = extractor.tickSetup()
 
-    override fun recievePassive(): Boolean = false
+    override fun receivePassive(): Boolean = false
 
     override fun hasGenericInterests(): Boolean = false
 

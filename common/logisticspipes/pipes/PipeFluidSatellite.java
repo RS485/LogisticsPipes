@@ -16,9 +16,6 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-
-import lombok.Getter;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDSatellite;
@@ -48,6 +45,8 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.SatellitePipe;
 
+import org.jetbrains.annotations.NotNull;
+
 public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport, IHeadUpDisplayRendererProvider, IChestContentReceiver, SatellitePipe {
 
 	// from baseLogicLiquidSatellite
@@ -64,9 +63,6 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final Map<FluidIdentifier, Integer> _lostItems = new HashMap<>();
 	private final ModuleSatellite moduleSatellite;
-
-	@Getter
-	private String satellitePipeName = "";
 
 	public PipeFluidSatellite(Item item) {
 		super(item);
@@ -150,7 +146,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if (mode == 1) {
 			localModeWatchers.add(player);
-			final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString((this).satellitePipeName).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class)
+				.setString(this.moduleSatellite.satellitePipeName.getValue()).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToPlayer(packet, player);
 			updateInv(true);
 		} else {
@@ -164,28 +161,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		localModeWatchers.remove(player);
 	}
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		if (nbttagcompound.hasKey("satelliteid")) {
-			int satelliteId = nbttagcompound.getInteger("satelliteid");
-			satellitePipeName = Integer.toString(satelliteId);
-		} else {
-			satellitePipeName = nbttagcompound.getString("satellitePipeName");
-		}
-		if (MainProxy.isServer(getWorld())) {
-			ensureAllSatelliteStatus();
-		}
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setString("satellitePipeName", satellitePipeName);
-		super.writeToNBT(nbttagcompound);
-	}
-
 	public void ensureAllSatelliteStatus() {
-		if (satellitePipeName.isEmpty()) {
+		if (this.moduleSatellite.satellitePipeName.isEmpty()) {
 			PipeFluidSatellite.AllSatellites.remove(this);
 		} else {
 			PipeFluidSatellite.AllSatellites.add(this);
@@ -195,7 +172,7 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	public void updateWatchers() {
 		final LogisticsTileGenericPipe container = Objects.requireNonNull(getContainer());
 		CoordinatesPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class)
-				.setString(satellitePipeName)
+				.setString(this.moduleSatellite.satellitePipeName.getValue())
 				.setTilePos(container);
 		MainProxy.sendToPlayerList(packet, localModeWatchers);
 		MainProxy.sendPacketToAllWatchingChunk(container, packet);
@@ -212,7 +189,8 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		// Send the satellite id when opening gui
-		final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+		final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class)
+			.setString(this.moduleSatellite.satellitePipeName.getValue()).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 		MainProxy.sendPacketToPlayer(packet, entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatellitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
@@ -266,9 +244,15 @@ public class PipeFluidSatellite extends FluidRoutedPipe implements IRequestFluid
 		return Collections.unmodifiableSet(AllSatellites);
 	}
 
+	@NotNull
+	@Override
+	public String getSatellitePipeName() {
+		return this.moduleSatellite.satellitePipeName.getValue();
+	}
+
 	@Override
 	public void setSatellitePipeName(@Nonnull String satellitePipeName) {
-		this.satellitePipeName = satellitePipeName;
+		this.moduleSatellite.satellitePipeName.setValue(satellitePipeName);
 	}
 
 	@Nonnull

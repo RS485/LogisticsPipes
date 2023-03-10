@@ -1,26 +1,22 @@
 package logisticspipes.pipes;
 
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.EnumFacing;
 
-import net.minecraftforge.fluids.FluidStack;
-
-import logisticspipes.interfaces.ITankUtil;
+import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleFluidExtractor;
+import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.transport.PipeFluidTransportLogistics;
-import logisticspipes.utils.FluidIdentifierStack;
 
-public class PipeFluidExtractor extends PipeFluidInsertion {
+public class PipeFluidExtractor extends FluidRoutedPipe {
 
-	private int[] liquidToExtract = new int[6];
-
-	private static final int flowRate = 500;
-	private static final int energyPerFlow = 5;
+	private final ModuleFluidExtractor moduleFluidExtractor;
 
 	public PipeFluidExtractor(Item item) {
 		super(item);
+		moduleFluidExtractor = new ModuleFluidExtractor();
+		moduleFluidExtractor.registerHandler(this, this);
+		moduleFluidExtractor.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override
@@ -29,46 +25,26 @@ public class PipeFluidExtractor extends PipeFluidInsertion {
 		if (!isNthTick(10)) {
 			return;
 		}
-		PipeFluidUtil.INSTANCE.getAdjacentTanks(this, false)
-				.forEach(tankData -> extractFrom(tankData.getValue2(), tankData.getValue1().getDirection()));
-	}
-
-	private void extractFrom(ITankUtil container, EnumFacing side) {
-		int sideID = side.ordinal();
-		FluidStack contained = ((PipeFluidTransportLogistics) transport).getTankProperties(side)[0].getContents();
-		int amountMissing = ((PipeFluidTransportLogistics) transport).getSideCapacity() - (contained != null ? contained.amount : 0);
-		if (liquidToExtract[sideID] < Math.min(PipeFluidExtractor.flowRate, amountMissing)) {
-			if (this.useEnergy(PipeFluidExtractor.energyPerFlow)) {
-				liquidToExtract[sideID] += Math.min(PipeFluidExtractor.flowRate, amountMissing);
-			}
-		}
-		FluidIdentifierStack extracted = container.drain(Math.min(liquidToExtract[sideID], PipeFluidExtractor.flowRate), false);
-
-		int inserted = 0;
-		if (extracted != null) {
-			inserted = ((PipeFluidTransportLogistics) transport).fill(side, extracted.makeFluidStack(), true);
-			container.drain(inserted, true);
-		}
-		liquidToExtract[sideID] -= inserted;
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		nbttagcompound.setIntArray("liquidToExtract", liquidToExtract);
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		liquidToExtract = nbttagcompound.getIntArray("liquidToExtract");
-		if (liquidToExtract.length < 6) {
-			liquidToExtract = new int[6];
-		}
+		moduleFluidExtractor.tick();
 	}
 
 	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_LIQUID_EXTRACTOR;
+	}
+
+	@Override
+	public boolean canInsertToTanks() {
+		return false;
+	}
+
+	@Override
+	public boolean canInsertFromSideToTanks() {
+		return false;
+	}
+
+	@Override
+	public boolean canReceiveFluid() {
+		return true;
 	}
 }

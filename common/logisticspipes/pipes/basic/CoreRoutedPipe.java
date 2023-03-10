@@ -180,7 +180,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	 * @return the adjacent cache directly.
 	 */
 	@Nonnull
-	protected Adjacent getAdjacent() {
+	public Adjacent getAdjacent() {
 		return adjacent;
 	}
 

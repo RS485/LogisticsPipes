@@ -167,8 +167,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void ensureAllSatelliteStatus() {
 		if (this.moduleSatellite.satellitePipeName.isEmpty()) {
 			PipeItemsSatelliteLogistics.AllSatellites.remove(this);
-		}
-		if (!this.moduleSatellite.satellitePipeName.isEmpty()) {
+		} else {
 			PipeItemsSatelliteLogistics.AllSatellites.add(this);
 		}
 	}

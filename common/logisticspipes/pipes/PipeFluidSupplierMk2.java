@@ -8,7 +8,6 @@ import java.util.Objects;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
 import net.minecraftforge.fluids.FluidTank;
 
@@ -17,6 +16,8 @@ import lombok.Getter;
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IRequestFluid;
 import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
+import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleFluidSupplierMK2;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.pipe.FluidSupplierAmount;
@@ -28,7 +29,6 @@ import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.PipeFluidTransportLogistics;
 import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport {
@@ -49,9 +49,14 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		}
 	}
 
+	private final ModuleFluidSupplierMK2 moduleFluidSupplierMK2;
+
 	public PipeFluidSupplierMk2(Item item) {
 		super(item);
 		throttleTime = 100;
+		moduleFluidSupplierMK2 = new ModuleFluidSupplierMK2();
+		moduleFluidSupplierMK2.registerHandler(this, this);
+		moduleFluidSupplierMK2.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override
@@ -94,13 +99,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	}
 
 	//from PipeFluidSupplierMk2
-	private ItemIdentifierInventory dummyInventory = new ItemIdentifierInventory(1, "Fluid to keep stocked", 127, true);
-	private int amount = 0;
-
 	private final Map<FluidIdentifier, Integer> _requestedItems = new HashMap<>();
-
-	private boolean _requestPartials = false;
-	private MinMode _bucketMinimum = MinMode.ONEBUCKET;
 
 	@Override
 	public void throttledUpdateEntity() {
@@ -111,7 +110,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 			return;
 		}
 		super.throttledUpdateEntity();
-		if (dummyInventory.getIDStackInSlot(0) == null) {
+		if (moduleFluidSupplierMK2.dummyInventory.getIDStackInSlot(0) == null) {
 			return;
 		}
 
@@ -122,10 +121,10 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 			//How much do I want?
 			Map<FluidIdentifier, Integer> wantFluids = new HashMap<>();
-			ItemIdentifierStack stack = dummyInventory.getIDStackInSlot(0);
+			ItemIdentifierStack stack = moduleFluidSupplierMK2.dummyInventory.getIDStackInSlot(0);
 			if (stack == null) return;
 			FluidIdentifier fIdent = FluidIdentifier.get(stack.getItem());
-			wantFluids.put(fIdent, amount);
+			wantFluids.put(fIdent, moduleFluidSupplierMK2.amount.getValue());
 
 			//How much do I have?
 			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
@@ -174,7 +173,8 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 				if (countToRequest < 1) {
 					continue;
 				}
-				if (_bucketMinimum.getAmount() != 0 && countToRequest < _bucketMinimum.getAmount()) {
+				if (moduleFluidSupplierMK2._bucketMinimum.getValue().getAmount() != 0
+					&& countToRequest < moduleFluidSupplierMK2._bucketMinimum.getValue().getAmount()) {
 					continue;
 				}
 
@@ -184,7 +184,7 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 
 				boolean success = false;
 
-				if (_requestPartials) {
+				if (moduleFluidSupplierMK2._requestPartials.getValue()) {
 					countToRequest = RequestTree.requestFluidPartial(need, countToRequest, this, null);
 					if (countToRequest > 0) {
 						success = true;
@@ -205,24 +205,6 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 				}
 			}
 		});
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		dummyInventory.readFromNBT(nbttagcompound, "");
-		_requestPartials = nbttagcompound.getBoolean("requestpartials");
-		amount = nbttagcompound.getInteger("amount");
-		_bucketMinimum = MinMode.values()[nbttagcompound.getByte("_bucketMinimum")];
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		dummyInventory.writeToNBT(nbttagcompound, "");
-		nbttagcompound.setBoolean("requestpartials", _requestPartials);
-		nbttagcompound.setInteger("amount", amount);
-		nbttagcompound.setByte("_bucketMinimum", (byte) _bucketMinimum.ordinal());
 	}
 
 	private void decreaseRequested(FluidIdentifier liquid, int remaining) {
@@ -265,19 +247,19 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	public void liquidNotInserted(FluidIdentifier item, int amount) {}
 
 	public boolean isRequestingPartials() {
-		return _requestPartials;
+		return moduleFluidSupplierMK2._requestPartials.getValue();
 	}
 
 	public void setRequestingPartials(boolean value) {
-		_requestPartials = value;
+		moduleFluidSupplierMK2._requestPartials.setValue(value);
 	}
 
 	public MinMode getMinMode() {
-		return _bucketMinimum;
+		return moduleFluidSupplierMK2._bucketMinimum.getValue();
 	}
 
 	public void setMinMode(MinMode value) {
-		_bucketMinimum = value;
+		moduleFluidSupplierMK2._bucketMinimum.setValue(value);
 	}
 
 	@Override
@@ -286,25 +268,26 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 	}
 
 	public IInventory getDummyInventory() {
-		return dummyInventory;
+		return moduleFluidSupplierMK2.dummyInventory;
 	}
 
 	public int getAmount() {
-		return amount;
+		return moduleFluidSupplierMK2.amount.getValue();
 	}
 
 	public void setAmount(int amount) {
 		if (MainProxy.isClient(Objects.requireNonNull(container).getWorld())) {
-			this.amount = amount;
+			moduleFluidSupplierMK2.amount.setValue(amount);
 		}
 	}
 
 	public void changeFluidAmount(int change, EntityPlayer player) {
-		amount += change;
-		if (amount <= 0) {
-			amount = 0;
+		moduleFluidSupplierMK2.amount.increase(change);
+		if (moduleFluidSupplierMK2.amount.getValue() <= 0) {
+			moduleFluidSupplierMK2.amount.setValue(0);
 		}
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierAmount.class).setInteger(amount).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(FluidSupplierAmount.class)
+			.setInteger(moduleFluidSupplierMK2.amount.getValue()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()), player);
 	}
 
 	@Override

@@ -137,9 +137,9 @@ public class GuiHandler implements IGuiHandler {
 					}
 					IInventory inv = null;
 					if (pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
-						inv = ((PipeItemsSystemEntranceLogistics) pipe.pipe).inv;
+						inv = ((PipeItemsSystemEntranceLogistics) pipe.pipe).getModule().inv;
 					} else if (pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
-						inv = ((PipeItemsSystemDestinationLogistics) pipe.pipe).inv;
+						inv = ((PipeItemsSystemDestinationLogistics) pipe.pipe).getModule().inv;
 					}
 
 					dummy = new DummyContainer(player.inventory, inv);
@@ -302,9 +302,9 @@ public class GuiHandler implements IGuiHandler {
 					}
 					IInventory inv = null;
 					if (pipe.pipe instanceof PipeItemsSystemEntranceLogistics) {
-						inv = ((PipeItemsSystemEntranceLogistics) pipe.pipe).inv;
+						inv = ((PipeItemsSystemEntranceLogistics) pipe.pipe).getModule().inv;
 					} else if (pipe.pipe instanceof PipeItemsSystemDestinationLogistics) {
-						inv = ((PipeItemsSystemDestinationLogistics) pipe.pipe).inv;
+						inv = ((PipeItemsSystemDestinationLogistics) pipe.pipe).getModule().inv;
 					}
 					return new GuiFreqCardContent(player, inv);
 

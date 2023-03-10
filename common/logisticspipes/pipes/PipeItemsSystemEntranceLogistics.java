@@ -4,42 +4,46 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import lombok.Getter;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.network.GuiIDs;
+import logisticspipes.modules.ModuleItemsSystemEntranceLogistics;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.EntrencsTransport;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 
 public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
-
-	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq Slot", 1);
+	@Getter
+	private final ModuleItemsSystemEntranceLogistics module;
 
 	public PipeItemsSystemEntranceLogistics(Item item) {
 		super(new EntrencsTransport(), item);
 		((EntrencsTransport) transport).pipe = this;
+		module = new ModuleItemsSystemEntranceLogistics();
+		module.registerHandler(this, this);
+		module.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	public UUID getLocalFreqUUID() {
-		if (inv.getStackInSlot(0) == null) {
+		if (module.inv.getStackInSlot(0) == null) {
 			return null;
 		}
-		if (!inv.getStackInSlot(0).hasTagCompound()) {
+		if (!module.inv.getStackInSlot(0).hasTagCompound()) {
 			return null;
 		}
-		if (!inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
+		if (!module.inv.getStackInSlot(0).getTagCompound().hasKey("UUID")) {
 			return null;
 		}
 		spawnParticle(Particles.WhiteParticle, 2);
-		return UUID.fromString(inv.getStackInSlot(0).getTagCompound().getString("UUID"));
+		return UUID.fromString(module.inv.getStackInSlot(0).getTagCompound().getString("UUID"));
 	}
 
 	@Override
@@ -54,19 +58,7 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 
 	@Override
 	public @Nullable LogisticsModule getLogisticsModule() {
-		return null;
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		inv.writeToNBT(nbttagcompound);
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		inv.readFromNBT(nbttagcompound);
+		return module;
 	}
 
 	@Override
@@ -75,12 +67,12 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 	}
 
 	private void dropFreqCard() {
-		if (inv.getStackInSlot(0) == null) {
+		if (module.inv.getStackInSlot(0) == null) {
 			return;
 		}
-		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), inv.getStackInSlot(0));
+		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), module.inv.getStackInSlot(0));
 		getWorld().spawnEntity(item);
-		inv.clearInventorySlotContents(0);
+		module.inv.clearInventorySlotContents(0);
 	}
 
 	@Override

@@ -30,7 +30,7 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 			}
 			if (pipe.pipe instanceof PipeItemsInvSysConnector) {
 				PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
-				invCon.resistance = getInteger();
+				invCon.getModuleItemInvSysConnect().resistance.setValue(getInteger());
 			}
 		} else {
 			final LogisticsTileGenericPipe pipe = this.getPipe(player.world);
@@ -39,7 +39,7 @@ public class InvSysConResistance extends IntegerCoordinatesPacket {
 			}
 			if (pipe.pipe instanceof PipeItemsInvSysConnector) {
 				PipeItemsInvSysConnector invCon = (PipeItemsInvSysConnector) pipe.pipe;
-				invCon.resistance = getInteger();
+				invCon.getModuleItemInvSysConnect().resistance.setValue(getInteger());
 				invCon.getRouter().update(true, invCon);
 			}
 		}

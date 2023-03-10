@@ -5,28 +5,32 @@ import java.util.UUID;
 
 import javax.annotation.Nullable;
 
+import lombok.Getter;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleItemsSystemDestinationLogistics;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.pipefxhandlers.Particles;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
 public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
-
-	public ItemIdentifierInventory inv = new ItemIdentifierInventory(1, "Freq Slot", 1);
+	@Getter
+	private final ModuleItemsSystemDestinationLogistics module;
 
 	public PipeItemsSystemDestinationLogistics(Item item) {
 		super(item);
+		module = new ModuleItemsSystemDestinationLogistics();
+		module.registerHandler(this, this);
+		module.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override
@@ -41,11 +45,11 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 
 	@Override
 	public @Nullable LogisticsModule getLogisticsModule() {
-		return null;
+		return module;
 	}
 
 	public Object getTargetUUID() {
-		final ItemIdentifierStack itemident = inv.getIDStackInSlot(0);
+		final ItemIdentifierStack itemident = module.inv.getIDStackInSlot(0);
 		if (itemident == null) {
 			return null;
 		}
@@ -65,26 +69,14 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 		dropFreqCard();
 	}
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		inv.writeToNBT(nbttagcompound);
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		inv.readFromNBT(nbttagcompound);
-	}
-
 	private void dropFreqCard() {
-		final ItemIdentifierStack itemident = inv.getIDStackInSlot(0);
+		final ItemIdentifierStack itemident = module.inv.getIDStackInSlot(0);
 		if (itemident == null) {
 			return;
 		}
 		EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), itemident.makeNormalStack());
 		getWorld().spawnEntity(item);
-		inv.clearInventorySlotContents(0);
+		module.inv.clearInventorySlotContents(0);
 	}
 
 	@Override

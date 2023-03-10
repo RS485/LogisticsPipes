@@ -71,7 +71,7 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		if (this.resistanceCountBar == null) {
 			this.resistanceCountBar = new InputBar(this.fontRenderer, this, guiLeft + 90, guiTop + 55, 30, 12, false, true, InputBar.Align.CENTER);
 			this.resistanceCountBar.minNumber = 0;
-			this.resistanceCountBar.setInteger(pipe.resistance);
+			this.resistanceCountBar.setInteger(pipe.getModuleItemInvSysConnect().resistance.getValue());
 		}
 		this.resistanceCountBar.reposition(guiLeft + 90, guiTop + 55, 30, 12);
 
@@ -178,8 +178,8 @@ public class GuiInvSysConnector extends LogisticsBaseGuiScreen implements IGUICh
 		} else if (button.id == 4) {
 			resistanceCountBar.setInteger(resistanceCountBar.getInteger() + 1);
 		} else if (button.id == 5) {
-			pipe.resistance = resistanceCountBar.getInteger();
-			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.resistance).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
+			pipe.getModuleItemInvSysConnect().resistance.setValue(resistanceCountBar.getInteger());
+			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(pipe.getModuleItemInvSysConnect().resistance.getValue()).setPosX(pipe.getX()).setPosY(pipe.getY()).setPosZ(pipe.getZ()));
 		} else if (button.id == 6) {
 			MainProxy.sendPacketToServer(PacketHandler.getPacket(InvSysConOpenSelectChannelPopupPacket.class).setTilePos(pipe.container));
 		}

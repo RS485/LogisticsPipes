@@ -16,10 +16,11 @@ import java.util.UUID;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import lombok.Getter;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
@@ -33,6 +34,7 @@ import logisticspipes.interfaces.routing.IChannelManager;
 import logisticspipes.interfaces.routing.IChannelRoutingConnection;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleItemInvSysConnect;
 import logisticspipes.network.NewGuiHandler;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.guis.pipe.InvSysConGuiProvider;
@@ -64,18 +66,20 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	private boolean init = false;
 	private HashMap<ItemIdentifier, List<ItemRoutingInformation>> itemsOnRoute = new HashMap<>();
-	public int resistance;
 	public Set<ItemIdentifierStack> oldList = new TreeSet<>();
 	public final LinkedList<ItemIdentifierStack> displayList = new LinkedList<>();
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public final PlayerCollectionList localGuiWatchers = new PlayerCollectionList();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
 	private UUID idbuffer = UUID.randomUUID();
-
-	private UUID connectedChannel;
+	@Getter
+	private final ModuleItemInvSysConnect moduleItemInvSysConnect;
 
 	public PipeItemsInvSysConnector(Item item) {
 		super(new TransportInvConnection(), item);
+		moduleItemInvSysConnect = new ModuleItemInvSysConnect();
+		moduleItemInvSysConnect.registerHandler(this, this);
+		moduleItemInvSysConnect.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override
@@ -84,7 +88,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		if (!init) {
 			if (hasConnectionUUID()) {
 				if (!SimpleServiceLocator.connectionManager.addChannelConnection(getConnectionUUID(), getRouter())) {
-					connectedChannel = null;
+					moduleItemInvSysConnect.connectedChannel.setValue(null);
 					sendChannelInformationToPlayers();
 				}
 				List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
@@ -206,11 +210,11 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	private static UUID testUUID = UUID.randomUUID();
 
 	private UUID getConnectionUUID() {
-		return connectedChannel;
+		return moduleItemInvSysConnect.connectedChannel.getValue();
 	}
 
 	private boolean hasConnectionUUID() {
-		return connectedChannel != null;
+		return moduleItemInvSysConnect.connectedChannel.getValue() != null;
 	}
 
 	public Set<ItemIdentifierStack> getExpectedItems() {
@@ -263,26 +267,6 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 		super.onChunkUnload();
 	}
 
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		nbttagcompound.setInteger("resistance", resistance);
-		if (connectedChannel != null) {
-			nbttagcompound.setString("connectedChannel", connectedChannel.toString());
-		}
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		resistance = nbttagcompound.getInteger("resistance");
-		if (nbttagcompound.hasKey("connectedChannel")) {
-			connectedChannel = UUID.fromString(nbttagcompound.getString("connectedChannel"));
-		} else {
-			connectedChannel = null;
-		}
-	}
-
 	private boolean hasRemoteConnection() {
 		return hasConnectionUUID() && getWorld() != null && SimpleServiceLocator.connectionManager.hasChannelConnection(getRouter());
 	}
@@ -309,7 +293,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	@Override
 	public @Nullable LogisticsModule getLogisticsModule() {
-		return null;
+		return moduleItemInvSysConnect;
 	}
 
 	@Override
@@ -319,7 +303,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 
 	@Override
 	public int getConnectionResistance() {
-		return resistance;
+		return moduleItemInvSysConnect.resistance.getValue();
 	}
 
 	@Override
@@ -418,14 +402,14 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	public void setChannelFromClient(UUID fromString) {
-		this.connectedChannel = fromString;
+		moduleItemInvSysConnect.connectedChannel.setValue(fromString);
 		sendChannelInformationToPlayers();
 	}
 
 	@Override
 	public void guiOpenedByPlayer(EntityPlayer player) {
 		localGuiWatchers.add(player);
-		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(this.resistance).setBlockPos(this.getPos()), player);
+		MainProxy.sendPacketToPlayer(PacketHandler.getPacket(InvSysConResistance.class).setInteger(moduleItemInvSysConnect.resistance.getValue()).setBlockPos(this.getPos()), player);
 
 		IChannelManager manager = SimpleServiceLocator.channelManagerProvider.getChannelManager(this.getWorld());
 		Optional<ChannelInformation> channel = manager.getChannels().stream()

@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -40,6 +41,12 @@ public class SimpleStackInventory implements IInventory, IStore, Iterable<Pair<I
 	private final int _stackLimit;
 
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<>();
+
+	public SimpleStackInventory(SimpleStackInventory copy) {
+		this.stackList = NonNullList.from(new ItemStack(Items.AIR), copy.stackList.toArray(new ItemStack[0]));
+		_name = copy._name;
+		_stackLimit = copy._stackLimit;
+	}
 
 	public SimpleStackInventory(int size, String name, int stackLimit) {
 		stackList = NonNullList.withSize(size, ItemStack.EMPTY);

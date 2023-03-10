@@ -16,7 +16,6 @@ import net.minecraft.inventory.SlotCrafting;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.TextComponentTranslation;
@@ -32,6 +31,8 @@ import logisticspipes.interfaces.IRequestWatcher;
 import logisticspipes.interfaces.IRotationProvider;
 import logisticspipes.logisticspipes.IRoutedItem;
 import logisticspipes.logisticspipes.TransportLayer;
+import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleRequesterTable;
 import logisticspipes.network.GuiIDs;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.packets.block.CraftingSetType;
@@ -54,25 +55,19 @@ import logisticspipes.utils.PlayerCollectionList;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.item.SimpleStackInventory;
 import logisticspipes.utils.tuples.Pair;
 
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
-
-	public SimpleStackInventory diskInv = new SimpleStackInventory(1, "Disk Slot", 1);
-	public SimpleStackInventory inv = new SimpleStackInventory(27, "Crafting Resources", 64);
-	public ItemIdentifierInventory matrix = new ItemIdentifierInventory(9, "Crafting Matrix", 1);
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
-	public SimpleStackInventory toSortInv = new SimpleStackInventory(1, "Sorting Slot", 64);
+	private final ModuleRequesterTable moduleRequesterTable;
 	private InventoryCraftResult vanillaResult = new InventoryCraftResult();
 	private IRecipe cache;
 	private EntityPlayerMP fake;
 	private int delay = 0;
 	private int tick = 0;
-	private int rotation;
 	private boolean init = false;
 
-	private PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
+	private final PlayerCollectionList localGuiWatcher = new PlayerCollectionList();
 	public Map<Integer, Pair<IResource, LinkedLogisticsOrderList>> watchedRequests = new HashMap<>();
 	private int localLastUsedWatcherId = 0;
 
@@ -80,7 +75,10 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	public PipeBlockRequestTable(Item item) {
 		super(item);
-		matrix.addListener(this);
+		moduleRequesterTable = new ModuleRequesterTable();
+		moduleRequesterTable.registerHandler(this, this);
+		moduleRequesterTable.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
+		moduleRequesterTable.matrix.addListener(this);
 	}
 
 	@Override
@@ -159,7 +157,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void enabledUpdateEntity() {
 		super.enabledUpdateEntity();
-		ItemStack stack = toSortInv.getStackInSlot(0);
+		ItemStack stack = moduleRequesterTable.toSortInv.getStackInSlot(0);
 		if (!stack.isEmpty()) {
 			if (delay > 0) {
 				delay--;
@@ -171,7 +169,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				EnumFacing dir = getRouteLayer().getOrientationForItem(itemToSend, null);
 				super.queueRoutedItem(itemToSend, dir.getOpposite());
 				spawnParticle(Particles.OrangeParticle, 4);
-				toSortInv.clearInventorySlotContents(0);
+				moduleRequesterTable.toSortInv.clearInventorySlotContents(0);
 			} else {
 				delay = 100;
 			}
@@ -183,9 +181,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
-		if (!diskInv.getStackInSlot(0).isEmpty()) {
+		if (!moduleRequesterTable.diskInv.getStackInSlot(0).isEmpty()) {
 			if (!entityplayer.getHeldItemMainhand().isEmpty() && entityplayer.getHeldItemMainhand().getItem().equals(LPItems.disk)) {
-				diskInv.setInventorySlotContents(0, entityplayer.getHeldItemMainhand());
+				moduleRequesterTable.diskInv.setInventorySlotContents(0, entityplayer.getHeldItemMainhand());
 				entityplayer.inventory.setInventorySlotContents(entityplayer.inventory.currentItem, ItemStack.EMPTY);
 				flag = false;
 			}
@@ -251,9 +249,9 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 	@Override
 	public void onAllowedRemoval() {
 		if (MainProxy.isServer(getWorld())) {
-			inv.dropContents(getWorld(), getPos());
-			toSortInv.dropContents(getWorld(), getPos());
-			diskInv.dropContents(getWorld(), getPos());
+			moduleRequesterTable.inv.dropContents(getWorld(), getPos());
+			moduleRequesterTable.toSortInv.dropContents(getWorld(), getPos());
+			moduleRequesterTable.diskInv.dropContents(getWorld(), getPos());
 		}
 	}
 
@@ -263,7 +261,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		resultInv.clearInventorySlotContents(0);
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(null);
 		for (int i = 0; i < 9; i++) {
-			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+			craftInv.setInventorySlotContents(i, moduleRequesterTable.matrix.getStackInSlot(i));
 		}
 		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
@@ -280,7 +278,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				for (IRecipe recipe : list) {
 					craftInv = new AutoCraftingInventory(null);
 					for (int i = 0; i < 9; i++) {
-						craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+						craftInv.setInventorySlotContents(i, moduleRequesterTable.matrix.getStackInSlot(i));
 					}
 					ItemStack result = recipe.getCraftingResult(craftInv);
 					if (targetType == ItemIdentifier.get(result)) {
@@ -312,7 +310,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		cache = null;
 		AutoCraftingInventory craftInv = new AutoCraftingInventory(null);
 		for (int i = 0; i < 9; i++) {
-			craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+			craftInv.setInventorySlotContents(i, moduleRequesterTable.matrix.getStackInSlot(i));
 		}
 		List<IRecipe> list = new ArrayList<>();
 		for (IRecipe r : CraftingUtil.getRecipeList()) {
@@ -330,7 +328,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				}
 				craftInv = new AutoCraftingInventory(null);
 				for (int i = 0; i < 9; i++) {
-					craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+					craftInv.setInventorySlotContents(i, moduleRequesterTable.matrix.getStackInSlot(i));
 				}
 				if (targetType == ItemIdentifier.get(recipe.getCraftingResult(craftInv))) {
 					if (down) {
@@ -351,7 +349,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			}
 			craftInv = new AutoCraftingInventory(null);
 			for (int i = 0; i < 9; i++) {
-				craftInv.setInventorySlotContents(i, matrix.getStackInSlot(i));
+				craftInv.setInventorySlotContents(i, moduleRequesterTable.matrix.getStackInSlot(i));
 			}
 			targetType = ItemIdentifier.get(cache.getCraftingResult(craftInv));
 		}
@@ -374,17 +372,17 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		}
 
 		int[] toUse = new int[9];
-		int[] used = new int[inv.getSizeInventory()];
+		int[] used = new int[moduleRequesterTable.inv.getSizeInventory()];
 		outer:
 		for (int i = 0; i < 9; i++) {
-			ItemStack item = matrix.getStackInSlot(i);
+			ItemStack item = moduleRequesterTable.matrix.getStackInSlot(i);
 			if (item.isEmpty()) {
 				toUse[i] = -1;
 				continue;
 			}
 			ItemIdentifier ident = ItemIdentifier.get(item);
-			for (int j = 0; j < inv.getSizeInventory(); j++) {
-				item = inv.getStackInSlot(j);
+			for (int j = 0; j < moduleRequesterTable.inv.getSizeInventory(); j++) {
+				item = moduleRequesterTable.inv.getStackInSlot(j);
 				if (item.isEmpty()) {
 					continue;
 				}
@@ -413,7 +411,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
 			if (j != -1) {
-				crafter.setInventorySlotContents(i, inv.getStackInSlot(j));
+				crafter.setInventorySlotContents(i, moduleRequesterTable.inv.getStackInSlot(j));
 			}
 		}
 		if (!cache.matches(crafter, getWorld())) {
@@ -430,7 +428,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		for (int i = 0; i < 9; i++) {
 			int j = toUse[i];
 			if (j != -1) {
-				crafter.setInventorySlotContents(i, inv.decrStackSize(j, 1));
+				crafter.setInventorySlotContents(i, moduleRequesterTable.inv.decrStackSize(j, 1));
 			}
 		}
 		result = cache.getCraftingResult(crafter);
@@ -455,7 +453,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			ItemStack left = crafter.getStackInSlot(i);
 			crafter.setInventorySlotContents(i, ItemStack.EMPTY);
 			if (!left.isEmpty()) {
-				left.setCount(inv.addCompressed(left, false));
+				left.setCount(moduleRequesterTable.inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
@@ -465,7 +463,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			ItemStack left = fake.inventory.getStackInSlot(i);
 			fake.inventory.setInventorySlotContents(i, ItemStack.EMPTY);
 			if (!left.isEmpty()) {
-				left.setCount(inv.addCompressed(left, false));
+				left.setCount(moduleRequesterTable.inv.addCompressed(left, false));
 				if (left.getCount() > 0) {
 					ItemIdentifierInventory.dropItems(getWorld(), left, getX(), getY(), getZ());
 				}
@@ -484,7 +482,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 			if (result.isEmpty()) {
 				return ItemStack.EMPTY;
 			}
-			result.setCount(inv.addCompressed(result, false));
+			result.setCount(moduleRequesterTable.inv.addCompressed(result, false));
 			if (result.getCount() > 0) {
 				return result;
 			}
@@ -495,39 +493,17 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@Override
 	public void InventoryChanged(IInventory inventory) {
-		if (inventory == matrix) {
+		if (inventory == moduleRequesterTable.matrix) {
 			cacheRecipe();
 		}
 	}
 
 	public void handleNEIRecipePacket(NonNullList<ItemStack> content) {
-		if (matrix.getSizeInventory() != content.size()) throw new IllegalStateException("Different sizes of matrix and inventory from packet");
+		if (moduleRequesterTable.matrix.getSizeInventory() != content.size()) throw new IllegalStateException("Different sizes of matrix and inventory from packet");
 		for (int i = 0; i < content.size(); i++) {
-			matrix.setInventorySlotContents(i, content.get(i));
+			moduleRequesterTable.matrix.setInventorySlotContents(i, content.get(i));
 		}
 		cacheRecipe();
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound par1nbtTagCompound) {
-		super.readFromNBT(par1nbtTagCompound);
-		inv.readFromNBT(par1nbtTagCompound, "inv");
-		matrix.readFromNBT(par1nbtTagCompound, "matrix");
-		toSortInv.readFromNBT(par1nbtTagCompound, "toSortInv");
-		diskInv.readFromNBT(par1nbtTagCompound, "diskInv");
-		rotation = par1nbtTagCompound.getInteger("blockRotation");
-		//TODO NPEs on world load
-		//cacheRecipe();
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound par1nbtTagCompound) {
-		super.writeToNBT(par1nbtTagCompound);
-		inv.writeToNBT(par1nbtTagCompound, "inv");
-		matrix.writeToNBT(par1nbtTagCompound, "matrix");
-		toSortInv.writeToNBT(par1nbtTagCompound, "toSortInv");
-		diskInv.writeToNBT(par1nbtTagCompound, "diskInv");
-		par1nbtTagCompound.setInteger("blockRotation", rotation);
 	}
 
 	@Override
@@ -546,7 +522,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 					PipeBlockRequestTable.this.notifyOfItemArival(item.getInfo());
 					if (item.getItemIdentifierStack() != null) {
 						ItemIdentifierStack stack = item.getItemIdentifierStack();
-						stack.setStackSize(inv.addCompressed(stack.makeNormalStack(), false));
+						stack.setStackSize(moduleRequesterTable.inv.addCompressed(stack.makeNormalStack(), false));
 					}
 				}
 
@@ -609,17 +585,17 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 
 	@Nonnull
 	public ItemStack getDisk() {
-		return diskInv.getStackInSlot(0);
+		return moduleRequesterTable.diskInv.getStackInSlot(0);
 	}
 
 	@Override
 	public int getRotation() {
-		return rotation;
+		return moduleRequesterTable.rotation.getValue();
 	}
 
 	@Override
 	public void setRotation(int rotation) {
-		this.rotation = rotation;
+		moduleRequesterTable.rotation.setValue(rotation);
 	}
 
 	@Override

@@ -40,7 +40,7 @@ import network.rs485.logisticspipes.property.Property;
 
 public class ModuleFluidSupplier extends LogisticsModule implements IClientInformationProvider, Gui {
 
-	protected final FluidRoutedPipe fluidPipe = (FluidRoutedPipe) Objects.requireNonNull(_service, "service object was null in " + this);
+	protected final FluidRoutedPipe fluidPipe = (FluidRoutedPipe) _service;
 
 	private final HashMap<ItemIdentifier, Integer> _requestedItems = new HashMap<>();
 

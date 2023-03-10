@@ -76,7 +76,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 
 	@Override
 	public @Nullable LogisticsModule getLogisticsModule() {
-		return null;
+		return moduleFluidSupplier;
 	}
 
 	@Override

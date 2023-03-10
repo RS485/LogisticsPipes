@@ -4,9 +4,12 @@ import java.util.BitSet;
 
 import javax.annotation.Nullable;
 
+import logisticspipes.modules.ModuleFirewall;
+
+import lombok.Getter;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.routing.IFilter;
@@ -20,23 +23,26 @@ import logisticspipes.request.resources.IResource;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
-import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
 
-	public ItemIdentifierInventory inv = new ItemIdentifierInventory(6 * 6, "Filter Inv", 1);
-	private boolean blockProvider = false;
-	private boolean blockCrafer = false;
-	private boolean blockSorting = false;
-	private boolean blockPower = true;
-	private boolean isBlocking = true;
+	@Getter
+	private final ModuleFirewall moduleFirewall;
 	private IFilter filter = null;
 
 	public PipeItemsFirewall(Item item) {
 		super(item);
+		moduleFirewall = new ModuleFirewall();
+		moduleFirewall.registerHandler(this, this);
+		moduleFirewall.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
+	}
+
+	@Nullable
+	@Override
+	public LogisticsModule getLogisticsModule() {
+		return this.moduleFirewall;
 	}
 
 	@Override
@@ -51,37 +57,8 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		inv.writeToNBT(nbttagcompound);
-		nbttagcompound.setBoolean("blockProvider", blockProvider);
-		nbttagcompound.setBoolean("blockCrafer", blockCrafer);
-		nbttagcompound.setBoolean("blockSorting", blockSorting);
-		nbttagcompound.setBoolean("blockPower", blockPower);
-		nbttagcompound.setBoolean("isBlocking", isBlocking);
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		inv.readFromNBT(nbttagcompound);
-		blockProvider = nbttagcompound.getBoolean("blockProvider");
-		blockCrafer = nbttagcompound.getBoolean("blockCrafer");
-		blockSorting = nbttagcompound.getBoolean("blockSorting");
-		if (nbttagcompound.hasKey("blockPower")) {
-			blockPower = nbttagcompound.getBoolean("blockPower");
-		}
-		isBlocking = nbttagcompound.getBoolean("isBlocking");
-	}
-
-	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_FIREWALL_TEXTURE;
-	}
-
-	@Override
-	public @Nullable LogisticsModule getLogisticsModule() {
-		return null;
 	}
 
 	public IFilter getFilter() {
@@ -90,32 +67,32 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 				@Override
 				public boolean isBlocked() {
-					return isBlocking;
+					return moduleFirewall.isBlocking.getValue();
 				}
 
 				@Override
 				public boolean isFilteredItem(ItemIdentifier item) {
-					return inv.containsUndamagedExcludeNBTItem(item.getIgnoringNBT().getUndamaged());
+					return moduleFirewall.inv.containsUndamagedExcludeNBTItem(item.getIgnoringNBT().getUndamaged());
 				}
 
 				@Override
 				public boolean blockProvider() {
-					return blockProvider;
+					return moduleFirewall.blockProvider.getValue();
 				}
 
 				@Override
 				public boolean blockCrafting() {
-					return blockCrafer;
+					return moduleFirewall.blockCrafter.getValue();
 				}
 
 				@Override
 				public boolean blockRouting() {
-					return blockSorting;
+					return moduleFirewall.blockSorting.getValue();
 				}
 
 				@Override
 				public boolean blockPower() {
-					return blockPower;
+					return moduleFirewall.blockPower.getValue();
 				}
 
 				@Override
@@ -135,8 +112,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 				@Override
 				public boolean isFilteredItem(IResource resultItem) {
-					for (Pair<ItemIdentifierStack, Integer> pair : inv) {
-						ItemIdentifierStack stack = pair.getValue1();
+					for (ItemIdentifierStack stack : moduleFirewall.inv) {
 						if (stack != null && resultItem.matches(stack.getItem(), IResource.MatchSettings.NORMAL)) {
 							return true;
 						}
@@ -149,66 +125,66 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	}
 
 	public boolean isBlockProvider() {
-		return blockProvider;
+		return moduleFirewall.blockProvider.getValue();
 	}
 
 	public void setBlockProvider(boolean blockProvider) {
-		this.blockProvider = blockProvider;
+		moduleFirewall.blockProvider.setValue(blockProvider);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
-	public boolean isBlockCrafer() {
-		return blockCrafer;
+	public boolean isBlockCrafter() {
+		return moduleFirewall.blockCrafter.getValue();
 	}
 
-	public void setBlockCrafer(boolean blockCrafer) {
-		this.blockCrafer = blockCrafer;
+	public void setBlockCrafer(boolean blockCrafter) {
+		moduleFirewall.blockCrafter.setValue(blockCrafter);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	public boolean isBlockSorting() {
-		return blockSorting;
+		return moduleFirewall.blockSorting.getValue();
 	}
 
 	public void setBlockSorting(boolean blockSorting) {
-		this.blockSorting = blockSorting;
+		moduleFirewall.blockSorting.setValue(blockSorting);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	public boolean isBlockPower() {
-		return blockPower;
+		return moduleFirewall.blockPower.getValue();
 	}
 
 	public void setBlockPower(boolean blockPower) {
-		this.blockPower = blockPower;
+		moduleFirewall.blockPower.setValue(blockPower);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	public boolean isBlocking() {
-		return isBlocking;
+		return moduleFirewall.isBlocking.getValue();
 	}
 
 	public void setBlocking(boolean isBlocking) {
-		this.isBlocking = isBlocking;
+		moduleFirewall.isBlocking.setValue(isBlocking);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
 	private BitSet getFlags() {
 		BitSet flags = new BitSet();
-		flags.set(0, blockProvider);
-		flags.set(1, blockCrafer);
-		flags.set(2, blockSorting);
-		flags.set(3, blockPower);
-		flags.set(4, isBlocking);
+		flags.set(0, moduleFirewall.blockProvider.getValue());
+		flags.set(1, moduleFirewall.blockCrafter.getValue());
+		flags.set(2, moduleFirewall.blockSorting.getValue());
+		flags.set(3, moduleFirewall.blockPower.getValue());
+		flags.set(4, moduleFirewall.isBlocking.getValue());
 		return flags;
 	}
 
 	public void setFlags(BitSet flags) {
-		blockProvider = flags.get(0);
-		blockCrafer = flags.get(1);
-		blockSorting = flags.get(2);
-		blockPower = flags.get(3);
-		isBlocking = flags.get(4);
+		moduleFirewall.blockProvider.setValue(flags.get(0));
+		moduleFirewall.blockCrafter.setValue(flags.get(1));
+		moduleFirewall.blockSorting.setValue(flags.get(2));
+		moduleFirewall.blockPower.setValue(flags.get(3));
+		moduleFirewall.isBlocking.setValue(flags.get(4));
 	}
 
 	@Override

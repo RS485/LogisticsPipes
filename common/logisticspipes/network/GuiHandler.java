@@ -209,7 +209,7 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !((pipe.pipe instanceof PipeItemsFirewall))) {
 						return null;
 					}
-					dummy = new DummyContainer(player.inventory, ((PipeItemsFirewall) pipe.pipe).inv);
+					dummy = new DummyContainer(player.inventory, ((PipeItemsFirewall) pipe.pipe).getModuleFirewall().inv);
 					dummy.addNormalSlotsForPlayerInventory(33, 147);
 					for (int i = 0; i < 6; i++) {
 						for (int j = 0; j < 6; j++) {
@@ -222,11 +222,11 @@ public class GuiHandler implements IGuiHandler {
 					if (pipe == null || !(pipe.pipe instanceof PipeBlockRequestTable)) {
 						return null;
 					}
-					dummy = new DummyContainer(player, ((PipeBlockRequestTable) pipe.pipe).matrix, (PipeBlockRequestTable) pipe.pipe);
+					dummy = new DummyContainer(player, ((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().matrix, (PipeBlockRequestTable) pipe.pipe);
 					int i = 0;
 					for (int Y = 0; Y < 3; Y++) {
 						for (int X = 0; X < 9; X++) {
-							dummy.addNormalSlot(i++, ((PipeBlockRequestTable) pipe.pipe).inv, 0, 0);
+							dummy.addNormalSlot(i++, ((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().inv, 0, 0);
 						}
 					}
 					i = 0;
@@ -236,8 +236,8 @@ public class GuiHandler implements IGuiHandler {
 						}
 					}
 					dummy.addCallableSlotHandler(0, ((PipeBlockRequestTable) pipe.pipe).resultInv, 0, 0, () -> ((PipeBlockRequestTable) fpipe.pipe).getResultForClick());
-					dummy.addNormalSlot(0, ((PipeBlockRequestTable) pipe.pipe).toSortInv, 0, 0);
-					dummy.addNormalSlot(0, ((PipeBlockRequestTable) pipe.pipe).diskInv, 0, 0);
+					dummy.addNormalSlot(0, ((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().toSortInv, 0, 0);
+					dummy.addNormalSlot(0, ((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().diskInv, 0, 0);
 					dummy.addNormalSlotsForPlayerInventory(0, 0);
 					return dummy;
 

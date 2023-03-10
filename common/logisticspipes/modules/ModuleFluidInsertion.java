@@ -24,7 +24,7 @@ import network.rs485.logisticspipes.property.Property;
 
 public class ModuleFluidInsertion extends LogisticsModule {
 
-	protected final FluidRoutedPipe fluidPipe = (FluidRoutedPipe) Objects.requireNonNull(_service, "service object was null in " + this);
+	protected final FluidRoutedPipe fluidPipe = (FluidRoutedPipe) _service;
 	public final IntListProperty nextSendMax = new IntListProperty("nextSendMax");
 	public final IntListProperty nextSendMin = new IntListProperty("nextSendMin");
 

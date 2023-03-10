@@ -32,24 +32,24 @@ public class DiskRequestConectPacket extends CoordinatesPacket {
 			return;
 		}
 		if (pipe.pipe instanceof PipeItemsRequestLogisticsMk2) {
-			if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk() != null) {
-				if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().getItem().equals(LPItems.disk)) {
-					if (!((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().hasTagCompound()) {
-						((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
-					}
+			if (((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().getItem().equals(LPItems.disk)) {
+				if (!((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().hasTagCompound()) {
+					((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk().setTagCompound(new NBTTagCompound());
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk()).setBlockPos(pipe.getPos()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeItemsRequestLogisticsMk2) pipe.pipe).getDisk())
+				.setBlockPos(pipe.getPos()), player);
 		}
 		if (pipe.pipe instanceof PipeBlockRequestTable) {
-			if (((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0) != null) {
-				if (((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).getItem().equals(LPItems.disk)) {
-					if (!((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).hasTagCompound()) {
-						((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0).setTagCompound(new NBTTagCompound());
+			if (((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().diskInv.getStackInSlot(0) != null) {
+				if (((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().diskInv.getStackInSlot(0).getItem().equals(LPItems.disk)) {
+					if (!((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().diskInv.getStackInSlot(0).hasTagCompound()) {
+						((PipeBlockRequestTable) pipe.pipe).getModuleRequesterTable().diskInv.getStackInSlot(0).setTagCompound(new NBTTagCompound());
 					}
 				}
 			}
-			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable) pipe.pipe).diskInv.getStackInSlot(0)).setBlockPos(pipe.getPos()), player);
+			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(DiscContent.class).setStack(((PipeBlockRequestTable) pipe.pipe)
+				.getModuleRequesterTable().diskInv.getStackInSlot(0)).setBlockPos(pipe.getPos()), player);
 		}
 	}
 }

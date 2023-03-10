@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.annotation.Nonnull;
 
+import lombok.Getter;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
@@ -57,8 +59,11 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
+import org.jetbrains.annotations.Nullable;
+
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
+	@Getter
 	private final ModuleRequesterTable moduleRequesterTable;
 	private InventoryCraftResult vanillaResult = new InventoryCraftResult();
 	private IRecipe cache;
@@ -79,6 +84,12 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		moduleRequesterTable.registerHandler(this, this);
 		moduleRequesterTable.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 		moduleRequesterTable.matrix.addListener(this);
+	}
+
+	@Nullable
+	@Override
+	public LogisticsModule getLogisticsModule() {
+		return this.moduleRequesterTable;
 	}
 
 	@Override

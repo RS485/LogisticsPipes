@@ -95,13 +95,13 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		} else {
 			dimension = GuiOrderer.dimensioncache;
 		}
-		DummyContainer dummy = new DummyContainer(entityPlayer.inventory, _table.matrix);
+		DummyContainer dummy = new DummyContainer(entityPlayer.inventory, _table.getModuleRequesterTable().matrix);
 		dummy.guiHolderForJEI = this;
 
 		int i = 0;
 		for (int y = 0; y < 3; y++) {
 			for (int x = 0; x < 9; x++) {
-				dummy.addNormalSlot(i++, _table.inv, guiLeft + (x * 18) + 20, guiTop + (y * 18) + 80);
+				dummy.addNormalSlot(i++, _table.getModuleRequesterTable().inv, guiLeft + (x * 18) + 20, guiTop + (y * 18) + 80);
 			}
 		}
 		i = 0;
@@ -111,8 +111,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			}
 		}
 		dummy.addCallableSlotHandler(0, _table.resultInv, guiLeft + 101, guiTop + 33, _table::getResultForClick);
-		dummy.addNormalSlot(0, _table.toSortInv, guiLeft + 164, guiTop + 51);
-		dummy.addNormalSlot(0, _table.diskInv, guiLeft + 164, guiTop + 25);
+		dummy.addNormalSlot(0, _table.getModuleRequesterTable().toSortInv, guiLeft + 164, guiTop + 51);
+		dummy.addNormalSlot(0, _table.getModuleRequesterTable().diskInv, guiLeft + 164, guiTop + 25);
 		dummy.addNormalSlotsForPlayerInventory(20, 150);
 		inventorySlots = dummy;
 		refreshItems();
@@ -522,12 +522,12 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			_table.cacheRecipe();
 		} else if (guibutton.id == 31) {
 			ArrayList<ItemIdentifierStack> list = new ArrayList<>(9);
-			list.addAll(_table.matrix.getItemsAndCount().entrySet().stream()
+			list.addAll(_table.getModuleRequesterTable().matrix.getItemsAndCount().entrySet().stream()
 					.map(e -> e.getKey().makeStack(e.getValue())).collect(Collectors.toList()));
-			for (Pair<ItemStack, Integer> entry : _table.inv) {
-				if (entry.getValue1().isEmpty()) continue;
-				int size = entry.getValue1().getCount();
-				ItemIdentifier ident = ItemIdentifier.get(entry.getValue1());
+			for (ItemStack itemStack : _table.getModuleRequesterTable().inv) {
+				if (itemStack.isEmpty()) continue;
+				int size = itemStack.getCount();
+				ItemIdentifier ident = ItemIdentifier.get(itemStack);
 				for (ItemIdentifierStack stack : list) {
 					if (!stack.getItem().equals(ident)) continue;
 					int toUse = Math.min(size, stack.getStackSize());
@@ -545,7 +545,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 	private void requestMatrix(int multiplier) {
 		ArrayList<ItemIdentifierStack> list = new ArrayList<>(9);
-		list.addAll(_table.matrix.getItemsAndCount().entrySet().stream()
+		list.addAll(_table.getModuleRequesterTable().matrix.getItemsAndCount().entrySet().stream()
 				.map(e -> e.getKey().makeStack(e.getValue() * multiplier)).collect(Collectors.toList()));
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(RequestSubmitListPacket.class).setIdentList(list).setTilePos(_table.container));
 		refreshItems();
@@ -571,7 +571,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			return;
 		}
 		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, guiLeft, guiTop);
-		Macrobutton.enabled = !_table.diskInv.getStackInSlot(0).isEmpty() && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
+		Macrobutton.enabled = !_table.getModuleRequesterTable().diskInv.getStackInSlot(0).isEmpty()
+			&& _table.getModuleRequesterTable().diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
 	}
 
 	@Override
@@ -673,7 +674,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	@Override
 	@Nonnull
 	public ItemStack getDisk() {
-		return _table.diskInv.getStackInSlot(0);
+		return _table.getModuleRequesterTable().diskInv.getStackInSlot(0);
 	}
 
 	@Override

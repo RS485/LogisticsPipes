@@ -19,7 +19,7 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 	public GuiFirewall(PipeItemsFirewall pipe, EntityPlayer player) {
 		super(230, 260, 0, 0);
 		this.pipe = pipe;
-		DummyContainer dummy = new DummyContainer(player.inventory, pipe.inv);
+		DummyContainer dummy = new DummyContainer(player.inventory, pipe.getModuleFirewall().inv);
 		dummy.addNormalSlotsForPlayerInventory(33, 175);
 		for (int x = 0; x < 6; x++) {
 			for (int y = 0; y < 6; y++) {
@@ -37,7 +37,7 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 		final String allowed = TextUtil.translate(GuiFirewall.PREFIX + "Allowed");
 		buttonList.add(new GuiStringHandlerButton(0, width / 2 + 23, height / 2 + 27 - 139, 60, 20, () -> pipe.isBlocking() ? blocked : allowed));
 		buttonList.add(new GuiStringHandlerButton(1, width / 2 + 23, height / 2 + 60 - 139, 60, 20, () -> pipe.isBlockProvider() ? blocked : allowed));
-		buttonList.add(new GuiStringHandlerButton(2, width / 2 + 23, height / 2 + 93 - 139, 60, 20, () -> pipe.isBlockCrafer() ? blocked : allowed));
+		buttonList.add(new GuiStringHandlerButton(2, width / 2 + 23, height / 2 + 93 - 139, 60, 20, () -> pipe.isBlockCrafter() ? blocked : allowed));
 		buttonList.add(new GuiStringHandlerButton(3, width / 2 + 23, height / 2 + 126 - 139, 60, 20, () -> pipe.isBlockSorting() ? blocked : allowed));
 		buttonList.add(new GuiStringHandlerButton(4, width / 2 + 23, height / 2 + 160 - 139, 60, 20, () -> pipe.isBlockPower() ? blocked : allowed));
 	}
@@ -52,7 +52,7 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 				pipe.setBlockProvider(!pipe.isBlockProvider());
 				break;
 			case 2:
-				pipe.setBlockCrafer(!pipe.isBlockCrafer());
+				pipe.setBlockCrafer(!pipe.isBlockCrafter());
 				break;
 			case 3:
 				pipe.setBlockSorting(!pipe.isBlockSorting());

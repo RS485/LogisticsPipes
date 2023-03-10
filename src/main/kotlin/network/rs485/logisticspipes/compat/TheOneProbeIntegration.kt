@@ -167,15 +167,15 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
         private fun addFirewallPipeInfo(pipe: PipeItemsFirewall, probeInfo: IProbeInfo) {
             val allowed = "${prefix}pipe.firewall.allowed"
             val blocked = "${prefix}pipe.firewall.blocked"
-            if (!pipe.inv.isEmpty) {
+            if (!pipe.moduleFirewall.inv.isEmpty) {
                 probeInfo.element(LPText("${prefix}pipe.firewall.filtering").apply {
-                    arguments.add(pipe.inv.itemsAndCount.count { it.value > 0 }.toString())
+                    arguments.add(pipe.moduleFirewall.inv.itemsAndCount.count { it.value > 0 }.toString())
                     arguments.add(if (pipe.isBlocking) blocked else allowed)
                 })
             }
             listOf(
                 "pipe.firewall.providing" to pipe.isBlockProvider,
-                "pipe.firewall.crafting" to pipe.isBlockCrafer,
+                "pipe.firewall.crafting" to pipe.isBlockCrafter,
                 "pipe.firewall.sorting" to pipe.isBlockSorting,
                 "pipe.firewall.power" to pipe.isBlockPower,
             ).forEach {

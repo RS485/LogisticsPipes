@@ -59,6 +59,8 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, override val t
 
     override val size: Int = sizeInventory
 
+    fun clearGrid(): Unit = inv.clearGrid()
+
     override fun decrStackSize(index: Int, count: Int): ItemStack = inv.decrStackSize(index, count).alsoIChanged()
 
     override fun removeStackFromSlot(index: Int): ItemStack = inv.removeStackFromSlot(index).alsoIChanged()

@@ -22,7 +22,7 @@ public class ClearCraftingGridPacket extends CoordinatesPacket {
 		TileEntity table = this.getTileAs(player.getEntityWorld(), TileEntity.class);
 		if (table instanceof LogisticsCraftingTableTileEntity) {
 		} else if (table instanceof LogisticsTileGenericPipe && ((LogisticsTileGenericPipe) table).pipe instanceof PipeBlockRequestTable) {
-			((PipeBlockRequestTable) ((LogisticsTileGenericPipe) table).pipe).matrix.clearGrid();
+			((PipeBlockRequestTable) ((LogisticsTileGenericPipe) table).pipe).getModuleRequesterTable().matrix.clearGrid();
 			((PipeBlockRequestTable) ((LogisticsTileGenericPipe) table).pipe).cacheRecipe();
 		}
 	}

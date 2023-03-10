@@ -22,9 +22,8 @@ import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
-import net.minecraft.nbt.NBTTagCompound;
 
-import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
 import logisticspipes.LogisticsPipes;
 import logisticspipes.gui.hud.HUDSatellite;
@@ -68,9 +67,6 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	private final HUDSatellite HUD = new HUDSatellite(this);
 	protected final LinkedList<ItemIdentifierStack> _lostItems = new LinkedList<>();
 	private final ModuleSatellite moduleSatellite;
-
-	@Getter
-	private String satellitePipeName = "";
 
 	public PipeItemsSatelliteLogistics(Item item) {
 		super(item);
@@ -142,7 +138,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	public void playerStartWatching(EntityPlayer player, int mode) {
 		if (mode == 1) {
 			localModeWatchers.add(player);
-			final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+			final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(this.moduleSatellite.satellitePipeName.getValue())
+				.setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 			MainProxy.sendPacketToPlayer(packet, player);
 			updateInv(true);
 		} else {
@@ -167,37 +164,18 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 		return HUD;
 	}
 
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		if (nbttagcompound.hasKey("satelliteid")) {
-			int satelliteId = nbttagcompound.getInteger("satelliteid");
-			satellitePipeName = Integer.toString(satelliteId);
-		} else {
-			satellitePipeName = nbttagcompound.getString("satellitePipeName");
-		}
-		if (MainProxy.isServer(getWorld())) {
-			ensureAllSatelliteStatus();
-		}
-	}
-
-	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		nbttagcompound.setString("satellitePipeName", satellitePipeName);
-		super.writeToNBT(nbttagcompound);
-	}
-
 	public void ensureAllSatelliteStatus() {
-		if (satellitePipeName.isEmpty()) {
+		if (this.moduleSatellite.satellitePipeName.isEmpty()) {
 			PipeItemsSatelliteLogistics.AllSatellites.remove(this);
 		}
-		if (!satellitePipeName.isEmpty()) {
+		if (!this.moduleSatellite.satellitePipeName.isEmpty()) {
 			PipeItemsSatelliteLogistics.AllSatellites.add(this);
 		}
 	}
 
 	public void updateWatchers() {
-		CoordinatesPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setTilePos(this.getContainer());
+		CoordinatesPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(this.moduleSatellite.satellitePipeName.getValue())
+			.setTilePos(this.getContainer());
 		MainProxy.sendToPlayerList(packet, localModeWatchers);
 		MainProxy.sendPacketToAllWatchingChunk(this.getContainer(), packet);
 	}
@@ -213,7 +191,8 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	@Override
 	public void onWrenchClicked(EntityPlayer entityplayer) {
 		// Send the satellite id when opening gui
-		final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(satellitePipeName).setPosX(getX()).setPosY(getY()).setPosZ(getZ());
+		final ModernPacket packet = PacketHandler.getPacket(SyncSatelliteNamePacket.class).setString(this.moduleSatellite.satellitePipeName.getValue())
+			.setPosX(getX()).setPosY(getY()).setPosZ(getZ());
 		MainProxy.sendPacketToPlayer(packet, entityplayer);
 		entityplayer.openGui(LogisticsPipes.instance, GuiIDs.GUI_SatellitePipe_ID, getWorld(), getX(), getY(), getZ());
 	}
@@ -255,12 +234,18 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 
 	@Override
 	public void setSatellitePipeName(@Nonnull String satellitePipeName) {
-		this.satellitePipeName = satellitePipeName;
+		this.moduleSatellite.satellitePipeName.setValue(satellitePipeName);
 	}
 
 	@Nonnull
 	@Override
 	public List<ItemIdentifierStack> getItemList() {
 		return itemList;
+	}
+
+	@NotNull
+	@Override
+	public String getSatellitePipeName() {
+		return this.moduleSatellite.satellitePipeName.getValue();
 	}
 }

@@ -1,24 +1,33 @@
 package logisticspipes.modules;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 
 import logisticspipes.interfaces.IPipeServiceProvider;
+import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.SinkReply.FixedPriority;
 import logisticspipes.utils.item.ItemIdentifier;
 import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
+import network.rs485.logisticspipes.SatellitePipe;
+import network.rs485.logisticspipes.property.StringProperty;
 import network.rs485.logisticspipes.property.Property;
 
 public class ModuleSatellite extends LogisticsModule {
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
+
+	public final StringProperty satellitePipeName = new StringProperty("", "satellitePipeName", "satelliteid");
+	private final List<Property<?>> properties = ImmutableList.<Property<?>>builder()
+		.add(satellitePipeName)
+		.build();
 
 	@Nonnull
 	@Override
@@ -29,7 +38,7 @@ public class ModuleSatellite extends LogisticsModule {
 	@NotNull
 	@Override
 	public List<Property<?>> getProperties() {
-		return Collections.emptyList();
+		return properties;
 	}
 
 	@Override
@@ -83,6 +92,14 @@ public class ModuleSatellite extends LogisticsModule {
 	@Override
 	public boolean receivePassive() {
 		return false;
+	}
+
+	@Override
+	public void readFromNBT(@NotNull NBTTagCompound tag) {
+		super.readFromNBT(tag);
+		if (MainProxy.isServer(getWorld()) && _service != null) {
+			((SatellitePipe) _service).ensureAllSatelliteStatus();
+		}
 	}
 
 }

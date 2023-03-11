@@ -19,7 +19,7 @@ public class Configs {
 
 	private static Configuration CONFIGURATION;
 
-	// Configrables
+	// Configurable
 	public static int LOGISTICS_DETECTION_LENGTH = 50;
 	public static int LOGISTICS_DETECTION_COUNT = 100;
 	public static int LOGISTICS_DETECTION_FREQUENCY = 20 * 30;
@@ -89,7 +89,7 @@ public class Configs {
 				.get(Configuration.CATEGORY_GENERAL,
 						"detectionCount",
 						Configs.LOGISTICS_DETECTION_COUNT,
-						"The maximum number of buildcraft pipes (including forks) between logistics pipes. This is an indicator of the maximum amount of nodes the recursion algorithm will visit before giving up. As it is possible to fork a pipe connection using standard BC pipes the algorithm will attempt to discover all available destinations through that pipe. Do note that the logistics system will not interfere with the operation of non-logistics pipes. So a forked pipe will usually be sup-optimal, but it is possible. A low value might reduce CPU usage, a high value will be able to handle more complex pipe setups. If you never fork your connection between the logistics pipes this has the same meaning as detectionLength and the lower of the two will be used")
+						"The maximum number of BuildCraft pipes (including forks) between logistics pipes. This is an indicator of the maximum amount of nodes the recursion algorithm will visit before giving up. As it is possible to fork a pipe connection using standard BC pipes the algorithm will attempt to discover all available destinations through that pipe. Do note that the logistics system will not interfere with the operation of non-logistics pipes. So a forked pipe will usually be sup-optimal, but it is possible. A low value might reduce CPU usage, a high value will be able to handle more complex pipe setups. If you never fork your connection between the logistics pipes this has the same meaning as detectionLength and the lower of the two will be used")
 						.getInt();
 		Configs.LOGISTICS_DETECTION_FREQUENCY = Math
 				.max(Configs.CONFIGURATION
@@ -174,15 +174,15 @@ public class Configs {
 
 
 		Configs.POWER_USAGE_MULTIPLIER = Configs.CONFIGURATION.get(
-				Configuration.CATEGORY_GENERAL, "powerUsageMultiplyer",
-				Configs.POWER_USAGE_MULTIPLIER, "A Multiplyer for the power usage.")
+				Configuration.CATEGORY_GENERAL, "powerUsageMultiplier",
+				Configs.POWER_USAGE_MULTIPLIER, "A Multiplier for the power usage.")
 				.getDouble(Configs.POWER_USAGE_MULTIPLIER);
 
 		if (Configs.POWER_USAGE_MULTIPLIER <= 0) {
 			Configs.POWER_USAGE_MULTIPLIER = 1;
 			Configs.CONFIGURATION.get(Configuration.CATEGORY_GENERAL,
-					"powerUsageMultiplyer", Configs.POWER_USAGE_MULTIPLIER,
-					"A Multiplyer for the power usage.").set(1);
+					"powerUsageMultiplier", Configs.POWER_USAGE_MULTIPLIER,
+					"A Multiplier for the power usage.").set(1);
 		}
 
 		Configs.LOGISTICS_CRAFTING_TABLE_POWER_USAGE = Math

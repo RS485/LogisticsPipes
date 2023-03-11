@@ -67,7 +67,7 @@ public class LogisticsItem extends Item implements ILogisticsItem {
 	 * Adds all keys from the translation file in the format:
 	 * item.className.tip([0-9]*) Tips start from 1 and increment. Sparse rows
 	 * should be left empty (ie empty line must still have a key present) Shift
-	 * shows full tooltip, without it you just get the first line.
+	 * shows full tooltip, without it, you just get the first line.
 	 */
 	@Override
 	@SideOnly(Side.CLIENT)

@@ -170,24 +170,24 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 		if (service.isNthTick(6)) {
 			checkUpdate(null);
 		}
-		int itemsleft = itemsToExtract();
-		int stacksleft = stacksToExtract();
+		int itemsLeft = itemsToExtract();
+		int stacksLeft = stacksToExtract();
 		LogisticsItemOrder firstOrder = null;
 		LogisticsItemOrder order = null;
-		while (itemsleft > 0 && stacksleft > 0 && service.getItemOrderManager().hasOrders(ResourceType.PROVIDER) && (
+		while (itemsLeft > 0 && stacksLeft > 0 && service.getItemOrderManager().hasOrders(ResourceType.PROVIDER) && (
 				firstOrder == null || firstOrder != order)) {
 			if (firstOrder == null) {
 				firstOrder = order;
 			}
 			order = service.getItemOrderManager().peekAtTopRequest(ResourceType.PROVIDER);
-			int sent = sendStack(order.getResource().stack, itemsleft, order.getDestination().getRouter().getSimpleID(),
+			int sent = sendStack(order.getResource().stack, itemsLeft, order.getDestination().getRouter().getSimpleID(),
 					order.getInformation());
 			if (sent < 0) {
 				break;
 			}
 			service.spawnParticle(Particles.VioletParticle, 3);
-			stacksleft -= 1;
-			itemsleft -= sent;
+			stacksLeft -= 1;
+			itemsLeft -= sent;
 		}
 	}
 
@@ -321,7 +321,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 			}
 			SinkReply reply = LogisticsManager
 					.canSink(stack.makeNormalStack(), dRtr, null, true, stack.getItem(), null, true, false);
-			boolean defersend = false;
+			boolean deferSend = false;
 			if (reply != null) {// some pipes are not aware of the space in the adjacent inventory, so they return null
 				if (reply.maxNumberOfItems < wanted) {
 					wanted = reply.maxNumberOfItems;
@@ -329,7 +329,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 						service.getItemOrderManager().deferSend();
 						return 0;
 					}
-					defersend = true;
+					deferSend = true;
 				}
 			}
 			if (!service.canUseEnergy(wanted * neededEnergy())) {
@@ -344,7 +344,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 
 			final IRoutedItem routedItem = service
 					.sendStack(removed, destination, itemSendMode(), info, current.getValue2());
-			service.getItemOrderManager().sendSuccessfull(sent, defersend, routedItem);
+			service.getItemOrderManager().sendSuccessfull(sent, deferSend, routedItem);
 			return sent;
 		}
 
@@ -439,11 +439,11 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		//when filter is empty or in exclude mode, this is interested in attached inventory already
 		if (!isExclusionFilter.getValue() && !filterInventory.isEmpty()) {
 			// when items included this is only interested in items in the filter
-			itemidCollection.addAll(filterInventory.getItemsAndCount().keySet());
+			itemIdCollection.addAll(filterInventory.getItemsAndCount().keySet());
 		}
 	}
 

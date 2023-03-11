@@ -31,10 +31,10 @@ public class PipeTransportLayer extends TransportLayer {
 	@Override
 	public EnumFacing itemArrived(IRoutedItem item, EnumFacing denied) {
 		if (item.getItemIdentifierStack() != null) {
-			_trackStatistics.recievedItem(item.getItemIdentifierStack().getStackSize());
+			_trackStatistics.receivedItem(item.getItemIdentifierStack().getStackSize());
 		}
 
-		// 1st prio, deliver to adjacent inventories
+		// 1st priority, deliver to adjacent inventories
 		LinkedList<EnumFacing> possibleEnumFacing = new LinkedList<>();
 		for (NeighborTileEntity<TileEntity> adjacent : routedPipe.getAvailableAdjacent().inventories()) {
 			if (_router.isRoutedExit(adjacent.getDirection())) {
@@ -57,7 +57,7 @@ public class PipeTransportLayer extends TransportLayer {
 			return possibleEnumFacing.get(routedPipe.getWorld().rand.nextInt(possibleEnumFacing.size()));
 		}
 
-		// 2nd prio, deliver to non-routed exit
+		// 2nd priority, deliver to non-routed exit
 		new WorldCoordinatesWrapper(routedPipe.container).connectedTileEntities().stream()
 				.filter(neighbor -> {
 					if (_router.isRoutedExit(neighbor.getDirection())) return false;

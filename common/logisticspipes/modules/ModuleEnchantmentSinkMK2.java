@@ -170,12 +170,12 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		Map<ItemIdentifier, Integer> mapIC = filterInventory.getItemsAndCount();
-		itemidCollection.addAll(mapIC.keySet());
+		itemIdCollection.addAll(mapIC.keySet());
 		for (ItemIdentifier id : mapIC.keySet()) {
-			itemidCollection.add(id.getUndamaged());
-			itemidCollection.add(id.getUndamaged().getIgnoringNBT());
+			itemIdCollection.add(id.getUndamaged());
+			itemIdCollection.add(id.getUndamaged().getIgnoringNBT());
 		}
 	}
 

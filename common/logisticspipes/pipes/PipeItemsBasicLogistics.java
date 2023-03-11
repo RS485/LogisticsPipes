@@ -109,9 +109,9 @@ public class PipeItemsBasicLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		if (!itemSinkModule.isDefaultRoute()) {
-			itemSinkModule.collectSpecificInterests(itemidCollection);
+			itemSinkModule.collectSpecificInterests(itemIdCollection);
 		}
 	}
 

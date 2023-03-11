@@ -127,7 +127,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 
 	public PipeLogisticsChassis(Item item) {
 		super(item);
-		_moduleInventory = new ItemIdentifierInventory(getChassisSize(), "Chassi pipe", 1);
+		_moduleInventory = new ItemIdentifierInventory(getChassisSize(), "Chassis pipe", 1);
 		_moduleInventory.addListener(this);
 		assert slotUpgradeManagers.size() == 0; // starting at index 0
 		for (int i = 0; i < getChassisSize(); i++) {
@@ -385,7 +385,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 			} else {
 				if (LogisticsPipes.isDEBUG() && info != null) {
 					System.out.println(item);
-					new RuntimeException("[ItemArrived] Information weren't ment for a chassi pipe").printStackTrace();
+					new RuntimeException("[ItemArrived] Information weren't meant for a chassis pipe").printStackTrace();
 				}
 			}
 		}
@@ -403,7 +403,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 			} else {
 				if (LogisticsPipes.isDEBUG()) {
 					System.out.println(item);
-					new RuntimeException("[ItemLost] Information weren't ment for a chassi pipe").printStackTrace();
+					new RuntimeException("[ItemLost] Information weren't meant for a chassis pipe").printStackTrace();
 				}
 			}
 		}
@@ -421,7 +421,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 			} else {
 				if (LogisticsPipes.isDEBUG()) {
 					System.out.println(item);
-					new RuntimeException("[AddToBuffer] Information weren't ment for a chassi pipe").printStackTrace();
+					new RuntimeException("[AddToBuffer] Information weren't meant for a chassis pipe").printStackTrace();
 				}
 			}
 		}
@@ -677,7 +677,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		// if we don't have a pointed inventory we can't be interested in anything
 		if (getPointedAdjacentOrNoAdjacent().inventories().isEmpty()) {
 			return;
@@ -692,20 +692,20 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 					continue;
 				}
 				Set<ItemIdentifier> items = inv.getItems();
-				itemidCollection.addAll(items);
+				itemIdCollection.addAll(items);
 
 				//also add tag-less variants ... we should probably add a module.interestedIgnoringNBT at some point
-				items.stream().map(ItemIdentifier::getIgnoringNBT).forEach(itemidCollection::add);
+				items.stream().map(ItemIdentifier::getIgnoringNBT).forEach(itemIdCollection::add);
 
-				boolean modulesInterestedInUndamged = false;
+				boolean modulesInterestedInUndamaged = false;
 				for (int i = 0; i < getChassisSize(); i++) {
 					if (getSubModule(moduleIndex).interestedInUndamagedID()) {
-						modulesInterestedInUndamged = true;
+						modulesInterestedInUndamaged = true;
 						break;
 					}
 				}
-				if (modulesInterestedInUndamged) {
-					items.stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
+				if (modulesInterestedInUndamaged) {
+					items.stream().map(ItemIdentifier::getUndamaged).forEach(itemIdCollection::add);
 				}
 				break; // no need to check other modules for interest in the inventory, when we know that 1 already is.
 			}
@@ -713,7 +713,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 		for (int i = 0; i < getChassisSize(); i++) {
 			LogisticsModule module = getSubModule(i);
 			if (module != null) {
-				module.collectSpecificInterests(itemidCollection);
+				module.collectSpecificInterests(itemIdCollection);
 			}
 		}
 	}
@@ -738,7 +738,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 		return getSubModule((int) (i - 1));
 	}
 
-	@CCCommand(description = "Returns the size of this Chassie pipe")
+	@CCCommand(description = "Returns the size of this Chassis pipe")
 	public Integer getChassieSize() {
 		return getChassisSize();
 	}
@@ -816,7 +816,7 @@ public abstract class PipeLogisticsChassis extends CoreRoutedPipe
 	@Override
 	public int getTodo() {
 		// TODO Auto-generated method stub
-		// probably not needed, the chasi order manager handles the count, would need to store origin to specifically know this.
+		// probably not needed, the chassis order manager handles the count, would need to store origin to specifically know this.
 		return 0;
 	}
 

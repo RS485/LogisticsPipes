@@ -223,8 +223,8 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		craftingModule.collectSpecificInterests(itemidCollection);
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
+		craftingModule.collectSpecificInterests(itemIdCollection);
 	}
 
 	@Override

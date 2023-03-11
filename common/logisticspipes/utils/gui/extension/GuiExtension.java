@@ -1,4 +1,4 @@
-package logisticspipes.utils.gui.extention;
+package logisticspipes.utils.gui.extension;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
-public abstract class GuiExtention {
+public abstract class GuiExtension {
 
 	@Getter
 	@Setter(value = AccessLevel.PACKAGE)
@@ -28,7 +28,7 @@ public abstract class GuiExtention {
 
 	public abstract int getFinalHeight();
 
-	public abstract void renderForground(int left, int top);
+	public abstract void renderForeground(int left, int top);
 
 	public final void update(int xPos, int yPos) {
 		double d = 0;

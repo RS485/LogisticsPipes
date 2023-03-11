@@ -180,8 +180,8 @@ public class ModulePassiveSupplier extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		itemidCollection.addAll(filterInventory.getItemsAndCount().keySet());
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
+		itemIdCollection.addAll(filterInventory.getItemsAndCount().keySet());
 	}
 
 	@Override

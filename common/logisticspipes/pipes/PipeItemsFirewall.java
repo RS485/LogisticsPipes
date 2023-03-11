@@ -29,7 +29,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public ItemIdentifierInventory inv = new ItemIdentifierInventory(6 * 6, "Filter Inv", 1);
 	private boolean blockProvider = false;
-	private boolean blockCrafer = false;
+	private boolean blockCrafter = false;
 	private boolean blockSorting = false;
 	private boolean blockPower = true;
 	private boolean isBlocking = true;
@@ -55,7 +55,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		super.writeToNBT(nbttagcompound);
 		inv.writeToNBT(nbttagcompound);
 		nbttagcompound.setBoolean("blockProvider", blockProvider);
-		nbttagcompound.setBoolean("blockCrafer", blockCrafer);
+		nbttagcompound.setBoolean("blockCrafer", blockCrafter);
 		nbttagcompound.setBoolean("blockSorting", blockSorting);
 		nbttagcompound.setBoolean("blockPower", blockPower);
 		nbttagcompound.setBoolean("isBlocking", isBlocking);
@@ -66,7 +66,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		super.readFromNBT(nbttagcompound);
 		inv.readFromNBT(nbttagcompound);
 		blockProvider = nbttagcompound.getBoolean("blockProvider");
-		blockCrafer = nbttagcompound.getBoolean("blockCrafer");
+		blockCrafter = nbttagcompound.getBoolean("blockCrafer");
 		blockSorting = nbttagcompound.getBoolean("blockSorting");
 		if (nbttagcompound.hasKey("blockPower")) {
 			blockPower = nbttagcompound.getBoolean("blockPower");
@@ -105,7 +105,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 				@Override
 				public boolean blockCrafting() {
-					return blockCrafer;
+					return blockCrafter;
 				}
 
 				@Override
@@ -157,12 +157,12 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
-	public boolean isBlockCrafer() {
-		return blockCrafer;
+	public boolean isBlockCrafter() {
+		return blockCrafter;
 	}
 
-	public void setBlockCrafer(boolean blockCrafer) {
-		this.blockCrafer = blockCrafer;
+	public void setBlockCrafter(boolean blockCrafter) {
+		this.blockCrafter = blockCrafter;
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}
 
@@ -196,7 +196,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 	private BitSet getFlags() {
 		BitSet flags = new BitSet();
 		flags.set(0, blockProvider);
-		flags.set(1, blockCrafer);
+		flags.set(1, blockCrafter);
 		flags.set(2, blockSorting);
 		flags.set(3, blockPower);
 		flags.set(4, isBlocking);
@@ -205,7 +205,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 	public void setFlags(BitSet flags) {
 		blockProvider = flags.get(0);
-		blockCrafer = flags.get(1);
+		blockCrafter = flags.get(1);
 		blockSorting = flags.get(2);
 		blockPower = flags.get(3);
 		isBlocking = flags.get(4);

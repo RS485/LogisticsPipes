@@ -44,7 +44,7 @@ public class RouteLayer {
 		//If the destination is unknown / unroutable or it already arrived at its destination and somehow looped back
 		if (item.getDestination() >= 0 && (!_router.hasRoute(item.getDestination(), item.getTransportMode() == TransportMode.Active, item.getItemIdentifierStack().getItem()) || item.getArrived())) {
 			item = SimpleServiceLocator.logisticsManager.assignDestinationFor(item, _router.getSimpleID(), false);
-			_pipe.debug.log("Unreachable Destination, sssigned new destination: (" + item.getInfo());
+			_pipe.debug.log("Unreachable Destination, signed new destination: (" + item.getInfo());
 		}
 
 		item.checkIDFromUUID();
@@ -53,7 +53,7 @@ public class RouteLayer {
 			return null;
 		}
 
-		//Is the destination ourself? Deliver it
+		//Is the destination ourselves? Deliver it
 		if (item.getDestinationUUID().equals(_router.getId())) {
 
 			_transport.handleItem(item);

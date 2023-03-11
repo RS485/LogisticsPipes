@@ -334,8 +334,8 @@ public class ModuleCrafter extends LogisticsModule
 		}
 		// if(true) return;
 		DelayedGeneric<Pair<ItemIdentifierStack, IAdditionalTargetInformation>> lostItem = _lostItems.poll();
-		int rerequested = 0;
-		while (lostItem != null && rerequested < 100) {
+		int reRequested = 0;
+		while (lostItem != null && reRequested < 100) {
 			Pair<ItemIdentifierStack, IAdditionalTargetInformation> pair = lostItem.get();
 			if (service.getItemOrderManager().hasOrders(ResourceType.CRAFTING)) {
 				SinkReply reply = LogisticsManager.canSink(pair.getValue1().makeNormalStack(), getRouter(), null, true,
@@ -347,7 +347,7 @@ public class ModuleCrafter extends LogisticsModule
 				}
 			}
 			int received = RequestTree.requestPartial(pair.getValue1(), (CoreRoutedPipe) service, pair.getValue2());
-			rerequested++;
+			reRequested++;
 			if (received < pair.getValue1().getStackSize()) {
 				pair.getValue1().setStackSize(pair.getValue1().getStackSize() - received);
 				_lostItems.add(new DelayedGeneric<>(pair, 4500 + (int) (Math.random() * 1000)));
@@ -371,13 +371,13 @@ public class ModuleCrafter extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		List<ItemIdentifierStack> result = getCraftedItems();
 		if (result == null) {
 			return;
 		}
 
-		result.stream().map(ItemIdentifierStack::getItem).forEach(itemidCollection::add);
+		result.stream().map(ItemIdentifierStack::getItem).forEach(itemIdCollection::add);
 		/*
 		for(int i=0; i<9;i++) {
 			ItemIdentifierStack stack = getMaterials(i);
@@ -996,27 +996,27 @@ public class ModuleCrafter extends LogisticsModule
 			return;
 		}
 
-		List<ItemIdentifierStack> wanteditem = getCraftedItems();
-		if (wanteditem == null || wanteditem.isEmpty()) {
+		List<ItemIdentifierStack> wantedItem = getCraftedItems();
+		if (wantedItem == null || wantedItem.isEmpty()) {
 			return;
 		}
 
 		service.spawnParticle(Particles.VioletParticle, 2);
 
-		int itemsleft = itemsToExtract();
-		int stacksleft = stacksToExtract();
-		while (itemsleft > 0 && stacksleft > 0 && (service.getItemOrderManager()
+		int itemsLeft = itemsToExtract();
+		int stacksLeft = stacksToExtract();
+		while (itemsLeft > 0 && stacksLeft > 0 && (service.getItemOrderManager()
 				.hasOrders(ResourceType.CRAFTING, ResourceType.EXTRA))) {
 			LogisticsItemOrder nextOrder = service.getItemOrderManager()
 					.peekAtTopRequest(ResourceType.CRAFTING, ResourceType.EXTRA); // fetch but not remove.
-			int maxtosend = Math.min(itemsleft, nextOrder.getResource().stack.getStackSize());
-			maxtosend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxtosend);
+			int maxToSend = Math.min(itemsLeft, nextOrder.getResource().stack.getStackSize());
+			maxToSend = Math.min(nextOrder.getResource().getItem().getMaxStackSize(), maxToSend);
 			// retrieve the new crafted items
 			ItemStack extracted = ItemStack.EMPTY;
 			NeighborTileEntity<TileEntity> adjacent = null; // there has to be at least one adjacentCrafter at this point; adjacent wont stay null
 			for (NeighborTileEntity<TileEntity> adjacentCrafter : adjacentInventories) {
 				adjacent = adjacentCrafter;
-				extracted = extract(adjacent, nextOrder.getResource(), maxtosend);
+				extracted = extract(adjacent, nextOrder.getResource(), maxToSend);
 				if (!extracted.isEmpty()) {
 					break;
 				}
@@ -1041,39 +1041,39 @@ public class ModuleCrafter extends LogisticsModule
 						} while (isExtractedMismatch(nextOrder, extractedID) && startOrder != nextOrder);
 					}
 					if (startOrder == nextOrder) {
-						int numtosend = Math.min(extracted.getCount(), extractedID.getMaxStackSize());
-						if (numtosend == 0) {
+						int numToSend = Math.min(extracted.getCount(), extractedID.getMaxStackSize());
+						if (numToSend == 0) {
 							break;
 						}
-						stacksleft -= 1;
-						itemsleft -= numtosend;
-						ItemStack stackToSend = extracted.splitStack(numtosend);
+						stacksLeft -= 1;
+						itemsLeft -= numToSend;
+						ItemStack stackToSend = extracted.splitStack(numToSend);
 						//Route the unhandled item
 
 						service.sendStack(stackToSend, -1, ItemSendMode.Normal, null, adjacent.getDirection());
 						continue;
 					}
 				}
-				int numtosend = Math.min(extracted.getCount(), extractedID.getMaxStackSize());
-				numtosend = Math.min(numtosend, nextOrder.getResource().stack.getStackSize());
-				if (numtosend == 0) {
+				int numToSend = Math.min(extracted.getCount(), extractedID.getMaxStackSize());
+				numToSend = Math.min(numToSend, nextOrder.getResource().stack.getStackSize());
+				if (numToSend == 0) {
 					break;
 				}
-				stacksleft -= 1;
-				itemsleft -= numtosend;
-				ItemStack stackToSend = extracted.splitStack(numtosend);
+				stacksLeft -= 1;
+				itemsLeft -= numToSend;
+				ItemStack stackToSend = extracted.splitStack(numToSend);
 				if (nextOrder.getDestination() != null) {
 					SinkReply reply = LogisticsManager
 							.canSink(stackToSend, nextOrder.getDestination().getRouter(), null, true,
 									ItemIdentifier.get(stackToSend), null, true, false);
-					boolean defersend = (reply == null || reply.bufferMode != BufferMode.NONE
+					boolean deferSend = (reply == null || reply.bufferMode != BufferMode.NONE
 							|| reply.maxNumberOfItems < 1);
 					IRoutedItem item = SimpleServiceLocator.routedItemHelper.createNewTravelItem(stackToSend);
 					item.setDestination(nextOrder.getDestination().getRouter().getSimpleID());
 					item.setTransportMode(TransportMode.Active);
 					item.setAdditionalTargetInformation(nextOrder.getInformation());
 					service.queueRoutedItem(item, adjacent.getDirection());
-					service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), defersend, item);
+					service.getItemOrderManager().sendSuccessfull(stackToSend.getCount(), deferSend, item);
 				} else {
 					service.sendStack(stackToSend, -1, ItemSendMode.Normal, nextOrder.getInformation(),
 							adjacent.getDirection());
@@ -1139,17 +1139,17 @@ public class ModuleCrafter extends LogisticsModule
 	}
 
 	@Nonnull
-	private ItemStack extractFromInventory(@Nonnull IInventoryUtil invUtil, IResource wanteditem, int count) {
+	private ItemStack extractFromInventory(@Nonnull IInventoryUtil invUtil, IResource wantedItem, int count) {
 		final IPipeServiceProvider service = _service;
 		if (service == null) return ItemStack.EMPTY;
 		ItemIdentifier itemToExtract = null;
-		if (wanteditem instanceof ItemResource) {
-			itemToExtract = ((ItemResource) wanteditem).getItem();
-		} else if (wanteditem instanceof DictResource) {
+		if (wantedItem instanceof ItemResource) {
+			itemToExtract = ((ItemResource) wantedItem).getItem();
+		} else if (wantedItem instanceof DictResource) {
 			int max = Integer.MIN_VALUE;
 			ItemIdentifier toExtract = null;
 			for (Map.Entry<ItemIdentifier, Integer> content : invUtil.getItemsAndCount().entrySet()) {
-				if (wanteditem.matches(content.getKey(), IResource.MatchSettings.NORMAL)) {
+				if (wantedItem.matches(content.getKey(), IResource.MatchSettings.NORMAL)) {
 					if (content.getValue() > max) {
 						max = content.getValue();
 						toExtract = content.getKey();
@@ -1177,23 +1177,23 @@ public class ModuleCrafter extends LogisticsModule
 		final IPipeServiceProvider service = _service;
 		if (service == null) return ItemStack.EMPTY;
 
-		ItemIdentifier wanteditem = null;
+		ItemIdentifier wantedItem = null;
 		boolean found = false;
 		for (ItemIdentifier item : invUtil.getItemsAndCount().keySet()) {
 			found = isFiltered(filter, filterInvLimit, item, found);
 			if (isExcluded != found) {
-				wanteditem = item;
+				wantedItem = item;
 				break;
 			}
 		}
-		if (wanteditem == null) {
+		if (wantedItem == null) {
 			return ItemStack.EMPTY;
 		}
-		int available = invUtil.itemCount(wanteditem);
+		int available = invUtil.itemCount(wantedItem);
 		if (available == 0 || !service.canUseEnergy(neededEnergy() * Math.min(64, available))) {
 			return ItemStack.EMPTY;
 		}
-		ItemStack extracted = invUtil.getMultipleItems(wanteditem, Math.min(64, available));
+		ItemStack extracted = invUtil.getMultipleItems(wantedItem, Math.min(64, available));
 		service.useEnergy(neededEnergy() * extracted.getCount());
 		return extracted;
 	}
@@ -1215,33 +1215,33 @@ public class ModuleCrafter extends LogisticsModule
 
 	@Nonnull
 	private ItemStack extractFromLogisticsCraftingTable(
-			NeighborTileEntity<LogisticsCraftingTableTileEntity> adjacentCraftingTable, IResource wanteditem,
+			NeighborTileEntity<LogisticsCraftingTableTileEntity> adjacentCraftingTable, IResource wantedItem,
 			int count) {
 		final IPipeServiceProvider service = _service;
 		if (service == null) return ItemStack.EMPTY;
 		ItemStack extracted = extractFromInventory(
-				Objects.requireNonNull(LPNeighborTileEntityKt.getInventoryUtil(adjacentCraftingTable)), wanteditem,
+				Objects.requireNonNull(LPNeighborTileEntityKt.getInventoryUtil(adjacentCraftingTable)), wantedItem,
 				count);
 		if (!extracted.isEmpty()) {
 			return extracted;
 		}
-		ItemStack retstack = ItemStack.EMPTY;
+		ItemStack retStack = ItemStack.EMPTY;
 		while (count > 0) {
-			ItemStack stack = adjacentCraftingTable.getTileEntity().getOutput(wanteditem, service);
+			ItemStack stack = adjacentCraftingTable.getTileEntity().getOutput(wantedItem, service);
 			if (stack.isEmpty()) {
 				break;
 			}
-			if (retstack.isEmpty()) {
-				if (!wanteditem.matches(ItemIdentifier.get(stack), wanteditem instanceof ItemResource ?
+			if (retStack.isEmpty()) {
+				if (!wantedItem.matches(ItemIdentifier.get(stack), wantedItem instanceof ItemResource ?
 						IResource.MatchSettings.WITHOUT_NBT :
 						IResource.MatchSettings.NORMAL)) {
 					break;
 				}
 			} else {
-				if (!retstack.isItemEqual(stack)) {
+				if (!retStack.isItemEqual(stack)) {
 					break;
 				}
-				if (!ItemStack.areItemStackTagsEqual(retstack, stack)) {
+				if (!ItemStack.areItemStackTagsEqual(retStack, stack)) {
 					break;
 				}
 			}
@@ -1249,17 +1249,17 @@ public class ModuleCrafter extends LogisticsModule
 				break;
 			}
 
-			if (retstack.isEmpty()) {
-				retstack = stack;
+			if (retStack.isEmpty()) {
+				retStack = stack;
 			} else {
-				retstack.grow(stack.getCount());
+				retStack.grow(stack.getCount());
 			}
 			count -= stack.getCount();
 			if (Objects.requireNonNull(getUpgradeManager()).isFuzzyUpgrade()) {
 				break;
 			}
 		}
-		return retstack;
+		return retStack;
 	}
 
 	protected int neededEnergy() {

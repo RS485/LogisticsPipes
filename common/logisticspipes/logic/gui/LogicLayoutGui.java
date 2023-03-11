@@ -66,7 +66,7 @@ public class LogicLayoutGui extends LogisticsBaseGuiScreen {
 
 	private static final ResourceLocation achievementTextures = new ResourceLocation("textures/gui/achievement/achievement_background.png");
 
-	private final ItemRenderer renderitem = new ItemRenderer(mc);
+	private final ItemRenderer renderItem = new ItemRenderer(mc);
 
 	private int isMouseButtonDown;
 	private int mouseX;

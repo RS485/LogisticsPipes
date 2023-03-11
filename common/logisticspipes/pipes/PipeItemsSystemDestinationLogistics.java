@@ -45,11 +45,11 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	public Object getTargetUUID() {
-		final ItemIdentifierStack itemident = inv.getIDStackInSlot(0);
-		if (itemident == null) {
+		final ItemIdentifierStack itemIdent = inv.getIDStackInSlot(0);
+		if (itemIdent == null) {
 			return null;
 		}
-		final ItemStack stack = itemident.makeNormalStack();
+		final ItemStack stack = itemIdent.makeNormalStack();
 		if (!stack.hasTagCompound()) {
 			return null;
 		}

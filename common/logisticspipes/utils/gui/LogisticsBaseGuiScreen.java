@@ -53,8 +53,8 @@ import logisticspipes.network.packets.gui.FuzzySlotSettingsPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ChainAddArrayList;
 import logisticspipes.utils.Color;
-import logisticspipes.utils.gui.extention.GuiExtentionController;
-import logisticspipes.utils.gui.extention.GuiExtentionController.GuiSide;
+import logisticspipes.utils.gui.extension.GuiExtensionController;
+import logisticspipes.utils.gui.extension.GuiExtensionController.GuiSide;
 import network.rs485.logisticspipes.property.IBitSet;
 import network.rs485.logisticspipes.util.FuzzyFlag;
 import network.rs485.logisticspipes.util.FuzzyUtil;
@@ -78,8 +78,8 @@ public abstract class LogisticsBaseGuiScreen extends GuiContainer implements ISu
 
 	private SubGuiScreen subGui;
 	protected List<IRenderSlot> slots = new ArrayList<>();
-	protected GuiExtentionController extentionControllerLeft = new GuiExtentionController(GuiSide.LEFT);
-	protected GuiExtentionController extentionControllerRight = new GuiExtentionController(GuiSide.RIGHT);
+	protected GuiExtensionController extentionControllerLeft = new GuiExtensionController(GuiSide.LEFT);
+	protected GuiExtensionController extentionControllerRight = new GuiExtensionController(GuiSide.RIGHT);
 	private GuiButton selectedButton;
 
 	private int currentDrawScreenMouseX;

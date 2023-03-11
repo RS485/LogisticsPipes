@@ -27,7 +27,7 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 	private int fuzzyPanelHover = -1;
 	private int fuzzyPanelHoverTime = 0;
 
-	private GuiButton[] sycleButtons = new GuiButton[2];
+	private GuiButton[] cycleButtons = new GuiButton[2];
 
 	public GuiLogisticsCraftingTable(EntityPlayer player, LogisticsCraftingTableTileEntity crafter) {
 		super(176, 218, 0, 0);
@@ -62,14 +62,14 @@ public class GuiLogisticsCraftingTable extends LogisticsBaseGuiScreen {
 	public void initGui() {
 		super.initGui();
 		buttonList.clear();
-		(sycleButtons[0] = addButton(new SmallGuiButton(0, guiLeft + 144, guiTop + 25, 15, 10, "/\\"))).visible = false;
-		(sycleButtons[1] = addButton(new SmallGuiButton(1, guiLeft + 144, guiTop + 37, 15, 10, "\\/"))).visible = false;
+		(cycleButtons[0] = addButton(new SmallGuiButton(0, guiLeft + 144, guiTop + 25, 15, 10, "/\\"))).visible = false;
+		(cycleButtons[1] = addButton(new SmallGuiButton(1, guiLeft + 144, guiTop + 37, 15, 10, "\\/"))).visible = false;
 	}
 
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float fA, int iA, int jA) {
-		for (GuiButton sycleButton : sycleButtons) {
-			sycleButton.visible = _crafter.targetType != null;
+		for (GuiButton cycleButton : cycleButtons) {
+			cycleButton.visible = _crafter.targetType != null;
 		}
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);

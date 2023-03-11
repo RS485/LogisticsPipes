@@ -6,7 +6,7 @@ import net.minecraft.client.gui.GuiButton;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SubGuiScreen;
 
-public class ActionChoisePopup extends SubGuiScreen {
+public class ActionChoicePopup extends SubGuiScreen {
 
 	private final String message;
 	private final String leftButton;
@@ -15,7 +15,7 @@ public class ActionChoisePopup extends SubGuiScreen {
 	private final Runnable rightAction;
 	private final boolean buttonMin;
 
-	public ActionChoisePopup(String message, String leftButton, Runnable leftAction, String rightButton, Runnable rightAction) {
+	public ActionChoicePopup(String message, String leftButton, Runnable leftAction, String rightButton, Runnable rightAction) {
 		super(100, 100, 0, 0);
 		this.message = message;
 		this.leftButton = leftButton;

@@ -248,7 +248,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 
 	@Override
 	//work in progress, currently not active code.
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		for (Pair<NeighborTileEntity<TileEntity>, ITankUtil> pair : PipeFluidUtil.INSTANCE.getAdjacentTanks(this, false)) {
 			boolean fallback = true;
 			if (pair.getValue2() instanceof ISpecialTankUtil) {
@@ -258,7 +258,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 				TileEntity tile = util.getTileEntity();
 				handler.getAvailableLiquid(tile).keySet().stream()
 						.map(FluidIdentifier::getItemIdentifier)
-						.forEach(itemidCollection::add);
+						.forEach(itemIdCollection::add);
 			}
 			if (fallback) {
 				if (pair.getValue2().containsTanks()) {
@@ -267,7 +267,7 @@ public class PipeFluidProvider extends FluidRoutedPipe implements IProvideFluids
 							if (pair.getValue2().canDrain(liquid.getFluid())) {
 								if (pair.getValue2().drain(1, false) != null) {
 									FluidIdentifier ident = liquid.getFluid();
-									itemidCollection.add(ident.getItemIdentifier());
+									itemIdCollection.add(ident.getItemIdentifier());
 								}
 							}
 						}

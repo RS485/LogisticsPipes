@@ -8,7 +8,7 @@ import net.minecraft.command.ICommandSender;
 
 import logisticspipes.commands.chathelper.MorePageDisplay;
 import logisticspipes.commands.exception.CommandNotFoundException;
-import logisticspipes.commands.exception.DublicatedCommandException;
+import logisticspipes.commands.exception.DuplicatedCommandException;
 import logisticspipes.commands.exception.MissingArgumentException;
 import logisticspipes.commands.exception.PermissionDeniedException;
 import logisticspipes.utils.string.ChatColor;
@@ -28,7 +28,7 @@ public abstract class SubCommandHandler implements ICommandHandler {
 		for (ICommandHandler handler : subCommands) {
 			for (String command : handler.getNames()) {
 				if (newCommands.contains(command)) {
-					throw new DublicatedCommandException();
+					throw new DuplicatedCommandException();
 				}
 			}
 		}

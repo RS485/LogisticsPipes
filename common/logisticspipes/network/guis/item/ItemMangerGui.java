@@ -7,7 +7,7 @@ import logisticspipes.gui.GuiCardManager;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.items.ItemModule;
 import logisticspipes.network.abstractguis.GuiProvider;
-import logisticspipes.utils.CardManagmentInventory;
+import logisticspipes.utils.CardManagementInventory;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.gui.DummyContainer;
 
@@ -25,7 +25,7 @@ public class ItemMangerGui extends GuiProvider {
 
 	@Override
 	public DummyContainer getContainer(EntityPlayer player) {
-		final CardManagmentInventory Cinv = new CardManagmentInventory();
+		final CardManagementInventory Cinv = new CardManagementInventory();
 		DummyContainer dummy = new DummyContainer(player, Cinv, new IGuiOpenControler() {
 
 			@Override

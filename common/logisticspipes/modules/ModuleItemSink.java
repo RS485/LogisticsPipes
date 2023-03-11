@@ -266,13 +266,13 @@ public class ModuleItemSink extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		if (defaultRoute.getValue()) {
 			return;
 		}
 		Map<ItemIdentifier, Integer> mapIC = filterInventory.getItemsAndCount();
-		itemidCollection.addAll(mapIC.keySet());
-		mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
+		itemIdCollection.addAll(mapIC.keySet());
+		mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).forEach(itemIdCollection::add);
 		if (getUpgradeManager().isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> stack : filterInventory.contents()) {
 				if (stack.getValue1() == null) {
@@ -280,13 +280,13 @@ public class ModuleItemSink extends LogisticsModule
 				}
 				ItemIdentifier ident = stack.getValue1().getItem();
 				if (ignoreData.get(stack.getValue2())) {
-					itemidCollection.add(ident.getIgnoringData());
+					itemIdCollection.add(ident.getIgnoringData());
 				}
 				if (ignoreNBT.get(stack.getValue2())) {
-					itemidCollection.add(ident.getIgnoringNBT());
+					itemIdCollection.add(ident.getIgnoringNBT());
 				}
 				if (ignoreData.get(stack.getValue2()) && ignoreNBT.get(stack.getValue2())) {
-					itemidCollection.add(ident.getIgnoringData().getIgnoringNBT());
+					itemIdCollection.add(ident.getIgnoringData().getIgnoringNBT());
 				}
 			}
 		}

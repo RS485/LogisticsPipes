@@ -86,17 +86,17 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 	private class Upgrades extends TabSubGui {
 
 		private final List<Slot> TAB_SLOTS_SNEAKY_INV = new ArrayList<>();
-		private final Slot[] upgradeslot = new Slot[18];
+		private final Slot[] upgradeSlot = new Slot[18];
 		private GuiButton[] upgradeConfig = new GuiButton[18];
 
 		private Upgrades(DummyContainer dummy) {
 			for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-				addSlot(upgradeslot[pipeSlot] = dummy.addUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot, 10 + pipeSlot * 18, 42, itemStack ->
+				addSlot(upgradeSlot[pipeSlot] = dummy.addUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot, 10 + pipeSlot * 18, 42, itemStack ->
 						!itemStack.isEmpty() && itemStack.getItem() instanceof ItemUpgrade && ((ItemUpgrade) itemStack.getItem()).getUpgradeForItem(itemStack, null).isAllowedForPipe(pipe)));
 			}
 
 			for (int pipeSlot = 0; pipeSlot < 9; pipeSlot++) {
-				TAB_SLOTS_SNEAKY_INV.add(addSlot(upgradeslot[pipeSlot + 9] = dummy.addSneakyUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot + 9, 10 + pipeSlot * 18, 88, itemStack -> {
+				TAB_SLOTS_SNEAKY_INV.add(addSlot(upgradeSlot[pipeSlot + 9] = dummy.addSneakyUpgradeSlot(pipeSlot, pipe.getOriginalUpgradeManager(), pipeSlot + 9, 10 + pipeSlot * 18, 88, itemStack -> {
 					if (itemStack.isEmpty()) {
 						return false;
 					}
@@ -156,7 +156,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		public void buttonClicked(GuiButton button) {
 			for (int i = 0; i < upgradeConfig.length; i++) {
 				if (upgradeConfig[i] == button) {
-					MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenUpgradePacket.class).setSlot(upgradeslot[i]));
+					MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenUpgradePacket.class).setSlot(upgradeSlot[i]));
 				}
 			}
 		}
@@ -174,7 +174,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		}
 
 		@Override
-		public void renderForgroundContent() {
+		public void renderForegroundContent() {
 			fontRenderer.drawString(TextUtil.translate(PREFIX + "upgrade"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			if (pipe.getOriginalUpgradeManager().hasCombinedSneakyUpgrade()) {
 				fontRenderer.drawString(TextUtil.translate(PREFIX + "sneakyUpgrades"), 10, 74, Color.getValue(Color.DARKER_GREY), false);
@@ -212,7 +212,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		}
 
 		@Override
-		public void renderForgroundContent() {
+		public void renderForegroundContent() {
 			fontRenderer.drawString(TextUtil.translate(PREFIX + "security"), 10, 28, Color.getValue(Color.DARKER_GREY), false);
 			ItemStack itemStack = pipe.getOriginalUpgradeManager().secInv.getStackInSlot(0);
 			if (!itemStack.isEmpty()) {
@@ -223,7 +223,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 				fontRenderer.drawString(ChatColor.BLUE.toString() + id.toString(), 0, 0, Color.getValue(Color.DARKER_GREY), false);
 				GL11.glScaled(1 / 0.75D, 1 / 0.75D, 1.0D);
 				GL11.glTranslated(-10, -80, 0);
-				fontRenderer.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Deauthorized"), 10, 94, Color.getValue(Color.DARKER_GREY), false);
+				fontRenderer.drawString("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? ChatColor.GREEN + "Authorized" : ChatColor.RED + "Unauthorized"), 10, 94, Color.getValue(Color.DARKER_GREY), false);
 			}
 		}
 	}
@@ -241,42 +241,42 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		}
 
 		@Override
-		public void renderForgroundContent() {
+		public void renderForegroundContent() {
 			String pipeName = ItemIdentifier.get(pipe.item, 0, null).getFriendlyName();
 			fontRenderer.drawString(pipeName, (170 - fontRenderer.getStringWidth(pipeName)) / 2, 28, 0x83601c);
 
-			int sessionxCenter = 85;
-			int lifetimexCenter = 140;
+			int sessionXCenter = 85;
+			int lifetimeXCenter = 140;
 			String s;
 
-			fontRenderer.drawString(TextUtil.translate(PREFIX + "Session"), sessionxCenter - fontRenderer
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Session"), sessionXCenter - fontRenderer
 					.getStringWidth(TextUtil.translate(PREFIX + "Session")) / 2, 40, 0x303030);
-			fontRenderer.drawString(TextUtil.translate(PREFIX + "Lifetime"), lifetimexCenter - fontRenderer
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Lifetime"), lifetimeXCenter - fontRenderer
 					.getStringWidth(TextUtil.translate(PREFIX + "Lifetime")) / 2, 40, 0x303030);
 			fontRenderer.drawString(TextUtil.translate(PREFIX + "Sent") + ":", 55 - fontRenderer
 					.getStringWidth(TextUtil.translate(PREFIX + "Sent") + ":"), 55, 0x303030);
-			fontRenderer.drawString(TextUtil.translate(PREFIX + "Recieved") + ":", 55 - fontRenderer
-					.getStringWidth(TextUtil.translate(PREFIX + "Recieved") + ":"), 70, 0x303030);
+			fontRenderer.drawString(TextUtil.translate(PREFIX + "Received") + ":", 55 - fontRenderer
+					.getStringWidth(TextUtil.translate(PREFIX + "Received") + ":"), 70, 0x303030);
 			fontRenderer.drawString(TextUtil.translate(PREFIX + "Relayed") + ":", 55 - fontRenderer
 					.getStringWidth(TextUtil.translate(PREFIX + "Relayed") + ":"), 85, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_sent);
-			fontRenderer.drawString(s, sessionxCenter - fontRenderer.getStringWidth(s) / 2, 55, 0x303030);
+			fontRenderer.drawString(s, sessionXCenter - fontRenderer.getStringWidth(s) / 2, 55, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_recieved);
-			fontRenderer.drawString(s, sessionxCenter - fontRenderer.getStringWidth(s) / 2, 70, 0x303030);
+			fontRenderer.drawString(s, sessionXCenter - fontRenderer.getStringWidth(s) / 2, 70, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_session_relayed);
-			fontRenderer.drawString(s, sessionxCenter - fontRenderer.getStringWidth(s) / 2, 85, 0x303030);
+			fontRenderer.drawString(s, sessionXCenter - fontRenderer.getStringWidth(s) / 2, 85, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_sent);
-			fontRenderer.drawString(s, lifetimexCenter - fontRenderer.getStringWidth(s) / 2, 55, 0x303030);
+			fontRenderer.drawString(s, lifetimeXCenter - fontRenderer.getStringWidth(s) / 2, 55, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_recieved);
-			fontRenderer.drawString(s, lifetimexCenter - fontRenderer.getStringWidth(s) / 2, 70, 0x303030);
+			fontRenderer.drawString(s, lifetimeXCenter - fontRenderer.getStringWidth(s) / 2, 70, 0x303030);
 
 			s = StringUtils.getStringWithSpacesFromLong(pipe.stat_lifetime_relayed);
-			fontRenderer.drawString(s, lifetimexCenter - fontRenderer.getStringWidth(s) / 2, 85, 0x303030);
+			fontRenderer.drawString(s, lifetimeXCenter - fontRenderer.getStringWidth(s) / 2, 85, 0x303030);
 
 			fontRenderer.drawString(TextUtil.translate(PREFIX + "RoutingTableSize") + ":", 110 - fontRenderer
 					.getStringWidth(TextUtil.translate(PREFIX + "RoutingTableSize") + ":"), 110, 0x303030);
@@ -333,7 +333,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		}
 
 		@Override
-		public void renderForgroundContent() {
+		public void renderForegroundContent() {
 
 		}
 	}
@@ -393,7 +393,7 @@ public class GuiPipeController extends LogisticsBaseTabGuiScreen {
 		}
 
 		@Override
-		public void renderForgroundContent() {
+		public void renderForegroundContent() {
 			List<ItemIdentifierStack> _allItems = pipe.getClientSideOrderManager().stream()
 					.map(IOrderInfoProvider::getAsDisplayItem).collect(Collectors.toCollection(LinkedList::new));
 			_itemDisplay_5.setItemList(_allItems);

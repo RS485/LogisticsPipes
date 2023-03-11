@@ -23,7 +23,7 @@ public class TargetCommand implements ICommandHandler {
 
 	@Override
 	public String[] getDescription() {
-		return new String[] { "Starts debugging the TileEntity", "or Entitiy you are currently looking at." };
+		return new String[] { "Starts debugging the TileEntity", "or Entity you are currently looking at." };
 	}
 
 	@Override

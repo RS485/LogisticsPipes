@@ -167,10 +167,10 @@ public class ModuleTerminus extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		Set<ItemIdentifier> filterItemids = filterInventory.getItemsAndCount().keySet();
-		itemidCollection.addAll(filterItemids);
-		filterItemids.stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
+		Set<ItemIdentifier> filterItemIds = filterInventory.getItemsAndCount().keySet();
+		itemIdCollection.addAll(filterItemIds);
+		filterItemIds.stream().map(ItemIdentifier::getUndamaged).forEach(itemIdCollection::add);
 	}
 
 	@Override

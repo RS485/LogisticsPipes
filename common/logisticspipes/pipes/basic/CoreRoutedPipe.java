@@ -953,7 +953,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	/* ITrackStatistics */
 
 	@Override
-	public void recievedItem(int count) {
+	public void receivedItem(int count) {
 		stat_session_recieved += count;
 		stat_lifetime_recieved += count;
 		updateStats();

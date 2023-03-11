@@ -70,7 +70,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	public final PlayerCollectionList localModeWatchers = new PlayerCollectionList();
 	public final PlayerCollectionList localGuiWatchers = new PlayerCollectionList();
 	private HUDInvSysConnector HUD = new HUDInvSysConnector(this);
-	private UUID idbuffer = UUID.randomUUID();
+	private UUID idBuffer = UUID.randomUUID();
 
 	private UUID connectedChannel;
 
@@ -97,7 +97,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 				getRouter().update(true, this);
 				refreshRender(true);
 				init = true;
-				idbuffer = getConnectionUUID();
+				idBuffer = getConnectionUUID();
 			}
 		}
 		if (init && !hasConnectionUUID()) {
@@ -111,7 +111,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 				});
 			}
 		}
-		if (init && idbuffer != null && !idbuffer.equals(getConnectionUUID())) {
+		if (init && idBuffer != null && !idBuffer.equals(getConnectionUUID())) {
 			init = false;
 			List<CoreRoutedPipe> connectedPipes = SimpleServiceLocator.connectionManager.getConnectedPipes(getRouter());
 			SimpleServiceLocator.connectionManager.removeChannelConnection(getRouter());
@@ -142,7 +142,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 	}
 
 	private boolean checkOneConnectedInv(@Nonnull IInventoryUtil inv, EnumFacing dir) {
-		boolean contentchanged = false;
+		boolean contentChanged = false;
 		if (!itemsOnRoute.isEmpty()) { // don't check the inventory if you don't want anything
 			List<ItemIdentifier> items = new ArrayList<>(itemsOnRoute.keySet());
 			items.retainAll(inv.getItems());
@@ -160,11 +160,11 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 					ItemRoutingInformation need = iterator.next();
 					if (need.getItem().getStackSize() <= itemAmount) {
 						if (!useEnergy(6)) {
-							return contentchanged;
+							return contentChanged;
 						}
 						ItemStack toSend = inv.getMultipleItems(ident, need.getItem().getStackSize());
 						if (toSend.isEmpty()) {
-							return contentchanged;
+							return contentChanged;
 						}
 						if (toSend.getCount() != need.getItem().getStackSize()) {
 							if (inv instanceof ITransactor) {
@@ -173,12 +173,12 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 								container.getWorld().spawnEntity(ItemIdentifierStack.getFromStack(toSend).makeEntityItem(getWorld(), container.getX(), container.getY(), container.getZ()));
 							}
 							new UnsupportedOperationException("The extracted amount didn't match the requested one. (" + inv + ")").printStackTrace();
-							return contentchanged;
+							return contentChanged;
 						}
 						sendStack(need, dir);
 
 						iterator.remove(); // finished with this need, we sent part of a stack, lets see if anyone where needs the current item type.
-						contentchanged = true;
+						contentChanged = true;
 						if (needs.isEmpty()) {
 							itemsOnRoute.remove(ident);
 						}
@@ -194,7 +194,7 @@ public class PipeItemsInvSysConnector extends CoreRoutedPipe implements IChannel
 				}
 			}
 		}
-		return contentchanged;
+		return contentChanged;
 	}
 
 	public void sendStack(ItemRoutingInformation info, EnumFacing dir) {

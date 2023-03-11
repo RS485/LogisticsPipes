@@ -108,8 +108,8 @@ public class LogisticsSolidBlock extends Block {
 	}
 
 	@Override
-	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neigbour) {
-		super.onNeighborChange(world, pos, neigbour);
+	public void onNeighborChange(IBlockAccess world, BlockPos pos, BlockPos neighbor) {
+		super.onNeighborChange(world, pos, neighbor);
 		TileEntity tile = world.getTileEntity(pos);
 		if (tile instanceof LogisticsSolidTileEntity) {
 			((LogisticsSolidTileEntity) tile).notifyOfBlockChange();

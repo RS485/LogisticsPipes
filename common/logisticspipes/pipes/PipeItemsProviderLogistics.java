@@ -150,15 +150,15 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdCollection) {
 		if (providerModule.isExclusionFilter.getValue() || providerModule.filterInventory.isEmpty()) {
-			itemidCollection.addAll(
+			itemIdCollection.addAll(
 					providerModule.inventoriesWithMode()
 							.flatMap(invUtil -> invUtil.getItems().stream())
 							.filter(item -> !providerModule.filterBlocksItem(item))
 							.collect(Collectors.toList()));
 		} else {
-			providerModule.collectSpecificInterests(itemidCollection);
+			providerModule.collectSpecificInterests(itemIdCollection);
 		}
 	}
 

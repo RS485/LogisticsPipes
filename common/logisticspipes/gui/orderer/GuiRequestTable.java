@@ -59,7 +59,7 @@ import logisticspipes.utils.gui.InputBar;
 import logisticspipes.utils.gui.ItemDisplay;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.gui.extention.GuiExtention;
+import logisticspipes.utils.gui.extension.GuiExtension;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.string.ChatColor;
@@ -74,14 +74,14 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 	public ItemDisplay itemDisplay;
 	public int dimension;
 	protected DisplayOptions displayOptions = DisplayOptions.Both;
-	private SmallGuiButton Macrobutton;
+	private SmallGuiButton macroButton;
 	private InputBar search;
 	private boolean showRequest = true;
 	private int startLeft;
 	private int startXSize;
-	private BitSet handledExtention = new BitSet();
+	private BitSet handledExtension = new BitSet();
 	private int orderIdForButton;
-	private GuiButton[] sycleButtons = new GuiButton[2];
+	private GuiButton[] cycleButtons = new GuiButton[2];
 	private IChainAddList<GuiButton> moveWhileSmall = new ChainAddArrayList<>();
 	private IChainAddList<GuiButton> hideWhileSmall = new ChainAddArrayList<>();
 	private GuiButton hideShowButton;
@@ -156,11 +156,11 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		buttonList.add(moveWhileSmall.addChain(new SmallGuiButton(31, guiLeft + 108 + 2, guiTop + 18, 10, 10, "~", 3))); // ~
 
 		buttonList.add(hideShowButton = new SmallGuiButton(17, guiLeft + 173, guiTop + 5, 36, 10, "Hide")); // Hide
-		buttonList.add(Macrobutton = new SmallGuiButton(18, right - 55, bottom - 60, 50, 10, "Disk"));
-		Macrobutton.enabled = false;
+		buttonList.add(macroButton = new SmallGuiButton(18, right - 55, bottom - 60, 50, 10, "Disk"));
+		macroButton.enabled = false;
 
-		(sycleButtons[0] = addButton(new SmallGuiButton(21, guiLeft + 124, guiTop + 30, 15, 10, "/\\"))).visible = false;
-		(sycleButtons[1] = addButton(new SmallGuiButton(22, guiLeft + 124, guiTop + 42, 15, 10, "\\/"))).visible = false;
+		(cycleButtons[0] = addButton(new SmallGuiButton(21, guiLeft + 124, guiTop + 30, 15, 10, "/\\"))).visible = false;
+		(cycleButtons[1] = addButton(new SmallGuiButton(22, guiLeft + 124, guiTop + 42, 15, 10, "\\/"))).visible = false;
 
 		if (search == null) {
 			search = new InputBar(fontRenderer, this, guiLeft + 205, bottom - 78, 200, 15);
@@ -186,7 +186,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			for (GuiButton button : hideWhileSmall) {
 				button.visible = false;
 			}
-			Macrobutton.visible = false;
+			macroButton.visible = false;
 		}
 	}
 
@@ -198,8 +198,8 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 
 	@Override
 	public void drawGuiContainerBackgroundLayer(float f, int i, int j) {
-		for (GuiButton sycleButton : sycleButtons) {
-			sycleButton.visible = _table.targetType != null;
+		for (GuiButton cycleButton : cycleButtons) {
+			cycleButton.visible = _table.targetType != null;
 		}
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right - (showRequest ? 0 : 105), bottom, zLevel, true);
 
@@ -247,9 +247,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 		}
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 20, guiTop + 150);
 		for (final Entry<Integer, Pair<IResource, LinkedLogisticsOrderList>> entry : _table.watchedRequests.entrySet()) {
-			if (!handledExtention.get(entry.getKey())) {
-				handledExtention.set(entry.getKey());
-				extentionControllerLeft.addExtention(new GuiExtention() {
+			if (!handledExtension.get(entry.getKey())) {
+				handledExtension.set(entry.getKey());
+				extentionControllerLeft.addExtension(new GuiExtension() {
 
 					private Map<Pair<Integer, Integer>, IOrderInfoProvider> ordererPosition = new HashMap<>();
 					private int height;
@@ -257,9 +257,9 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 					private GuiButton localControlledButton;
 
 					@Override
-					public void renderForground(int left, int top) {
+					public void renderForeground(int left, int top) {
 						if (!_table.watchedRequests.containsKey(entry.getKey())) {
-							extentionControllerLeft.removeExtention(this);
+							extentionControllerLeft.removeExtension(this);
 							if (isFullyExtended() && localControlledButton != null) {
 								buttonList.remove(localControlledButton);
 								localControlledButton = null;
@@ -505,7 +505,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			for (GuiButton button : hideWhileSmall) {
 				button.visible = showRequest;
 			}
-			Macrobutton.visible = showRequest;
+			macroButton.visible = showRequest;
 			orderIdForButton = -1;
 		} else if (guibutton.id == 100) {
 			extentionControllerLeft.retract();
@@ -571,7 +571,7 @@ public class GuiRequestTable extends LogisticsBaseGuiScreen implements IItemSear
 			return;
 		}
 		GuiGraphics.displayItemToolTip(itemDisplay.getToolTip(), this, zLevel, guiLeft, guiTop);
-		Macrobutton.enabled = !_table.diskInv.getStackInSlot(0).isEmpty() && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
+		macroButton.enabled = !_table.diskInv.getStackInSlot(0).isEmpty() && _table.diskInv.getStackInSlot(0).getItem().equals(LPItems.disk);
 	}
 
 	@Override

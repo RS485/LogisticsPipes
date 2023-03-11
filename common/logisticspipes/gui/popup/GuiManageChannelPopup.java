@@ -112,7 +112,7 @@ public class GuiManageChannelPopup extends SubGuiScreen implements IGUIChannelIn
 		} else if (guibutton.id == 10) {
 			int selected = textList.getSelected();
 			if (selected >= 0) {
-				this.setSubGui(new ActionChoisePopup(TextUtil.translate(GUI_LANG_KEY + "deletedialog.title"), TextUtil.translate(GUI_LANG_KEY + "deletedialog.yes"), () ->
+				this.setSubGui(new ActionChoicePopup(TextUtil.translate(GUI_LANG_KEY + "deletedialog.title"), TextUtil.translate(GUI_LANG_KEY + "deletedialog.yes"), () ->
 						MainProxy.sendPacketToServer(PacketHandler.getPacket(DeleteChannelPacket.class).setChannelIdentifier(channelList.get(selected).getChannelIdentifier())),
 						TextUtil.translate(GUI_LANG_KEY + "deletedialog.no"), () -> {}));
 			}

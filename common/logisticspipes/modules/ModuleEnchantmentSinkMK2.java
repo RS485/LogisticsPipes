@@ -190,7 +190,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

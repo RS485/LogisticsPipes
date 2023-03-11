@@ -121,7 +121,7 @@ public class LogisticsManager implements ILogisticsManager {
 		if (module == null) {
 			return null;
 		}
-		if (!(module.recievePassive() || activeRequest)) {
+		if (!(module.receivePassive() || activeRequest)) {
 			return null;
 		}
 		if (crp == null || !crp.isEnabled()) {

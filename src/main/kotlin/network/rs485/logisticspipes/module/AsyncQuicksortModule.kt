@@ -163,7 +163,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
 
     override fun runSyncWork() {}
 
-    override fun recievePassive(): Boolean = false
+    override fun receivePassive(): Boolean = false
 
     override fun hasGenericInterests(): Boolean = false
 

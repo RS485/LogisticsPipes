@@ -327,7 +327,7 @@ class AsyncExtractorModule(
         return toSend.count
     }
 
-    override fun recievePassive(): Boolean = false
+    override fun receivePassive(): Boolean = false
 
     override fun hasGenericInterests(): Boolean = false
 

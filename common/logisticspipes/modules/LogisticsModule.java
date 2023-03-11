@@ -162,7 +162,7 @@ public abstract class LogisticsModule implements IStore, ILPCCTypeHolder, Proper
 	/**
 	 * is this module a valid destination for bounced items.
 	 */
-	public abstract boolean recievePassive();
+	public abstract boolean receivePassive();
 
 	/**
 	 * Returns whether the module should be displayed the effect when as an

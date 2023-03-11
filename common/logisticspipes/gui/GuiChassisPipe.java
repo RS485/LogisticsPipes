@@ -37,45 +37,46 @@ import network.rs485.logisticspipes.module.Gui;
 
 public class GuiChassisPipe extends LogisticsBaseGuiScreen {
 
-	private final PipeLogisticsChassis _chassiPipe;
+	private final PipeLogisticsChassis chassisPipe;
 	private final IInventory _moduleInventory;
 	//private final GuiScreen _previousGui;
 	private final List<SmallGuiButton> moduleConfigButtons = new LinkedList<>();
 
-	private final Slot[] upgradeslot = new Slot[2 * Configs.CHASSIS_SLOTS_ARRAY[4]];
+	private final Slot[] upgradeSlots = new Slot[2 * Configs.CHASSIS_SLOTS_ARRAY[4]];
 	private GuiButton[] upgradeConfig;
 
-	private final boolean hasUpgradeModuleUpgarde;
+	private final boolean hasUpgradeModuleUpgrade;
 
-	public GuiChassisPipe(EntityPlayer player, PipeLogisticsChassis chassis, boolean hasUpgradeModuleUpgarde) { //, GuiScreen previousGui) {
+	public GuiChassisPipe(EntityPlayer player, PipeLogisticsChassis chassis, boolean hasUpgradeModuleUpgrade) { //, GuiScreen previousGui) {
 		super(null);
-		_chassiPipe = chassis;
+		chassisPipe = chassis;
 		_moduleInventory = chassis.getModuleInventory();
 		//_previousGui = previousGui;
-		this.hasUpgradeModuleUpgarde = hasUpgradeModuleUpgarde;
+		this.hasUpgradeModuleUpgrade = hasUpgradeModuleUpgrade;
 
 		DummyContainer dummy = new DummyContainer(player.inventory, _moduleInventory);
-		dummy.addNormalSlotsForPlayerInventory(18, 9 + 20* _chassiPipe.getChassisSize());
-		for (int i = 0; i < _chassiPipe.getChassisSize(); i++)
-			dummy.addModuleSlot(i, _moduleInventory, 18, 9 + 20 * i, _chassiPipe);
+		dummy.addNormalSlotsForPlayerInventory(18, 9 + 20* chassisPipe.getChassisSize());
+		for (int i = 0; i < chassisPipe.getChassisSize(); i++)
+			dummy.addModuleSlot(i, _moduleInventory, 18, 9 + 20 * i, chassisPipe);
 
-		if (hasUpgradeModuleUpgarde) {
-			for (int i = 0; i < _chassiPipe.getChassisSize(); i++) {
+		if (hasUpgradeModuleUpgrade) {
+			for (int i = 0; i < chassisPipe.getChassisSize(); i++) {
 				final int fI = i;
-				ModuleUpgradeManager upgradeManager = _chassiPipe.getModuleUpgradeManager(i);
-				upgradeslot[i * 2] = dummy.addUpgradeSlot(0, upgradeManager, 0, 145, 9 + i * 20, itemStack -> ChassisGuiProvider.checkStack(itemStack, _chassiPipe, fI));
-				upgradeslot[i * 2 + 1] = dummy.addUpgradeSlot(1, upgradeManager, 1, 165, 9 + i * 20, itemStack -> ChassisGuiProvider.checkStack(itemStack, _chassiPipe, fI));
+				ModuleUpgradeManager upgradeManager = chassisPipe.getModuleUpgradeManager(i);
+				upgradeSlots[i * 2] = dummy.addUpgradeSlot(0, upgradeManager, 0, 145, 9 + i * 20, itemStack -> ChassisGuiProvider.checkStack(itemStack,
+					chassisPipe, fI));
+				upgradeSlots[i * 2 + 1] = dummy.addUpgradeSlot(1, upgradeManager, 1, 165, 9 + i * 20, itemStack -> ChassisGuiProvider.checkStack(itemStack,
+					chassisPipe, fI));
 			}
 		}
 
 		inventorySlots = dummy;
 
-
 		int playerInventoryWidth = 162;
 		int playerInventoryHeight = 76;
 
 		xSize = playerInventoryWidth + 26;
-		ySize = playerInventoryHeight + 14 + 20*_chassiPipe.getChassisSize();
+		ySize = playerInventoryHeight + 14 + (20 * chassisPipe.getChassisSize());
 
 	}
 
@@ -88,26 +89,26 @@ public class GuiChassisPipe extends LogisticsBaseGuiScreen {
 
 		buttonList.clear();
 		moduleConfigButtons.clear();
-		upgradeConfig = new GuiButton[_chassiPipe.getChassisSize() * 2];
-		for (int i = 0; i < _chassiPipe.getChassisSize(); i++) {
+		upgradeConfig = new GuiButton[chassisPipe.getChassisSize() * 2];
+		for (int i = 0; i < chassisPipe.getChassisSize(); i++) {
 			moduleConfigButtons.add(addButton(new SmallGuiButton(i, left + 5, top + 12 + 20 * i, 10, 10, "!")));
 			if (_moduleInventory == null) {
 				continue;
 			}
 			updateModuleConfigButtonVisibility(i);
 
-			if (hasUpgradeModuleUpgarde) {
+			if (hasUpgradeModuleUpgrade) {
 				upgradeConfig[i * 2] = addButton(new SmallGuiButton(100 + i, guiLeft + 134, guiTop + 12 + i * 20, 10, 10, "!"));
-				upgradeConfig[i * 2].visible = _chassiPipe.getModuleUpgradeManager(i).hasGuiUpgrade(0);
+				upgradeConfig[i * 2].visible = chassisPipe.getModuleUpgradeManager(i).hasGuiUpgrade(0);
 				upgradeConfig[i * 2 + 1] = addButton(new SmallGuiButton(120 + i, guiLeft + 182, guiTop + 12 + i * 20, 10, 10, "!"));
-				upgradeConfig[i * 2 + 1].visible = _chassiPipe.getModuleUpgradeManager(i).hasGuiUpgrade(1);
+				upgradeConfig[i * 2 + 1].visible = chassisPipe.getModuleUpgradeManager(i).hasGuiUpgrade(1);
 			}
 		}
 	}
 
 	private void updateModuleConfigButtonVisibility(int slot) {
 		ItemStack module = _moduleInventory.getStackInSlot(slot);
-		LogisticsModule subModule = _chassiPipe.getSubModule(slot);
+		LogisticsModule subModule = chassisPipe.getSubModule(slot);
 		if (module.isEmpty() || subModule == null) {
 			moduleConfigButtons.get(slot).visible = false;
 		} else {
@@ -117,23 +118,23 @@ public class GuiChassisPipe extends LogisticsBaseGuiScreen {
 
 	@Override
 	public void onGuiClosed() {
-		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(_chassiPipe.container));
+		MainProxy.sendPacketToServer(PacketHandler.getPacket(GuiClosePacket.class).setTilePos(chassisPipe.container));
 		super.onGuiClosed();
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-
-		if (guibutton.id >= 0 && guibutton.id <= _chassiPipe.getChassisSize()) {
-			LogisticsModule module = _chassiPipe.getSubModule(guibutton.id);
+		if (guibutton.id >= 0 && guibutton.id <= chassisPipe.getChassisSize()) {
+			LogisticsModule module = chassisPipe.getSubModule(guibutton.id);
 			if (module != null) {
-				final ModernPacket packet = PacketHandler.getPacket(ChassisGUI.class).setButtonID(guibutton.id).setPosX(_chassiPipe.getX()).setPosY(_chassiPipe.getY()).setPosZ(_chassiPipe.getZ());
+				final ModernPacket packet = PacketHandler.getPacket(ChassisGUI.class).setButtonID(guibutton.id).setPosX(
+					chassisPipe.getX()).setPosY(chassisPipe.getY()).setPosZ(chassisPipe.getZ());
 				MainProxy.sendPacketToServer(packet);
 			}
 		}
 		for (int i = 0; i < upgradeConfig.length; i++) {
 			if (upgradeConfig[i] == guibutton) {
-				MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenUpgradePacket.class).setSlot(upgradeslot[i]));
+				MainProxy.sendPacketToServer(PacketHandler.getPacket(OpenUpgradePacket.class).setSlot(upgradeSlots[i]));
 			}
 		}
 	}
@@ -141,15 +142,15 @@ public class GuiChassisPipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerForegroundLayer(int par1, int par2) {
 		super.drawGuiContainerForegroundLayer(par1, par2);
-		for (int i = 0; i < _chassiPipe.getChassisSize(); i++) {
+		for (int i = 0; i < chassisPipe.getChassisSize(); i++) {
 			updateModuleConfigButtonVisibility(i);
 		}
-		if (hasUpgradeModuleUpgarde) {
+		if (hasUpgradeModuleUpgrade) {
 			for (int i = 0; i < upgradeConfig.length; i++) {
-				upgradeConfig[i].visible = _chassiPipe.getModuleUpgradeManager(i / 2).hasGuiUpgrade(i % 2);
+				upgradeConfig[i].visible = chassisPipe.getModuleUpgradeManager(i / 2).hasGuiUpgrade(i % 2);
 			}
 		}
-		for (int i = 0; i < _chassiPipe.getChassisSize(); i++)
+		for (int i = 0; i < chassisPipe.getChassisSize(); i++)
 			mc.fontRenderer.drawString(getModuleName(i), 40, 14 + 20 * i, 0x404040);
 	}
 
@@ -164,7 +165,7 @@ public class GuiChassisPipe extends LogisticsBaseGuiScreen {
 			return "";
 		}
 		String name = _moduleInventory.getStackInSlot(slot).getItem().getItemStackDisplayName(_moduleInventory.getStackInSlot(slot));
-		if (!hasUpgradeModuleUpgarde) {
+		if (!hasUpgradeModuleUpgrade) {
 			return name;
 		}
 		return StringUtils.getWithMaxWidth(name, 100, fontRenderer);
@@ -173,13 +174,13 @@ public class GuiChassisPipe extends LogisticsBaseGuiScreen {
 	@Override
 	protected void drawGuiContainerBackgroundLayer(float f, int x, int y) {
 		GuiGraphics.drawGuiBackGround(mc, guiLeft, guiTop, right, bottom, zLevel, true);
-		for (int i = 0; i < _chassiPipe.getChassisSize(); i++)
+		for (int i = 0; i < chassisPipe.getChassisSize(); i++)
 			GuiGraphics.drawSlotBackground(mc, guiLeft + 17, guiTop + 8 + 20 * i);
 
-		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 18, guiTop + 9 + 20 * _chassiPipe.getChassisSize());
+		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 18, guiTop + 9 + 20 * chassisPipe.getChassisSize());
 
-		if (hasUpgradeModuleUpgarde) {
-			for (int i = 0; i < _chassiPipe.getChassisSize(); i++) {
+		if (hasUpgradeModuleUpgrade) {
+			for (int i = 0; i < chassisPipe.getChassisSize(); i++) {
 				GuiGraphics.drawSlotBackground(mc, guiLeft + 144, guiTop + 8 + i * 20);
 				GuiGraphics.drawSlotBackground(mc, guiLeft + 164, guiTop + 8 + i * 20);
 			}

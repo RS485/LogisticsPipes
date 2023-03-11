@@ -551,7 +551,7 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 				}
 
 				@Override
-				public EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed) {
+				public EnumFacing itemArrived(IRoutedItem item, EnumFacing denied) {
 					return null;
 				}
 

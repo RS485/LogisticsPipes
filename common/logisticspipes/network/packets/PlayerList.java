@@ -24,7 +24,7 @@ public class PlayerList extends StringListPacket {
 	@Override
 	public void processPacket(EntityPlayer player) {
 		if (FMLClientHandler.instance().getClient().currentScreen instanceof PlayerListReciver) {
-			((PlayerListReciver) FMLClientHandler.instance().getClient().currentScreen).recivePlayerList(getStringList());
+			((PlayerListReciver) FMLClientHandler.instance().getClient().currentScreen).receivePlayerList(getStringList());
 		}
 	}
 }

@@ -55,9 +55,9 @@ public class LogisticsFluidContainer extends LogisticsItem implements IItemAdvan
 	@Override
 	@Nonnull
 	public String getItemStackDisplayName(@Nonnull ItemStack itemstack) {
-		String unlocalizedName = getUnlocalizedName(itemstack);
-		String unlocalizedNameInefficiently = getUnlocalizedNameInefficiently(itemstack); // Fix for Logistics fluid container naming
-		return I18n.translateToLocal(unlocalizedName + (unlocalizedName.equals(unlocalizedNameInefficiently) ? ".name" : "")).trim();
+		String unLocalizedName = getUnlocalizedName(itemstack);
+		String unLocalizedNameInefficiently = getUnlocalizedNameInefficiently(itemstack); // Fix for Logistics fluid container naming
+		return I18n.translateToLocal(unLocalizedName + (unLocalizedName.equals(unLocalizedNameInefficiently) ? ".name" : "")).trim();
 	}
 
 	@Override

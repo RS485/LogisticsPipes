@@ -39,7 +39,7 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
-import logisticspipes.utils.gui.extention.GuiExtention;
+import logisticspipes.utils.gui.extension.GuiExtension;
 import network.rs485.logisticspipes.gui.widget.Label;
 import network.rs485.logisticspipes.gui.widget.VerticalLabel;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
@@ -138,12 +138,12 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			} else {
 				liquidLeft = -(liquidCrafter * 40) + (i * 40);
 			}
-			fluidSlotIDs[i] = extentionControllerLeft.registerControlledSlot(dummy.addFluidSlot(i,
+			fluidSlotIDs[i] = extensionControllerLeft.registerControlledSlot(dummy.addFluidSlot(i,
 					craftingModule.liquidInventory, liquidLeft + 11, 24));
 		}
 
 		if (hasByproductExtractor) {
-			byproductSlotID = extentionControllerLeft.registerControlledSlot(dummy.addDummySlot(10, -26, 29));
+			byproductSlotID = extensionControllerLeft.registerControlledSlot(dummy.addDummySlot(10, -26, 29));
 		} else {
 			byproductSlotID = -1;
 		}
@@ -151,7 +151,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		cleanupSlotIDs = new int[cleanupSize * 3];
 		for (int y = 0; y < cleanupSize; y++) {
 			for (int x = 0; x < 3; x++) {
-				cleanupSlotIDs[y * 3 + x] = extentionControllerLeft.registerControlledSlot(dummy.addDummySlot(y * 3 + x,
+				cleanupSlotIDs[y * 3 + x] = extensionControllerLeft.registerControlledSlot(dummy.addDummySlot(y * 3 + x,
 						craftingModule.cleanupInventory, x * 18 - 57, y * 18 + 13));
 			}
 		}
@@ -169,12 +169,12 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	@Override
 	public void initGui() {
 		super.initGui();
-		extentionControllerLeft.clear();
+		extensionControllerLeft.clear();
 		buttonList.clear();
-		FluidCraftingExtention extention = null;
+		FluidCraftingExtension extension = null;
 		if (!isAdvancedSat) {
 			if (liquidCrafter != 0) {
-				extention = new FluidCraftingExtention(0);
+				extension = new FluidCraftingExtension(0);
 			}
 			addButton(normalButtonArray[0] = new SmallGuiButton(0, (width - xSize) / 2 + 125, (height - ySize) / 2 + 57, 37, 10, TextUtil.translate(PREFIX + "Select")));
 			normalButtonArray[0].enabled = craftingModule.getSlot().isInWorld();
@@ -183,7 +183,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 			addButton(normalButtonArray[3] = new SmallGuiButton(20, (width - xSize) / 2 + 155, (height - ySize) / 2 + 85, 10, 10, ">"));
 			addButton(normalButtonArray[4] = new SmallGuiButton(21, (width - xSize) / 2 + 120, (height - ySize) / 2 + 85, 10, 10, "<"));
 			if (liquidCrafter != 0) {
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(normalButtonArray[5] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 - 18, guiTop + 158, 37, 10, TextUtil.translate(PREFIX + "Select")))));
+				extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(normalButtonArray[5] = new SmallGuiButton(22, guiLeft - (liquidCrafter * 40) / 2 - 18, guiTop + 158, 37, 10, TextUtil.translate(PREFIX + "Select")))));
 			}
 			satellitePipeLabel = new Label(craftingModule.clientSideSatelliteNames.satelliteName, 115, 43, 55, 0x404040, 0xff8b8b8b);
 		} else {
@@ -199,7 +199,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 		for (int i = 0; i < liquidCrafter; i++) {
 			if (isAdvancedSat) {
-				extention = new FluidCraftingExtention(i);
+				extension = new FluidCraftingExtension(i);
 			}
 			int liquidLeft;
 			if (isAdvancedSat) {
@@ -208,39 +208,40 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 				liquidLeft = guiLeft - (liquidCrafter * 40) + (i * 40);
 			}
 			liquidGuiParts[i] = new GuiButton[10];
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][0] = new SmallGuiButton(100 + 10 * i + 0, liquidLeft + 22, guiTop + 65, 10, 10, "+"))));
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][1] = new SmallGuiButton(100 + 10 * i + 1, liquidLeft + 22, guiTop + 85, 10, 10, "+"))));
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][2] = new SmallGuiButton(100 + 10 * i + 2, liquidLeft + 22, guiTop + 105, 10, 10, "+"))));
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][3] = new SmallGuiButton(100 + 10 * i + 3, liquidLeft + 22, guiTop + 125, 10, 10, "+"))));
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][4] = new SmallGuiButton(100 + 10 * i + 4, liquidLeft + 8, guiTop + 65, 10, 10, "-"))));
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][5] = new SmallGuiButton(100 + 10 * i + 5, liquidLeft + 8, guiTop + 85, 10, 10, "-"))));
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
-			extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][0] = new SmallGuiButton(100 + 10 * i + 0, liquidLeft + 22, guiTop + 65, 10, 10, "+"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][1] = new SmallGuiButton(100 + 10 * i + 1, liquidLeft + 22, guiTop + 85, 10, 10, "+"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][2] = new SmallGuiButton(100 + 10 * i + 2, liquidLeft + 22, guiTop + 105, 10, 10, "+"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][3] = new SmallGuiButton(100 + 10 * i + 3, liquidLeft + 22, guiTop + 125, 10, 10, "+"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][4] = new SmallGuiButton(100 + 10 * i + 4, liquidLeft + 8, guiTop + 65, 10, 10, "-"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][5] = new SmallGuiButton(100 + 10 * i + 5, liquidLeft + 8, guiTop + 85, 10, 10, "-"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][6] = new SmallGuiButton(100 + 10 * i + 6, liquidLeft + 8, guiTop + 105, 10, 10, "-"))));
+			extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][7] = new SmallGuiButton(100 + 10 * i + 7, liquidLeft + 8, guiTop + 125, 10, 10, "-"))));
 			if (isAdvancedSat) {
 				final SmallGuiButton advancedSatelliteSelector = new SmallGuiButton(100 + 10 * i + 8, liquidLeft + 2, guiTop + 160, 37, 10, TextUtil.translate(PREFIX + "Select"));
 				advancedSatelliteSelector.enabled = craftingModule.getSlot().isInWorld();
-				extention.registerButton(extentionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = advancedSatelliteSelector)));
-				extentionControllerLeft.addExtention(extention);
+				extension.registerButton(extensionControllerLeft.registerControlledButton(addButton(liquidGuiParts[i][8] = advancedSatelliteSelector)));
+				extensionControllerLeft.addExtension(extension);
 			}
-			extention.registerSlot(fluidSlotIDs[i]);
+			extension.registerSlot(fluidSlotIDs[i]);
 		}
 		if (!isAdvancedSat && liquidCrafter != 0) {
-			extentionControllerLeft.addExtention(extention);
+			extensionControllerLeft.addExtension(extension);
 		}
 		if (hasByproductExtractor) {
-			ByproductExtention byproductExtention = new ByproductExtention();
-			byproductExtention.registerSlot(byproductSlotID);
-			extentionControllerLeft.addExtention(byproductExtention);
+			ByproductExtension byproductExtension = new ByproductExtension();
+			byproductExtension.registerSlot(byproductSlotID);
+			extensionControllerLeft.addExtension(byproductExtension);
 		}
 		if (cleanupSize > 0) {
-			CleanupExtention cleanupExtention = new CleanupExtention();
-			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + (
+			CleanupExtension cleanupExtension = new CleanupExtension();
+			cleanupExtension.registerButton(extensionControllerLeft.registerControlledButton(addButton(cleanupModeButton = new SmallGuiButton(24, guiLeft - 56, guiTop + 18 + (18 * cleanupSize), 50, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + (
 					cleanupModeIsExcludeOverlay.get() ? "Exclude" : "Include"))))));
-			cleanupExtention.registerButton(extentionControllerLeft.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + "Import")))));
+			cleanupExtension.registerButton(
+				extensionControllerLeft.registerControlledButton(addButton(new SmallGuiButton(25, guiLeft - 56, guiTop + 32 + (18 * cleanupSize), 50, 10, TextUtil.translate(GuiCraftingPipe.PREFIX + "Import")))));
 			for (int i = 0; i < cleanupSize * 3; i++) {
-				cleanupExtention.registerSlot(cleanupSlotIDs[i]);
+				cleanupExtension.registerSlot(cleanupSlotIDs[i]);
 			}
-			extentionControllerLeft.addExtention(cleanupExtention);
+			extensionControllerLeft.addExtension(cleanupExtension);
 		}
 	}
 
@@ -400,7 +401,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 		GuiGraphics.drawPlayerInventoryBackground(mc, guiLeft + 8, guiTop + ySize - 82);
 
-		super.renderExtentions();
+		super.renderExtensions();
 	}
 
 	private Unit updateCleanupModeButton(Property<Boolean> prop) {
@@ -409,11 +410,11 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		return Unit.INSTANCE;
 	}
 
-	private final class FluidCraftingExtention extends GuiExtention {
+	private final class FluidCraftingExtension extends GuiExtension {
 
 		private final int id;
 
-		public FluidCraftingExtention(int id) {
+		public FluidCraftingExtension(int id) {
 			this.id = id;
 		}
 
@@ -432,7 +433,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 
 		@Override
-		public void renderForground(int left, int top) {
+		public void renderForeground(int left, int top) {
 			if (!isFullyExtended()) {
 				GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
@@ -530,7 +531,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 	}
 
-	private final class ByproductExtention extends GuiExtention {
+	private final class ByproductExtension extends GuiExtension {
 
 		@Override
 		public int getFinalWidth() {
@@ -543,7 +544,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 
 		@Override
-		public void renderForground(int left, int top) {
+		public void renderForeground(int left, int top) {
 			if (!isFullyExtended()) {
 				GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);
@@ -563,7 +564,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 	}
 
-	private final class CleanupExtention extends GuiExtention {
+	private final class CleanupExtension extends GuiExtension {
 
 		@Override
 		public int getFinalWidth() {
@@ -576,7 +577,7 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 		}
 
 		@Override
-		public void renderForground(int left, int top) {
+		public void renderForeground(int left, int top) {
 			if (!isFullyExtended()) {
 				GL11.glEnable(GL12.GL_RESCALE_NORMAL);
 				OpenGlHelper.setLightmapTextureCoords(OpenGlHelper.lightmapTexUnit, 240 / 1.0F, 240 / 1.0F);

@@ -24,7 +24,7 @@ import logisticspipes.utils.item.ItemIdentifier;
 public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvider {
 
 	public PipeItemsRequestLogisticsMk2 pipe;
-	private SmallGuiButton Macrobutton;
+	private SmallGuiButton macroButton;
 
 	public NormalMk2GuiOrderer(PipeItemsRequestLogisticsMk2 RequestPipeMK2, EntityPlayer entityPlayer) {
 		super(RequestPipeMK2.getX(), RequestPipeMK2.getY(), RequestPipeMK2.getZ(), RequestPipeMK2.getWorld().provider.getDimension(), entityPlayer);
@@ -35,8 +35,8 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 	@Override
 	public void initGui() {
 		super.initGui();
-		buttonList.add(Macrobutton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, "Disk"));
-		Macrobutton.enabled = false;
+		buttonList.add(macroButton = new SmallGuiButton(12, right - 55, bottom - 60, 50, 10, "Disk"));
+		macroButton.enabled = false;
 	}
 
 	@Override
@@ -48,9 +48,9 @@ public class NormalMk2GuiOrderer extends NormalGuiOrderer implements IDiskProvid
 
 		if (pipe.getDisk() != null) {
 			itemRender.renderItemIntoGUI(pipe.getDisk(), right - 37, bottom - 45);
-			Macrobutton.enabled = true;
+			macroButton.enabled = true;
 		} else {
-			Macrobutton.enabled = false;
+			macroButton.enabled = false;
 		}
 		GL11.glDisable(2896 /*GL_LIGHTING*/);
 	}

@@ -44,7 +44,7 @@ public class ItemHUDArmor extends ItemArmor implements ISpecialArmor, IHUDArmor,
 
 	@Override
 	public void damageArmor(EntityLivingBase entity, @Nonnull ItemStack stack, DamageSource source, int damage, int slot) {
-		// Does not get dammaged
+		// Does not get damaged
 	}
 
 	@Override

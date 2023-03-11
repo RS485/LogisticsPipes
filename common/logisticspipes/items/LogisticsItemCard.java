@@ -47,7 +47,7 @@ public class LogisticsItemCard extends LogisticsItem implements IItemAdvancedExi
 					tooltip.add("Id: " + tag.getString("UUID"));
 					if (stack.getItemDamage() == LogisticsItemCard.SEC_CARD) {
 						UUID id = UUID.fromString(tag.getString("UUID"));
-						tooltip.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "Authorized" : "Deauthorized"));
+						tooltip.add("Authorization: " + (SimpleServiceLocator.securityStationManager.isAuthorized(id) ? "Authorized" : "Unauthorized"));
 					}
 				}
 			}

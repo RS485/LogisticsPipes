@@ -175,7 +175,7 @@ class TheOneProbeIntegration : Function<ITheOneProbe, Void?> {
             }
             listOf(
                 "pipe.firewall.providing" to pipe.isBlockProvider,
-                "pipe.firewall.crafting" to pipe.isBlockCrafer,
+                "pipe.firewall.crafting" to pipe.isBlockCrafter,
                 "pipe.firewall.sorting" to pipe.isBlockSorting,
                 "pipe.firewall.power" to pipe.isBlockPower,
             ).forEach {

@@ -92,7 +92,7 @@ public class GuiLogisticsSettings extends LogisticsBaseTabGuiScreen {
 		}
 
 		@Override
-		public void renderForgroundContent() {
+		public void renderForegroundContent() {
 			renderDistance.drawTextBox();
 			contentRenderDistance.drawTextBox();
 			//fontRenderer.drawString(StringUtil.translate(PREFIX + "pipenewrenderer"), 38, 34, 0x404040);

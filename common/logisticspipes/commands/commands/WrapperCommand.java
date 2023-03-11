@@ -21,7 +21,7 @@ public class WrapperCommand extends SubCommandHandler {
 
 	@Override
 	public String[] getDescription() {
-		return new String[] { "wrapper controll commands" };
+		return new String[] { "wrapper control commands" };
 	}
 
 	@Override

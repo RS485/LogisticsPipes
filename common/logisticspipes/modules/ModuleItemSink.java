@@ -270,13 +270,13 @@ public class ModuleItemSink extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdentifiers) {
 		if (defaultRoute.getValue()) {
 			return;
 		}
 		Map<ItemIdentifier, Integer> mapIC = filterInventory.getItemsAndCount();
-		itemidCollection.addAll(mapIC.keySet());
-		mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
+		itemIdentifiers.addAll(mapIC.keySet());
+		mapIC.keySet().stream().map(ItemIdentifier::getUndamaged).forEach(itemIdentifiers::add);
 		if (getUpgradeManager().isFuzzyUpgrade()) {
 			for (Pair<ItemIdentifierStack, Integer> stack : filterInventory.contents()) {
 				if (stack.getValue1() == null) {
@@ -285,13 +285,13 @@ public class ModuleItemSink extends LogisticsModule
 				ItemIdentifier ident = stack.getValue1().getItem();
 				IBitSet slotFlags = getSlotFuzzyFlags(stack.getValue2());
 				if (FuzzyUtil.INSTANCE.get(slotFlags, FuzzyFlag.IGNORE_DAMAGE)) {
-					itemidCollection.add(ident.getIgnoringData());
+					itemIdentifiers.add(ident.getIgnoringData());
 				}
 				if (FuzzyUtil.INSTANCE.get(slotFlags, FuzzyFlag.IGNORE_NBT)) {
-					itemidCollection.add(ident.getIgnoringNBT());
+					itemIdentifiers.add(ident.getIgnoringNBT());
 				}
 				if (FuzzyUtil.INSTANCE.get(slotFlags, FuzzyFlag.IGNORE_DAMAGE) && FuzzyUtil.INSTANCE.get(slotFlags, FuzzyFlag.IGNORE_NBT)) {
-					itemidCollection.add(ident.getIgnoringData().getIgnoringNBT());
+					itemIdentifiers.add(ident.getIgnoringData().getIgnoringNBT());
 				}
 			}
 		}
@@ -309,7 +309,7 @@ public class ModuleItemSink extends LogisticsModule
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

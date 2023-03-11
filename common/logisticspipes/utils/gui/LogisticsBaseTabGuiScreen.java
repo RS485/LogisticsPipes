@@ -113,7 +113,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 		super.drawGuiContainerForegroundLayer(par1, par2);
 		for (int i = 0; i < tabList.size(); i++) {
 			if (current_Tab == i) {
-				tabList.get(i).renderForgroundContent();
+				tabList.get(i).renderForegroundContent();
 			}
 		}
 	}
@@ -177,7 +177,7 @@ public class LogisticsBaseTabGuiScreen extends LogisticsBaseGuiScreen {
 
 		public abstract void renderBackgroundContent();
 
-		public abstract void renderForgroundContent();
+		public abstract void renderForegroundContent();
 
 		public boolean isSlotForTab(Slot slot) {
 			return TAB_SLOTS.contains(slot);

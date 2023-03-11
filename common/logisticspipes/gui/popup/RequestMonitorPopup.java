@@ -106,13 +106,13 @@ public class RequestMonitorPopup extends SubGuiScreen {
 	}
 
 	private static void mirror(int[] par0ArrayOfInteger, int width, int height) {
-		int[] aint1 = new int[width];
+		int[] aInt1 = new int[width];
 		int k = height / 2;
 
 		for (int l = 0; l < k; ++l) {
-			System.arraycopy(par0ArrayOfInteger, l * width, aint1, 0, width);
+			System.arraycopy(par0ArrayOfInteger, l * width, aInt1, 0, width);
 			System.arraycopy(par0ArrayOfInteger, (height - 1 - l) * width, par0ArrayOfInteger, l * width, width);
-			System.arraycopy(aint1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
+			System.arraycopy(aInt1, 0, par0ArrayOfInteger, (height - 1 - l) * width, width);
 		}
 	}
 
@@ -249,7 +249,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glLoadIdentity();
 		mc.entityRenderer.setupOverlayRendering();
-		drawForSreenShot(0, 0);
+		drawForScreenShot(0, 0);
 
 		//Start Creating the Image
 		for (int x = left; x < right + width; x += width) {
@@ -257,7 +257,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 			for (int y = top; y < bottom + height; y += height) {
 				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 				mc.entityRenderer.setupOverlayRendering();
-				drawForSreenShot(y, x);
+				drawForScreenShot(y, x);
 				pixels.clear();
 				GL11.glReadPixels(0, 0, useWidth, useHeight, GL12.GL_BGRA, GL12.GL_UNSIGNED_INT_8_8_8_8_REV, pixels);
 				pixels.get(intArray);
@@ -276,11 +276,11 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		String s = dateFormat.format(new Date());
 		int i = 1;
 		while (true) {
-			File canidate = new File(screenShotsFolder, s + (i == 1 ? "" : "_" + i) + ".png");
-			if (!canidate.exists()) {
+			File candidate = new File(screenShotsFolder, s + (i == 1 ? "" : "_" + i) + ".png");
+			if (!candidate.exists()) {
 				try {
-					ImageIO.write(bufferedimage, "png", canidate);
-					Minecraft.getMinecraft().player.sendChatMessage("Saved tree view as " + canidate.getName());
+					ImageIO.write(bufferedimage, "png", candidate);
+					Minecraft.getMinecraft().player.sendChatMessage("Saved tree view as " + candidate.getName());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -290,7 +290,7 @@ public class RequestMonitorPopup extends SubGuiScreen {
 		}
 	}
 
-	private void drawForSreenShot(int top, int left) {
+	private void drawForScreenShot(int top, int left) {
 		left *= -1;
 		top *= -1;
 		GL11.glPushMatrix();

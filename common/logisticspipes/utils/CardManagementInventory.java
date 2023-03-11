@@ -13,7 +13,7 @@ import logisticspipes.items.ItemModule;
 import logisticspipes.items.LogisticsItemCard;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 
-public class CardManagmentInventory implements IInventory {
+public class CardManagementInventory implements IInventory {
 
 	ItemIdentifierInventory inv = new ItemIdentifierInventory(4, "", 1);
 

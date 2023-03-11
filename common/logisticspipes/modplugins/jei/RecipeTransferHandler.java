@@ -3,7 +3,6 @@ package logisticspipes.modplugins.jei;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -71,7 +70,7 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 			NEISetCraftingRecipe packet = PacketHandler.getPacket(NEISetCraftingRecipe.class);
 			NonNullList<ItemStack> stackList = packet.getStackList();
 			ItemStack[][] stacks = new ItemStack[9][];
-			boolean hasCanidates = false;
+			boolean hasCandidates = false;
 
 			IGuiItemStackGroup guiItemStackGroup = recipeLayout.getItemStacks();
 			Map<Integer, ? extends IGuiIngredient<ItemStack>> guiIngredients = guiItemStackGroup.getGuiIngredients();
@@ -109,7 +108,7 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 							}
 							stacks[slot] = itemCandidateList.toArray(new ItemStack[0]);
 							if (stacks[slot].length > 1) {
-								hasCanidates = true;
+								hasCandidates = true;
 							} else if (stacks[slot].length == 1) {
 								stackList.set(slot, stacks[slot][0]);
 							}
@@ -117,7 +116,7 @@ public class RecipeTransferHandler implements IRecipeTransferHandler<DummyContai
 					}
 				}
 
-				if (hasCanidates) {
+				if (hasCandidates) {
 					gui.setSubGui(new GuiRecipeImport(tile, stacks));
 				} else {
 					MainProxy.sendPacketToServer(packet.setTilePos(tile));

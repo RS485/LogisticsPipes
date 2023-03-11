@@ -24,8 +24,8 @@ import logisticspipes.utils.gui.TextListDisplay;
 
 public class GuiDiskPopup extends SubGuiScreen {
 
-	private boolean editname = false;
-	private boolean displaycursor = false;
+	private boolean editName = false;
+	private boolean displayCursor = false;
 	private long oldSystemTime = 0;
 	private String name1;
 	private String name2;
@@ -91,8 +91,8 @@ public class GuiDiskPopup extends SubGuiScreen {
 		textList.mouseClicked(i, j, k);
 		if (k == 0) {
 			if (10 < x && x < 138 && 29 < y && y < 44) {
-				editname = true;
-			} else if (editname) {
+				editName = true;
+			} else if (editName) {
 				writeDiskName();
 			} else {
 				super.mouseClicked(i, j, k);
@@ -103,7 +103,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 	}
 
 	private void writeDiskName() {
-		editname = false;
+		editName = false;
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiskSetNamePacket.class).setString(name1 + name2).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 		NBTTagCompound nbt = new NBTTagCompound();
 		if (diskProvider.getDisk().hasTagCompound()) {
@@ -132,7 +132,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 		mc.fontRenderer.drawStringWithShadow("Disk", xCenter - (mc.fontRenderer.getStringWidth("Disk") / 2), guiTop + 10, 0xFFFFFF);
 
 		//NameInput
-		if (editname) {
+		if (editName) {
 			Gui.drawRect(guiLeft + 10, guiTop + 28, right - 10, guiTop + 45, Color.getValue(Color.BLACK));
 			Gui.drawRect(guiLeft + 11, guiTop + 29, right - 11, guiTop + 44, Color.getValue(Color.WHITE));
 		} else {
@@ -146,14 +146,14 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 		textList.renderGuiBackground(mouseX, mouseY);
 
-		if (editname) {
-			int linex = guiLeft + 15 + mc.fontRenderer.getStringWidth(name1);
+		if (editName) {
+			int lineX = guiLeft + 15 + mc.fontRenderer.getStringWidth(name1);
 			if (System.currentTimeMillis() - oldSystemTime > 500) {
-				displaycursor = !displaycursor;
+				displayCursor = !displayCursor;
 				oldSystemTime = System.currentTimeMillis();
 			}
-			if (displaycursor) {
-				Gui.drawRect(linex, guiTop + 31, linex + 1, guiTop + 42, Color.getValue(Color.WHITE));
+			if (displayCursor) {
+				Gui.drawRect(lineX, guiTop + 31, lineX + 1, guiTop + 42, Color.getValue(Color.WHITE));
 			}
 		}
 	}
@@ -188,31 +188,31 @@ public class GuiDiskPopup extends SubGuiScreen {
 		}
 
 		NBTTagList list = nbt.getTagList("macroList", 10);
-		NBTTagList listnew = new NBTTagList();
+		NBTTagList newList = new NBTTagList();
 
 		for (int i = 0; i < list.tagCount(); i++) {
 			if (i != textList.getSelected()) {
-				listnew.appendTag(list.getCompoundTagAt(i));
+				newList.appendTag(list.getCompoundTagAt(i));
 			}
 		}
 		textList.setSelected(-1);
-		nbt.setTag("macroList", listnew);
+		nbt.setTag("macroList", newList);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(DiscContent.class).setStack(diskProvider.getDisk()).setPosX(diskProvider.getX()).setPosY(diskProvider.getY()).setPosZ(diskProvider.getZ()));
 	}
 
 	private void handleAddEdit() {
-		String macroname = "";
+		String macroName = "";
 		NBTTagCompound nbt = diskProvider.getDisk().getTagCompound();
 		if (nbt != null) {
 			if (nbt.hasKey("macroList")) {
 				NBTTagList list = nbt.getTagList("macroList", 10);
 				if (textList.getSelected() != -1 && textList.getSelected() < list.tagCount()) {
 					NBTTagCompound entry = list.getCompoundTagAt(textList.getSelected());
-					macroname = entry.getString("name");
+					macroName = entry.getString("name");
 				}
 			}
 		}
-		setSubGui(new GuiAddMacro(diskProvider, macroname));
+		setSubGui(new GuiAddMacro(diskProvider, macroName));
 	}
 
 	@Override
@@ -236,7 +236,7 @@ public class GuiDiskPopup extends SubGuiScreen {
 
 	@Override
 	protected void keyTyped(char c, int i) {
-		if (editname) {
+		if (editName) {
 			if (c == 13) {
 				writeDiskName();
 				return;

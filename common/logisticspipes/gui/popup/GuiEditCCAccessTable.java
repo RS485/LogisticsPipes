@@ -26,16 +26,16 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 
 	private final LogisticsSecurityTileEntity _tile;
 
-	private String searchinput1 = "0";
-	private String searchinput2 = "";
-	private boolean editsearch = false;
-	private boolean editsearchb = false;
-	private boolean displaycursor = true;
+	private String searchInput1 = "0";
+	private String searchInput2 = "";
+	private boolean editSearch = false;
+	private boolean editSearchB = false;
+	private boolean displayCursor = true;
 	private long oldSystemTime = 0;
 	private static int searchWidth = 55;
-	private int lastClickedx = 0;
-	private int lastClickedy = 0;
-	private int lastClickedk = 0;
+	private int lastClickedX = 0;
+	private int lastClickedY = 0;
+	private int lastClickedK = 0;
 	private boolean clickWasButton = false;
 	private int page = 0;
 
@@ -71,16 +71,16 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 			Integer id = _tile.excludedCC.get(i + (page * 9));
 			mc.fontRenderer.drawString(Integer.toString(id), guiLeft + 75 - (mc.fontRenderer.getStringWidth(Integer.toString(id)) / 2), guiTop + 16 + (i * 10), dark ? 0xFFFFFF : 0x000000);
 			dark = !dark;
-			if (lastClickedx >= guiLeft + 10 && lastClickedx < right - 10 && lastClickedy >= guiTop + 15 + (i * 10) && lastClickedy < guiTop + 25 + (i * 10)) {
-				lastClickedx = -10000000;
-				lastClickedy = -10000000;
-				searchinput1 = Integer.toString(id);
-				searchinput2 = "";
+			if (lastClickedX >= guiLeft + 10 && lastClickedX < right - 10 && lastClickedY >= guiTop + 15 + (i * 10) && lastClickedY < guiTop + 25 + (i * 10)) {
+				lastClickedX = -10000000;
+				lastClickedY = -10000000;
+				searchInput1 = Integer.toString(id);
+				searchInput2 = "";
 			}
 		}
 
 		//SearchInput
-		if (editsearch) {
+		if (editSearch) {
 			drawRect(guiLeft + 40, bottom - 30, right - 40, bottom - 13, Color.BLACK);
 			drawRect(guiLeft + 41, bottom - 29, right - 41, bottom - 14, Color.WHITE);
 		} else {
@@ -88,35 +88,35 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 		}
 		drawRect(guiLeft + 42, bottom - 28, right - 42, bottom - 15, Color.DARKER_GREY);
 
-		mc.fontRenderer.drawString(searchinput1 + searchinput2, guiLeft + 75 - (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) / 2), bottom - 25, 0xFFFFFF);
-		if (editsearch) {
-			int linex = guiLeft + 75 + mc.fontRenderer.getStringWidth(searchinput1) - (mc.fontRenderer.getStringWidth(searchinput1 + searchinput2) / 2);
+		mc.fontRenderer.drawString(searchInput1 + searchInput2, guiLeft + 75 - (mc.fontRenderer.getStringWidth(searchInput1 + searchInput2) / 2), bottom - 25, 0xFFFFFF);
+		if (editSearch) {
+			int lineX = guiLeft + 75 + mc.fontRenderer.getStringWidth(searchInput1) - (mc.fontRenderer.getStringWidth(searchInput1 + searchInput2) / 2);
 			if (System.currentTimeMillis() - oldSystemTime > 500) {
-				displaycursor = !displaycursor;
+				displayCursor = !displayCursor;
 				oldSystemTime = System.currentTimeMillis();
 			}
-			if (displaycursor) {
-				drawRect(linex, bottom - 27, linex + 1, bottom - 16, Color.WHITE);
+			if (displayCursor) {
+				drawRect(lineX, bottom - 27, lineX + 1, bottom - 16, Color.WHITE);
 			}
 		}
 
 		//Click into search
-		if (lastClickedx != -10000000 && lastClickedy != -10000000) {
-			if (lastClickedx >= guiLeft + 42 && lastClickedx < right - 42 && lastClickedy >= bottom - 30 && lastClickedy < bottom - 13) {
-				editsearch = true;
-				if (searchinput1.equals("0") && searchinput2.length() == 0) {
-					searchinput1 = "";
+		if (lastClickedX != -10000000 && lastClickedY != -10000000) {
+			if (lastClickedX >= guiLeft + 42 && lastClickedX < right - 42 && lastClickedY >= bottom - 30 && lastClickedY < bottom - 13) {
+				editSearch = true;
+				if (searchInput1.equals("0") && searchInput2.length() == 0) {
+					searchInput1 = "";
 				}
-				lastClickedx = -10000000;
-				lastClickedy = -10000000;
-				if (lastClickedk == 1) {
-					searchinput1 = "0";
-					searchinput2 = "";
+				lastClickedX = -10000000;
+				lastClickedY = -10000000;
+				if (lastClickedK == 1) {
+					searchInput1 = "0";
+					searchInput2 = "";
 				}
 			} else {
-				editsearch = false;
-				if (searchinput1.length() == 0 && searchinput2.length() == 0) {
-					searchinput1 = "0";
+				editSearch = false;
+				if (searchInput1.length() == 0 && searchInput2.length() == 0) {
+					searchInput1 = "0";
 				}
 			}
 		}
@@ -125,70 +125,70 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 	@Override
 	protected void mouseClicked(int i, int j, int k) throws IOException {
 		clickWasButton = false;
-		editsearchb = true;
+		editSearchB = true;
 		super.mouseClicked(i, j, k);
-		if ((!clickWasButton && i >= guiLeft + 10 && i < right - 10 && j >= guiTop + 18 && j < bottom - 10) || editsearch) {
-			if (!editsearchb) {
-				editsearch = false;
+		if ((!clickWasButton && i >= guiLeft + 10 && i < right - 10 && j >= guiTop + 18 && j < bottom - 10) || editSearch) {
+			if (!editSearchB) {
+				editSearch = false;
 			}
-			lastClickedx = i;
-			lastClickedy = j;
-			lastClickedk = k;
+			lastClickedX = i;
+			lastClickedY = j;
+			lastClickedK = k;
 		}
 	}
 
 	@Override
 	protected void actionPerformed(GuiButton guibutton) {
-		if (editsearch) {
-			editsearchb = false;
+		if (editSearch) {
+			editSearchB = false;
 		}
 		clickWasButton = true;
 		switch (guibutton.id) {
 			case 0:
-				if ((searchinput1 + searchinput2).equals("")) {
-					searchinput1 = "0";
+				if ((searchInput1 + searchInput2).equals("")) {
+					searchInput1 = "0";
 					break;
 				}
 				try {
-					int number = Integer.valueOf(searchinput1 + searchinput2);
+					int number = Integer.valueOf(searchInput1 + searchInput2);
 					number--;
 					if (number < 0) {
 						number = 0;
 					}
-					searchinput1 = Integer.toString(number);
-					searchinput2 = "";
+					searchInput1 = Integer.toString(number);
+					searchInput2 = "";
 				} catch (Exception e) {
 					e.printStackTrace();
-					searchinput1 = "0";
-					searchinput2 = "";
+					searchInput1 = "0";
+					searchInput2 = "";
 				}
 				break;
 			case 1:
-				if ((searchinput1 + searchinput2).equals("")) {
-					searchinput1 = "1";
+				if ((searchInput1 + searchInput2).equals("")) {
+					searchInput1 = "1";
 					break;
 				}
 				try {
-					int number = Integer.valueOf(searchinput1 + searchinput2);
+					int number = Integer.valueOf(searchInput1 + searchInput2);
 					number++;
 					if (mc.fontRenderer.getStringWidth(Integer.toString(number)) <= GuiEditCCAccessTable.searchWidth) {
-						searchinput1 = Integer.toString(number);
-						searchinput2 = "";
+						searchInput1 = Integer.toString(number);
+						searchInput2 = "";
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
-					searchinput1 = "0";
-					searchinput2 = "";
+					searchInput1 = "0";
+					searchInput2 = "";
 				}
 				break;
 			case 2: {
-				Integer id = Integer.valueOf(searchinput1 + searchinput2);
+				Integer id = Integer.valueOf(searchInput1 + searchInput2);
 				_tile.excludedCC.remove(id);
 				MainProxy.sendPacketToServer(PacketHandler.getPacket(SecurityRemoveCCIdPacket.class).setInteger(id).setBlockPos(_tile.getPos()));
 			}
 			break;
 			case 3: {
-				Integer id = Integer.valueOf(searchinput1 + searchinput2);
+				Integer id = Integer.valueOf(searchInput1 + searchInput2);
 				if (!_tile.excludedCC.contains(id)) {
 					_tile.excludedCC.add(id);
 					Collections.sort(_tile.excludedCC);
@@ -215,50 +215,50 @@ public class GuiEditCCAccessTable extends SubGuiScreen {
 
 	@Override
 	protected void keyTyped(char c, int i) {
-		if (editsearch) {
+		if (editSearch) {
 			if (c == 13) {
-				editsearch = false;
+				editSearch = false;
 				return;
 			} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				try {
 					Integer.valueOf(GuiScreen.getClipboardString());
-					searchinput1 = searchinput1 + GuiScreen.getClipboardString();
+					searchInput1 = searchInput1 + GuiScreen.getClipboardString();
 				} catch (Exception e) {
 					setSubGui(new GuiMessagePopup("Clipboard doesn't", "contain a number."));
 				}
 			} else if (c == 8) {
-				if (searchinput1.length() > 0) {
-					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
+				if (searchInput1.length() > 0) {
+					searchInput1 = searchInput1.substring(0, searchInput1.length() - 1);
 				}
 				return;
 			} else if (Character.isDigit(c)) {
-				if (mc.fontRenderer.getStringWidth(searchinput1 + c + searchinput2) <= GuiEditCCAccessTable.searchWidth) {
-					searchinput1 += c;
+				if (mc.fontRenderer.getStringWidth(searchInput1 + c + searchInput2) <= GuiEditCCAccessTable.searchWidth) {
+					searchInput1 += c;
 				}
 				return;
 			} else if (i == 203) { //Left
-				if (searchinput1.length() > 0) {
-					searchinput2 = searchinput1.substring(searchinput1.length() - 1) + searchinput2;
-					searchinput1 = searchinput1.substring(0, searchinput1.length() - 1);
+				if (searchInput1.length() > 0) {
+					searchInput2 = searchInput1.substring(searchInput1.length() - 1) + searchInput2;
+					searchInput1 = searchInput1.substring(0, searchInput1.length() - 1);
 				}
 			} else if (i == 205) { //Right
-				if (searchinput2.length() > 0) {
-					searchinput1 += searchinput2.substring(0, 1);
-					searchinput2 = searchinput2.substring(1);
+				if (searchInput2.length() > 0) {
+					searchInput1 += searchInput2.substring(0, 1);
+					searchInput2 = searchInput2.substring(1);
 				}
 			} else if (i == 1) { //ESC
-				editsearch = false;
+				editSearch = false;
 			} else if (i == 28) { //Enter
-				editsearch = false;
+				editSearch = false;
 			} else if (i == 199) { //Pos
-				searchinput2 = searchinput1 + searchinput2;
-				searchinput1 = "";
+				searchInput2 = searchInput1 + searchInput2;
+				searchInput1 = "";
 			} else if (i == 207) { //Ende
-				searchinput1 = searchinput1 + searchinput2;
-				searchinput2 = "";
+				searchInput1 = searchInput1 + searchInput2;
+				searchInput2 = "";
 			} else if (i == 211) { //Entf
-				if (searchinput2.length() > 0) {
-					searchinput2 = searchinput2.substring(1);
+				if (searchInput2.length() > 0) {
+					searchInput2 = searchInput2.substring(1);
 				}
 			}
 		} else {

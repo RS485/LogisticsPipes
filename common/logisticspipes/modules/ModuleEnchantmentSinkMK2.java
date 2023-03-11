@@ -170,12 +170,12 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdentifiers) {
 		Map<ItemIdentifier, Integer> mapIC = filterInventory.getItemsAndCount();
-		itemidCollection.addAll(mapIC.keySet());
+		itemIdentifiers.addAll(mapIC.keySet());
 		for (ItemIdentifier id : mapIC.keySet()) {
-			itemidCollection.add(id.getUndamaged());
-			itemidCollection.add(id.getUndamaged().getIgnoringNBT());
+			itemIdentifiers.add(id.getUndamaged());
+			itemIdentifiers.add(id.getUndamaged().getIgnoringNBT());
 		}
 	}
 
@@ -190,7 +190,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

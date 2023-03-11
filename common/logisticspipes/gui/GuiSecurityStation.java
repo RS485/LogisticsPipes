@@ -46,9 +46,9 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 
 	//Player name:
 	protected static final int searchWidth = 250;
-	protected int lastClickedx = 0;
-	protected int lastClickedy = 0;
-	protected int lastClickedk = 0;
+	protected int lastClickedX = 0;
+	protected int lastClickedY = 0;
+	protected int lastClickedK = 0;
 	private int addition;
 	private boolean authorized;
 	private InputBar searchBar;
@@ -92,8 +92,8 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		buttonList.add(new GuiButton(10, guiLeft + 177, guiTop + 230, 95, 20, TextUtil.translate(GuiSecurityStation.PREFIX + "ChannelManager")));
 		if (searchBar == null) {
 			searchBar = new InputBar(this.fontRenderer, this, guiLeft + 180, bottom - 120, right - 8 + addition - guiLeft - 180, 17);
-			lastClickedx = -10000000;
-			lastClickedy = -10000000;
+			lastClickedX = -10000000;
+			lastClickedY = -10000000;
 		}
 		searchBar.reposition(guiLeft + 180, bottom - 120, right - 8 + addition - guiLeft - 180, 17);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(PlayerListRequest.class));
@@ -169,9 +169,9 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 				pos += 11;
 			}
 			//Check mouse click
-			if (guiLeft + 180 < lastClickedx && lastClickedx < guiLeft + 280 && pos - 11 < lastClickedy && lastClickedy < pos) {
-				lastClickedx = -10000000;
-				lastClickedy = -10000000;
+			if (guiLeft + 180 < lastClickedX && lastClickedX < guiLeft + 280 && pos - 11 < lastClickedY && lastClickedY < pos) {
+				lastClickedX = -10000000;
+				lastClickedY = -10000000;
 				searchBar.setText(player);
 			}
 			if (pos > bottom - 12) {
@@ -193,9 +193,9 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 		super.mouseClicked(i, j, k);
 
 		if ((i >= guiLeft + 5 && i < right - 5 + addition && j >= guiTop + 5 && j < bottom - 5) && !searchBar.isFocused()) {
-			lastClickedx = i;
-			lastClickedy = j;
-			lastClickedk = k;
+			lastClickedX = i;
+			lastClickedY = j;
+			lastClickedK = k;
 		}
 	}
 
@@ -213,7 +213,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 	}
 
 	@Override
-	public void recivePlayerList(List<String> list) {
+	public void receivePlayerList(List<String> list) {
 		players.clear();
 		players.addAll(list);
 	}

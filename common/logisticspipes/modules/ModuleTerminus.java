@@ -167,10 +167,10 @@ public class ModuleTerminus extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		Set<ItemIdentifier> filterItemids = filterInventory.getItemsAndCount().keySet();
-		itemidCollection.addAll(filterItemids);
-		filterItemids.stream().map(ItemIdentifier::getUndamaged).forEach(itemidCollection::add);
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdentifiers) {
+		Set<ItemIdentifier> filterItemIds = filterInventory.getItemsAndCount().keySet();
+		itemIdentifiers.addAll(filterItemIds);
+		filterItemIds.stream().map(ItemIdentifier::getUndamaged).forEach(itemIdentifiers::add);
 	}
 
 	@Override
@@ -184,7 +184,7 @@ public class ModuleTerminus extends LogisticsModule
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

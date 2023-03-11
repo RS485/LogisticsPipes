@@ -200,12 +200,12 @@ public class ItemModule extends LogisticsItem {
 				return currentModule;
 			}
 		}
-		LogisticsModule newmodule = moduleType.getILogisticsModule();
-		if (newmodule == null) {
+		LogisticsModule newModule = moduleType.getILogisticsModule();
+		if (newModule == null) {
 			return null;
 		}
-		newmodule.registerHandler(world, service);
-		return newmodule;
+		newModule.registerHandler(world, service);
+		return newModule;
 	}
 
 	@Nullable
@@ -242,11 +242,11 @@ public class ItemModule extends LogisticsItem {
 				if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT)) {
 					NBTTagList nbttaglist = nbt.getTagList("informationList", 8);
 					for (int i = 0; i < nbttaglist.tagCount(); i++) {
-						Object nbttag = nbttaglist.get(i);
-						String data = ((NBTTagString) nbttag).getString();
+						Object nbtTag = nbttaglist.get(i);
+						String data = ((NBTTagString) nbtTag).getString();
 						if (data.equals("<inventory>") && i + 1 < nbttaglist.tagCount()) {
-							nbttag = nbttaglist.get(i + 1);
-							data = ((NBTTagString) nbttag).getString();
+							nbtTag = nbttaglist.get(i + 1);
+							data = ((NBTTagString) nbtTag).getString();
 							if (data.startsWith("<that>")) {
 								String prefix = data.substring(6);
 								NBTTagCompound module = nbt.getCompoundTag("moduleInformation");

@@ -56,7 +56,7 @@ public class HUDCrafting extends BasicHUDGui {
 		List<ItemIdentifierStack> list = new ArrayList<>();
 		List<ItemIdentifierStack> craftables = pipe.getCraftedItems();
 		if (craftables != null && craftables.size() > 0) {
-			//TODO: handle multiple crafables.
+			//TODO: handle multiple craftables.
 			list.add(craftables.get(0));
 		}
 		if (pipe.displayList.size() > 0) {

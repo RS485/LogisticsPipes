@@ -112,14 +112,14 @@ public abstract class LogisticsModule implements IStore, ILPCCTypeHolder, Proper
 	}
 
 	/**
-	 * Gives an sink answer on the given itemstack
+	 * Gives a sink answer on the given itemstack
 	 *
 	 * @param stack              to sink
 	 * @param item               to sink
 	 * @param bestPriority       best priority seen so far
-	 * @param bestCustomPriority best custom subpriority
+	 * @param bestCustomPriority best custom sub-priority
 	 * @param allowDefault       is a default only sink allowed to sink this?
-	 * @param includeInTransit   inclide the "in transit" items? -- true for a destination
+	 * @param includeInTransit   include the "in transit" items? -- true for a destination
 	 *                           search, false for a sink check.
 	 * @param forcePassive       check for passive routing only, in case this method is redirected to other sinks
 	 * @return SinkReply whether the module sinks the item or not
@@ -146,9 +146,9 @@ public abstract class LogisticsModule implements IStore, ILPCCTypeHolder, Proper
 	 * Collects the items which this module is capable of providing or supplying
 	 * (or is otherwise interested in)
 	 *
-	 * @param itemidCollection the collection to add the interests to
+	 * @param itemIdentifiers the collection to add the interests to
 	 */
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdentifiers) {
 	}
 
 	public abstract boolean interestedInAttachedInventory();
@@ -162,7 +162,7 @@ public abstract class LogisticsModule implements IStore, ILPCCTypeHolder, Proper
 	/**
 	 * is this module a valid destination for bounced items.
 	 */
-	public abstract boolean recievePassive();
+	public abstract boolean receivePassive();
 
 	/**
 	 * Returns whether the module should be displayed the effect when as an

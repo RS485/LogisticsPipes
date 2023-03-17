@@ -460,7 +460,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return false;
 	}
 

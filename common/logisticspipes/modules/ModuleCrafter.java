@@ -400,7 +400,7 @@ public class ModuleCrafter extends LogisticsModule
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return false;
 	}
 

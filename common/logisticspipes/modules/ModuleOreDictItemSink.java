@@ -226,7 +226,7 @@ public class ModuleOreDictItemSink extends LogisticsModule
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return true;
 	}
 

@@ -95,7 +95,7 @@ public class ModulePolymorphicItemSink extends LogisticsModule {
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return true;
 	}
 

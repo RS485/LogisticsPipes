@@ -132,7 +132,7 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         nbttagcompound.setInteger("Timeout", timeout)
     }
 
-    override fun receivePassive(): Boolean = false
+    override fun recievePassive(): Boolean = false
 
     override fun hasGenericInterests(): Boolean = false
 

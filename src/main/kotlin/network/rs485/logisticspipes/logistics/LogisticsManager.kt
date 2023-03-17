@@ -80,7 +80,7 @@ object LogisticsManager {
                     it.containsFlag(PipeRoutingConnectionType.canRouteTo) &&
                     it.filters.none { filter -> filter.blockRouting() || filter.isBlocked == filter.isFilteredItem(itemid) } &&
                     it.destination.logisticsModule != null &&
-                    it.destination.logisticsModule.receivePassive() &&
+                    it.destination.logisticsModule.recievePassive() &&
                     it.destination.pipe != null &&
                     it.destination.pipe.isEnabled &&
                     !it.destination.pipe.isOnSameContainer(sourceRouter.pipe)

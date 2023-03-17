@@ -195,7 +195,7 @@ public class ModulePassiveSupplier extends LogisticsModule
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return true;
 	}
 

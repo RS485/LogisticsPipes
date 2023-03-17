@@ -87,7 +87,7 @@ public class GuiSecurityStation extends LogisticsBaseGuiScreen implements Player
 			buttonList.get(6).visible = false;
 		}
 		buttonList.add(new GuiButton(7, guiLeft + 55, guiTop + 95, 70, 20, TextUtil.translate(GuiSecurityStation.PREFIX + "Authorize")));
-		buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, TextUtil.translate(GuiSecurityStation.PREFIX + "Unauthorize")));
+		buttonList.add(new GuiButton(8, guiLeft + 175, guiTop + 95, 70, 20, TextUtil.translate(GuiSecurityStation.PREFIX + "Deauthorize")));
 		buttonList.add(new GuiCheckBox(9, guiLeft + 160, guiTop + 74, 16, 16, _tile.allowAutoDestroy));
 		buttonList.add(new GuiButton(10, guiLeft + 177, guiTop + 230, 95, 20, TextUtil.translate(GuiSecurityStation.PREFIX + "ChannelManager")));
 		if (searchBar == null) {

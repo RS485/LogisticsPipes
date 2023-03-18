@@ -31,8 +31,6 @@ import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
-import org.jetbrains.annotations.Nullable;
-
 public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFluid, IRequireReliableFluidTransport {
 
 	private boolean _lastRequestFailed = false;
@@ -61,7 +59,6 @@ public class PipeFluidSupplierMk2 extends FluidRoutedPipe implements IRequestFlu
 		moduleFluidSupplierMK2.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
-	@Nullable
 	@Override
 	public LogisticsModule getLogisticsModule() {
 		return this.moduleFluidSupplierMK2;

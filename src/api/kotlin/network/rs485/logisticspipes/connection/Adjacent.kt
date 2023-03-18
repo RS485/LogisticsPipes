@@ -53,4 +53,6 @@ interface Adjacent {
 
     fun fluidTanks(): List<NeighborTileEntity<TileEntity>>
 
+    fun copy(): Adjacent
+
 }

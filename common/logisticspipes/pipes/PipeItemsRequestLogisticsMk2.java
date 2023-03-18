@@ -2,12 +2,14 @@ package logisticspipes.pipes;
 
 import javax.annotation.Nonnull;
 
+import logisticspipes.modules.LogisticsModule;
+import logisticspipes.modules.ModuleItemsRequestLogisticsMk2;
+
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.text.TextComponentTranslation;
 
 import logisticspipes.LPItems;
@@ -17,15 +19,16 @@ import logisticspipes.proxy.MainProxy;
 import logisticspipes.security.SecuritySettings;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
-import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 
-	@Nonnull
-	private ItemStack disk = ItemStack.EMPTY;
+	private final ModuleItemsRequestLogisticsMk2 module;
 
 	public PipeItemsRequestLogisticsMk2(Item item) {
 		super(item);
+		module = new ModuleItemsRequestLogisticsMk2();
+		module.registerHandler(this, this);
+		module.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Override
@@ -47,9 +50,9 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	@Override
 	public void openGui(EntityPlayer entityplayer) {
 		boolean flag = true;
-		if (disk.isEmpty()) {
+		if (module.disk.isEmpty()) {
 			if (!entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).isEmpty() && entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND).getItem().equals(LPItems.disk)) {
-				disk = entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND);
+				module.disk.setValue(entityplayer.getItemStackFromSlot(EntityEquipmentSlot.MAINHAND));
 				entityplayer.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
 				flag = false;
 			}
@@ -60,32 +63,13 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 	}
 
 	@Override
-	public void writeToNBT(NBTTagCompound nbttagcompound) {
-		super.writeToNBT(nbttagcompound);
-		if (!disk.isEmpty()) {
-			NBTTagCompound itemNBT = new NBTTagCompound();
-			disk.writeToNBT(itemNBT);
-			nbttagcompound.setTag("Disk", itemNBT);
-		}
-	}
-
-	@Override
-	public void readFromNBT(NBTTagCompound nbttagcompound) {
-		super.readFromNBT(nbttagcompound);
-		if (nbttagcompound.hasKey("Disk")) {
-			NBTTagCompound item = nbttagcompound.getCompoundTag("Disk");
-			disk = ItemStackLoader.loadAndFixItemStackFromNBT(item);
-		}
-	}
-
-	@Override
 	public TextureType getCenterTexture() {
 		return Textures.LOGISTICSPIPE_REQUESTERMK2_TEXTURE;
 	}
 
 	@Nonnull
 	public ItemStack getDisk() {
-		return disk;
+		return module.disk.getValue();
 	}
 
 	@Override
@@ -95,15 +79,20 @@ public class PipeItemsRequestLogisticsMk2 extends PipeItemsRequestLogistics {
 		}
 	}
 
+	@Override
+	public LogisticsModule getLogisticsModule() {
+		return module;
+	}
+
 	public void dropDisk() {
-		if (!disk.isEmpty()) {
-			EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), disk);
+		if (!module.disk.isEmpty()) {
+			EntityItem item = new EntityItem(getWorld(), getX(), getY(), getZ(), module.disk.getValue());
 			getWorld().spawnEntity(item);
-			disk = ItemStack.EMPTY;
+			module.disk.setValue(ItemStack.EMPTY);
 		}
 	}
 
 	public void setDisk(@Nonnull ItemStack itemstack) {
-		disk = itemstack;
+		module.disk.setValue(itemstack);
 	}
 }

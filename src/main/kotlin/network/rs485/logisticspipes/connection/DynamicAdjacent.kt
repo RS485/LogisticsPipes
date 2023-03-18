@@ -79,5 +79,7 @@ class DynamicAdjacent(private val parent: CoreRoutedPipe, private val cache: Arr
         }
         .mapNotNull { (tile, dir) -> LPNeighborTileEntity(tile, dir).takeIf { it.canHandleFluids() } }
 
+    override fun copy(): Adjacent = DynamicAdjacent(parent, cache.clone())
+
     override fun toString(): String = "DynamicAdjacent(${EnumFacing.VALUES.withIndex().joinToString { "{${it.value.name2}: ${cache[it.index]}}" }})"
 }

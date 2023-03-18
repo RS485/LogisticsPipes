@@ -67,5 +67,7 @@ class SingleAdjacent(private val parent: CoreRoutedPipe, val dir: EnumFacing, pr
             })
         } else emptyList()
 
+    override fun copy(): Adjacent = SingleAdjacent(parent, dir, adjacentType)
+
     override fun toString(): String = "SingleAdjacent(${dir.name2}: $adjacentType)"
 }

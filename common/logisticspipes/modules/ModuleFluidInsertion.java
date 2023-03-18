@@ -2,7 +2,6 @@ package logisticspipes.modules;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
@@ -102,7 +101,7 @@ public class ModuleFluidInsertion extends LogisticsModule {
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return false;
 	}
 }

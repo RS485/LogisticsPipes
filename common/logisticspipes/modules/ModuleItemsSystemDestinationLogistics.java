@@ -45,7 +45,7 @@ public class ModuleItemsSystemDestinationLogistics extends LogisticsModule {
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return false;
 	}
 }

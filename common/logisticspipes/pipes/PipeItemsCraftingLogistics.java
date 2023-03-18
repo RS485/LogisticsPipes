@@ -142,7 +142,7 @@ public class PipeItemsCraftingLogistics extends CoreRoutedPipe implements ICraft
 	}
 
 	@Override
-	public @Nonnull ModuleCrafter getLogisticsModule() {
+	public ModuleCrafter getLogisticsModule() {
 		return craftingModule;
 	}
 

@@ -8,7 +8,6 @@
 package logisticspipes.pipes;
 
 import java.util.List;
-import javax.annotation.Nonnull;
 
 import net.minecraft.item.Item;
 
@@ -45,7 +44,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	@Override
-	public @Nonnull ModuleActiveSupplier getLogisticsModule() {
+	public ModuleActiveSupplier getLogisticsModule() {
 		return supplierModule;
 	}
 

@@ -10,7 +10,7 @@ import network.rs485.logisticspipes.property.InventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
 public class ModuleItemsSystemEntranceLogistics extends LogisticsModule {
-	public InventoryProperty inv = new InventoryProperty(new ItemIdentifierInventory(1, "Freq Slot", 1), "");
+	public final InventoryProperty inv = new InventoryProperty(new ItemIdentifierInventory(1, "Freq Slot", 1), "");
 
 	@NotNull
 	@Override
@@ -45,7 +45,7 @@ public class ModuleItemsSystemEntranceLogistics extends LogisticsModule {
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return false;
 	}
 }

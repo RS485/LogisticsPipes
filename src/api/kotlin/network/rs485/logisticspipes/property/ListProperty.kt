@@ -37,6 +37,7 @@
 
 package network.rs485.logisticspipes.property
 
+import org.apache.commons.lang3.Validate
 import net.minecraft.nbt.NBTTagCompound
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.function.UnaryOperator
@@ -131,6 +132,25 @@ abstract class ListProperty<T>(
 
     override fun subList(fromIndex: Int, toIndex: Int): MutableList<T> =
         TODO("Returned sub list needs to inform of changes")
+
+}
+
+abstract class NonNullListProperty<T>(list: MutableList<T>) : ListProperty<T>(list) {
+    override fun add(element: T): Boolean  {
+        Validate.notNull(element)
+        return list.add(element).alsoIChanged()
+    }
+
+    override fun add(index: Int, element: T) {
+        Validate.notNull(element)
+        list.add(index, element).alsoIChanged()
+    }
+
+    override fun set(index: Int, element: T): T {
+        Validate.notNull(element)
+        return list.set(index, element).alsoIChanged()
+    }
+
 
 }
 

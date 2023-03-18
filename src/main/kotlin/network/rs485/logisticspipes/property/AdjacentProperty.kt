@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,19 +35,39 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.connection
+package network.rs485.logisticspipes.property
 
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos
-import java.util.*
+import network.rs485.logisticspipes.connection.Adjacent
+import network.rs485.logisticspipes.connection.ConnectionType
+import network.rs485.logisticspipes.connection.SingleAdjacent
+import logisticspipes.pipes.basic.CoreRoutedPipe
+import logisticspipes.utils.EnumFacingUtil
+import net.minecraft.nbt.NBTTagCompound
 
-object NoAdjacent : Adjacent {
-    override fun connectedPos(): Map<BlockPos, ConnectionType> = emptyMap()
-    override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> = Optional.empty()
-    override fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType> = emptyMap()
-    override fun inventories(): List<NeighborTileEntity<TileEntity>> = emptyList()
-    override fun fluidTanks(): List<NeighborTileEntity<TileEntity>> = emptyList()
-    override fun copy(): Adjacent = this
-    override fun toString(): String = "NoAdjacent"
+class AdjacentProperty<E: Adjacent>(
+    defaultValue: Adjacent?,
+    private val parent: CoreRoutedPipe,
+    override val tagKey: String
+) : ValueProperty<Adjacent?>(defaultValue) {
+
+    override fun copyValue(): Adjacent? = value?.copy()
+
+    override fun copyProperty(): AdjacentProperty<E> =
+        AdjacentProperty(copyValue(), parent, tagKey)
+
+    override fun readFromNBT(tag: NBTTagCompound) {
+        if (tag.hasKey(tagKey)) {
+            val ordinalValue = tag.getInteger(tagKey)
+            value = if (ordinalValue == -1) {
+                null
+            } else {
+                SingleAdjacent(parent, EnumFacingUtil.getOrientation(ordinalValue % 6), ConnectionType.UNDEFINED)
+            }
+        }
+    }
+
+    override fun writeToNBT(tag: NBTTagCompound) {
+        value?.takeIf { it is SingleAdjacent }
+            ?.let { tag.setInteger(tagKey, (it as SingleAdjacent).dir.ordinal) } ?: tag.setInteger(tagKey, -1)
+    }
 }

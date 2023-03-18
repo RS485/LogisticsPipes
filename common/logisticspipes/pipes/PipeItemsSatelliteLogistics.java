@@ -18,7 +18,6 @@ import java.util.Set;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -90,7 +89,7 @@ public class PipeItemsSatelliteLogistics extends CoreRoutedPipe implements IRequ
 	}
 
 	@Override
-	public @Nullable LogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		return moduleSatellite;
 	}
 

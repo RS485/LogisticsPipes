@@ -2,8 +2,6 @@ package logisticspipes.pipes;
 
 import java.util.UUID;
 
-import javax.annotation.Nullable;
-
 import lombok.Getter;
 
 import net.minecraft.entity.item.EntityItem;
@@ -57,7 +55,7 @@ public class PipeItemsSystemEntranceLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public @Nullable LogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		return module;
 	}
 

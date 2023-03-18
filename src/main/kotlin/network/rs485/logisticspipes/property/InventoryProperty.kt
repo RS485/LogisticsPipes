@@ -41,6 +41,7 @@ import logisticspipes.utils.item.ItemIdentifierInventory
 import logisticspipes.utils.item.ItemIdentifierStack
 import net.minecraft.item.ItemStack
 import net.minecraft.nbt.NBTTagCompound
+import net.minecraft.world.World
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.inventory.SlotAccess
 import java.util.concurrent.CopyOnWriteArraySet
@@ -101,5 +102,9 @@ class InventoryProperty(private val inv: ItemIdentifierInventory, override val t
 
     override fun iterator(): Iterator<ItemIdentifierStack> =
         inv.itemsAndCount.map { it.key.makeStack(it.value) }.iterator()
+
+    fun dropContents(world: World, x: Int, y: Int, z: Int) = inv.dropContents(world, x, y, z)
+
+    fun getInvProperty(): ItemIdentifierInventory = inv
 
 }

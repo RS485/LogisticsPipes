@@ -8,8 +8,6 @@ import logisticspipes.pipes.basic.fluid.FluidRoutedPipe;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 
-import org.jetbrains.annotations.Nullable;
-
 public class PipeFluidExtractor extends FluidRoutedPipe {
 
 	private final ModuleFluidExtractor moduleFluidExtractor;
@@ -21,7 +19,6 @@ public class PipeFluidExtractor extends FluidRoutedPipe {
 		moduleFluidExtractor.registerPosition(LogisticsModule.ModulePositionType.IN_PIPE, 0);
 	}
 
-	@Nullable
 	@Override
 	public LogisticsModule getLogisticsModule() {
 		return this.moduleFluidExtractor;

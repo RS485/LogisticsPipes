@@ -49,7 +49,7 @@ public class ModuleItemInvSysConnect extends LogisticsModule {
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return false;
 	}
 }

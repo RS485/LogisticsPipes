@@ -1,8 +1,8 @@
 package logisticspipes.pipes;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
-
-import javax.annotation.Nullable;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -10,6 +10,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.FluidUtil;
 
 import logisticspipes.LogisticsPipes;
@@ -23,13 +24,18 @@ import logisticspipes.network.GuiIDs;
 import logisticspipes.pipes.basic.CoreRoutedPipe;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.SimpleServiceLocator;
+import logisticspipes.request.RequestTree;
 import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
 import logisticspipes.utils.CacheHolder.CacheTypes;
+import logisticspipes.utils.FluidIdentifier;
 import logisticspipes.utils.FluidIdentifierStack;
+import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.connection.LPNeighborTileEntityKt;
+import network.rs485.logisticspipes.connection.NeighborTileEntity;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 
 public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
@@ -75,7 +81,7 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 	}
 
 	@Override
-	public @Nullable LogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		return moduleFluidSupplier;
 	}
 
@@ -133,7 +139,102 @@ public class PipeItemsFluidSupplier extends CoreRoutedPipe implements IRequestIt
 			return;
 		}
 		super.throttledUpdateEntity();
-		moduleFluidSupplier.tick();
+
+		for (NeighborTileEntity<TileEntity> neighbor : getAdjacent().fluidTanks()) {
+			final ITankUtil tankUtil = LPNeighborTileEntityKt.getTankUtil(neighbor);
+			if (tankUtil == null || !tankUtil.containsTanks()) {
+				continue;
+			}
+
+			//How much do I want?
+			Map<ItemIdentifier, Integer> wantContainers = moduleFluidSupplier.filterInventory.getItemsAndCount();
+			HashMap<FluidIdentifier, Integer> wantFluids = new HashMap<>();
+			for (Map.Entry<ItemIdentifier, Integer> item : wantContainers.entrySet()) {
+				ItemStack wantItem = item.getKey().unsafeMakeNormalStack(1);
+				FluidStack liquidstack = FluidUtil.getFluidContained(wantItem);
+				if (liquidstack == null) {
+					continue;
+				}
+				wantFluids.put(FluidIdentifier.get(liquidstack), item.getValue() * liquidstack.amount);
+			}
+
+			//How much do I have?
+			HashMap<FluidIdentifier, Integer> haveFluids = new HashMap<>();
+
+			tankUtil.tanks()
+					.map(tank -> FluidIdentifierStack.getFromStack(tank.getContents()))
+					.filter(Objects::nonNull)
+					.forEach(fluid -> {
+						if (wantFluids.containsKey(fluid.getFluid())) {
+							haveFluids.merge(fluid.getFluid(), fluid.getAmount(), Integer::sum);
+						}
+					});
+
+			//HashMap<Integer, Integer> needFluids = new HashMap<Integer, Integer>();
+			//Reduce what I have and what have been requested already
+			for (Map.Entry<FluidIdentifier, Integer> liquidId : wantFluids.entrySet()) {
+				Integer haveCount = haveFluids.get(liquidId.getKey());
+				if (haveCount != null) {
+					liquidId.setValue(liquidId.getValue() - haveCount);
+				}
+			}
+			for (Map.Entry<ItemIdentifier, Integer> requestedItem : moduleFluidSupplier._requestedItems.entrySet()) {
+				ItemStack wantItem = requestedItem.getKey().unsafeMakeNormalStack(1);
+				FluidStack requestedFluidId = FluidUtil.getFluidContained(wantItem);
+				if (requestedFluidId == null) {
+					continue;
+				}
+				FluidIdentifier requestedFluid = FluidIdentifier.get(requestedFluidId);
+				Integer want = wantFluids.get(requestedFluid);
+				if (want != null) {
+					wantFluids.put(requestedFluid, want - requestedItem.getValue() * requestedFluidId.amount);
+				}
+			}
+
+			((PipeItemsFluidSupplier) Objects.requireNonNull(container).pipe).setRequestFailed(false);
+
+			//Make request
+
+			for (ItemIdentifier need : wantContainers.keySet()) {
+				FluidStack requestedFluidId = FluidUtil.getFluidContained(need.unsafeMakeNormalStack(1));
+				if (requestedFluidId == null) {
+					continue;
+				}
+				if (!wantFluids.containsKey(FluidIdentifier.get(requestedFluidId))) {
+					continue;
+				}
+				int countToRequest = wantFluids.get(FluidIdentifier.get(requestedFluidId)) / requestedFluidId.amount;
+				if (countToRequest < 1) {
+					continue;
+				}
+
+				if (!useEnergy(11)) {
+					break;
+				}
+
+				boolean success = false;
+
+				if (moduleFluidSupplier._requestPartials.getValue()) {
+					countToRequest = RequestTree.requestPartial(need.makeStack(countToRequest), (IRequestItems) container.pipe, null);
+					if (countToRequest > 0) {
+						success = true;
+					}
+				} else {
+					success = RequestTree.request(need.makeStack(countToRequest), (IRequestItems) container.pipe, null, null);
+				}
+
+				if (success) {
+					Integer currentRequest = moduleFluidSupplier._requestedItems.get(need);
+					if (currentRequest == null) {
+						moduleFluidSupplier._requestedItems.put(need, countToRequest);
+					} else {
+						moduleFluidSupplier._requestedItems.put(need, currentRequest + countToRequest);
+					}
+				} else {
+					((PipeItemsFluidSupplier) container.pipe).setRequestFailed(true);
+				}
+			}
+		}
 	}
 
 	@Override

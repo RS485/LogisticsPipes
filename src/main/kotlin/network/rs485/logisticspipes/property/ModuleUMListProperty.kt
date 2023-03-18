@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,19 +35,46 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.connection
+package network.rs485.logisticspipes.property
 
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos
-import java.util.*
+import logisticspipes.pipes.upgrades.ModuleUpgradeManager
+import net.minecraft.nbt.NBTTagCompound
 
-object NoAdjacent : Adjacent {
-    override fun connectedPos(): Map<BlockPos, ConnectionType> = emptyMap()
-    override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> = Optional.empty()
-    override fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType> = emptyMap()
-    override fun inventories(): List<NeighborTileEntity<TileEntity>> = emptyList()
-    override fun fluidTanks(): List<NeighborTileEntity<TileEntity>> = emptyList()
-    override fun copy(): Adjacent = this
-    override fun toString(): String = "NoAdjacent"
+
+class ModuleUMListProperty : NonNullListProperty<ModuleUpgradeManager> {
+    override val tagKey: String
+
+    constructor(tagKey: String) : super(mutableListOf()) {
+        this.tagKey = tagKey
+    }
+
+    constructor(tagKey: String, list: MutableList<ModuleUpgradeManager>) : super(list) {
+        this.tagKey = tagKey
+    }
+
+    override fun copyValue(obj: ModuleUpgradeManager): ModuleUpgradeManager {
+        TODO("Not yet implemented")
+    }
+
+    override fun defaultValue(idx: Int): ModuleUpgradeManager {
+        TODO("Not yet implemented")
+    }
+
+    override fun writeToNBT(tag: NBTTagCompound) {
+        for (i in 0 until this.size) {
+            list.get(i).writeToNBT(tag, Integer.toString(i))
+        }
+    }
+
+    override fun readSingleFromNBT(tag: NBTTagCompound, key: String): ModuleUpgradeManager {
+        TODO("Not yet implemented")
+    }
+
+    override fun copyProperty(): Property<MutableList<ModuleUpgradeManager>> {
+        TODO("Not yet implemented")
+    }
+
+    override fun writeSingleToNBT(tag: NBTTagCompound, key: String, value: ModuleUpgradeManager) {
+        value.writeToNBT(tag, key)
+    }
 }

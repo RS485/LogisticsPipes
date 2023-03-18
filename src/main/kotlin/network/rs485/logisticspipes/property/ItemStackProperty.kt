@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,19 +35,31 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.connection
+package network.rs485.logisticspipes.property
 
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.EnumFacing
-import net.minecraft.util.math.BlockPos
-import java.util.*
+import net.minecraft.item.ItemStack
+import net.minecraft.nbt.NBTTagCompound
+import network.rs485.logisticspipes.util.items.ItemStackLoader
 
-object NoAdjacent : Adjacent {
-    override fun connectedPos(): Map<BlockPos, ConnectionType> = emptyMap()
-    override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> = Optional.empty()
-    override fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType> = emptyMap()
-    override fun inventories(): List<NeighborTileEntity<TileEntity>> = emptyList()
-    override fun fluidTanks(): List<NeighborTileEntity<TileEntity>> = emptyList()
-    override fun copy(): Adjacent = this
-    override fun toString(): String = "NoAdjacent"
+class ItemStackProperty(initialValue: ItemStack, override val tagKey: String) : ValueProperty<ItemStack>(initialValue) {
+    override fun copyValue(): ItemStack = value.copy()
+
+    override fun copyProperty(): Property<ItemStack> = ItemStackProperty(copyValue(), tagKey)
+
+    override fun readFromNBT(tag: NBTTagCompound) {
+        if (tag.hasKey(tagKey)) {
+            val item: NBTTagCompound = tag.getCompoundTag(tagKey)
+            value = ItemStackLoader.loadAndFixItemStackFromNBT(item)
+        }
+    }
+
+    override fun writeToNBT(tag: NBTTagCompound) {
+        if (!value.isEmpty) {
+            val itemNBT = NBTTagCompound()
+            value.writeToNBT(itemNBT)
+            tag.setTag(tagKey, itemNBT)
+        }
+    }
+
+    fun isEmpty(): Boolean = value.isEmpty
 }

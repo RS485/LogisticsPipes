@@ -8,9 +8,14 @@ import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.ResourceLocation;
 
+import logisticspipes.logisticspipes.ItemModuleInformationManager;
+import logisticspipes.LPItems;
+import logisticspipes.items.ItemModule;
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.network.NewGuiHandler;
@@ -20,24 +25,31 @@ import logisticspipes.network.guis.pipe.ChassisGuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
+import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
+import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.connection.SingleAdjacent;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
-import network.rs485.logisticspipes.property.Property;
-import network.rs485.logisticspipes.property.SlottedModule;
-import network.rs485.logisticspipes.property.SlottedModuleListProperty;
+import network.rs485.logisticspipes.property.*;
 
 public class ChassisModule extends LogisticsModule implements Gui {
 
 	private final PipeLogisticsChassis parentChassis;
 	private final SlottedModuleListProperty modules;
+	public final InventoryProperty _moduleInventory;
+	public final ModuleUMListProperty slotUpgradeManagers;
+	public final AdjacentProperty<SingleAdjacent> pointedAdjacent;
 
 	public ChassisModule(int moduleCount, PipeLogisticsChassis parentChassis) {
 		modules = new SlottedModuleListProperty(moduleCount, "modules");
+		_moduleInventory = new InventoryProperty(
+			new ItemIdentifierInventory(moduleCount, "Chassi pipe", 1), "chassi");
+		slotUpgradeManagers = new ModuleUMListProperty("");
+		pointedAdjacent = new AdjacentProperty<>(null, parentChassis, "Orientation");
 		this.parentChassis = parentChassis;
-		registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
 	@Nonnull
@@ -77,6 +89,10 @@ public class ChassisModule extends LogisticsModule implements Gui {
 
 	public Stream<SlottedModule> slottedModules() {
 		return modules.stream();
+	}
+
+	public SingleAdjacent getAdjacent() {
+		return (SingleAdjacent) this.pointedAdjacent.getValue();
 	}
 
 	@Override
@@ -133,11 +149,69 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	@Override
 	public void readFromNBT(@Nonnull NBTTagCompound tag) {
 		super.readFromNBT(tag);
-		// FIXME: remove after 1.12
+		for (int i = 0; i < parentChassis.getChassisSize(); i++) {
+			// TODO: remove after 1.12.2 update, backwards compatibility
+			final ItemIdentifierStack idStack = this._moduleInventory.getIDStackInSlot(i);
+			if (idStack != null && !this.hasModule(i)) {
+				final Item stackItem = idStack.getItem().item;
+				if (stackItem instanceof ItemModule) {
+					final ItemModule moduleItem = (ItemModule) stackItem;
+					LogisticsModule module = moduleItem.getModule(null, parentChassis, parentChassis);
+					if (module != null) {
+						this.installModule(i, module);
+					}
+				}
+			}
+			// remove end
+
+			if (i >= this.slotUpgradeManagers.size()) {
+				this.addModuleUpgradeManager();
+			}
+			this.slotUpgradeManagers.get(i).readFromNBT(tag, Integer.toString(i));
+		}
 		modules.stream()
-				.filter(slottedModule -> !slottedModule.isEmpty() && tag.hasKey("slot" + slottedModule.getSlot()))
-				.forEach(slottedModule -> Objects.requireNonNull(slottedModule.getModule())
-						.readFromNBT(tag.getCompoundTag("slot" + slottedModule.getSlot())));
+			.filter(slottedModule -> !slottedModule.isEmpty())
+			.forEach(slottedModule -> {
+				LogisticsModule logisticsModule = Objects.requireNonNull(slottedModule.getModule());
+				// FIXME: rely on getModuleForItem instead
+				logisticsModule.registerHandler(parentChassis, parentChassis);
+				slottedModule.registerPosition();
+				if (tag.hasKey("slot" + slottedModule.getSlot()))
+					logisticsModule.readFromNBT(tag.getCompoundTag("slot" + slottedModule.getSlot()));
+			});
+	}
+
+	@Override
+	public void writeToNBT(@Nonnull NBTTagCompound tag) {
+		super.writeToNBT(tag);
+		updateModuleInventory();
+	}
+
+	public void addModuleUpgradeManager() {
+		this.slotUpgradeManagers.add(new ModuleUpgradeManager(parentChassis, parentChassis.getOriginalUpgradeManager()));
+	}
+
+	// FIXME: remove after 1.12
+	public void updateModuleInventory() {
+		modules.forEach(slottedModule -> {
+			if (slottedModule.isEmpty()) {
+				this._moduleInventory.clearInventorySlotContents(slottedModule.getSlot());
+				return;
+			}
+			final LogisticsModule module = Objects.requireNonNull(slottedModule.getModule());
+			final ItemIdentifierStack idStack = this._moduleInventory.getIDStackInSlot(slottedModule.getSlot());
+			ItemStack moduleStack;
+			if (idStack != null) {
+				moduleStack = idStack.getItem().makeNormalStack(1);
+			} else {
+				ResourceLocation resourceLocation = LPItems.modules.get(module.getLPName());
+				Item item = Item.REGISTRY.getObject(resourceLocation);
+				if (item == null) return;
+				moduleStack = new ItemStack(item);
+			}
+			ItemModuleInformationManager.saveInformation(moduleStack, module);
+			this._moduleInventory.setInventorySlotContents(slottedModule.getSlot(), moduleStack);
+		});
 	}
 
 	@Override

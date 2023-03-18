@@ -59,8 +59,6 @@ import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
 
-import org.jetbrains.annotations.Nullable;
-
 public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements ISimpleInventoryEventHandler, IRequestWatcher, IGuiOpenControler, IRotationProvider {
 	public ItemIdentifierInventory resultInv = new ItemIdentifierInventory(1, "Crafting Result", 1);
 	@Getter
@@ -86,7 +84,6 @@ public class PipeBlockRequestTable extends PipeItemsRequestLogistics implements 
 		moduleRequesterTable.matrix.addListener(this);
 	}
 
-	@Nullable
 	@Override
 	public LogisticsModule getLogisticsModule() {
 		return this.moduleRequesterTable;

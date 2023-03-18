@@ -60,7 +60,7 @@ public class ModuleRequesterTable extends LogisticsModule {
 	}
 
 	@Override
-	public boolean receivePassive() {
+	public boolean recievePassive() {
 		return false;
 	}
 }

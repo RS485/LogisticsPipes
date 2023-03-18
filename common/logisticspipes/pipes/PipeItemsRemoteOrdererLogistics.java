@@ -1,7 +1,5 @@
 package logisticspipes.pipes;
 
-import javax.annotation.Nullable;
-
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
@@ -47,7 +45,7 @@ public class PipeItemsRemoteOrdererLogistics extends CoreRoutedPipe implements I
 	}
 
 	@Override
-	public @Nullable LogisticsModule getLogisticsModule() {
+	public LogisticsModule getLogisticsModule() {
 		return null;
 	}
 

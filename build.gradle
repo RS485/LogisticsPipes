@@ -613,7 +613,7 @@ task integrationTests(dependsOn: ['prepareRunServerTest'], type: Exec) {
     workingDir projectDir
 
     commandLine "$projectDir/gradlew"
-    args '--stacktrace', 'runServerTest'
+    args '--no-daemon', '--stacktrace', 'runServerTest'
     ignoreExitValue = true
 
     standardOutput = new ByteArrayOutputStream()
@@ -627,9 +627,10 @@ task integrationTests(dependsOn: ['prepareRunServerTest'], type: Exec) {
 
     doLast {
         final output = standardOutput.toString()
-        final start = output.substring(0, output.indexOf('[STARTING LOGISTICSPIPES TESTS]')).lastIndexOf('\n') + 1
+        final start = output.indexOf('[STARTING LOGISTICSPIPES TESTS]')
         if (start == -1) throw new GradleException("Cannot find LP test start:\n${output}")
-        def testOutput = output.substring(start)
+        final logStart = output.substring(0, start).lastIndexOf('\n') + 1
+        def testOutput = output.substring(logStart)
         final end = testOutput.indexOf('Attempting to read last messages from the daemon log')
         if (end != -1) {
             // remove double output from daemon log

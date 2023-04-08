@@ -113,8 +113,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 				@Override
 				public boolean isFilteredItem(IResource resultItem) {
-					for (Pair<ItemIdentifierStack, Integer> pair : moduleFirewall.inv) {
-						ItemIdentifierStack stack = pair.getValue1();
+					for (ItemIdentifierStack stack : moduleFirewall.inv) {
 						if (stack != null && resultItem.matches(stack.getItem(), IResource.MatchSettings.NORMAL)) {
 							return true;
 						}
@@ -139,7 +138,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		return moduleFirewall.blockCrafter.getValue();
 	}
 
-	public void setBlockCrafer(boolean blockCrafer) {
+	public void setBlockCrafter(boolean blockCrafter) {
 		moduleFirewall.blockCrafter.setValue(blockCrafter);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}

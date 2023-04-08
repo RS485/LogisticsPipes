@@ -22,6 +22,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+import javax.annotation.Nonnull;
+
 public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IRequestItems, IRequireReliableTransport {
 
 	private final ModuleActiveSupplier supplierModule;
@@ -44,7 +46,7 @@ public class PipeItemsSupplierLogistics extends CoreRoutedPipe implements IReque
 	}
 
 	@Override
-	public ModuleActiveSupplier getLogisticsModule() {
+	public @Nonnull ModuleActiveSupplier getLogisticsModule() {
 		return supplierModule;
 	}
 

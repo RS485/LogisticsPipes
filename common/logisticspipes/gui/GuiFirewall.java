@@ -52,7 +52,7 @@ public class GuiFirewall extends LogisticsBaseGuiScreen {
 				pipe.setBlockProvider(!pipe.isBlockProvider());
 				break;
 			case 2:
-				pipe.setBlockCrafer(!pipe.isBlockCrafter());
+				pipe.setBlockCrafter(!pipe.isBlockCrafter());
 				break;
 			case 3:
 				pipe.setBlockSorting(!pipe.isBlockSorting());

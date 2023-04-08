@@ -20,6 +20,8 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifierStack;
 
+import javax.annotation.Nullable;
+
 public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	@Getter
 	private final ModuleItemsSystemDestinationLogistics module;
@@ -42,13 +44,13 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	@Override
-	public LogisticsModule getLogisticsModule() {
+	public @Nullable LogisticsModule getLogisticsModule() {
 		return module;
 	}
 
 	public Object getTargetUUID() {
 		final ItemIdentifierStack itemIdent = module.inv.getIDStackInSlot(0);
-		if (itemident == null) {
+		if (itemIdent == null) {
 			return null;
 		}
 		final ItemStack stack = itemIdent.makeNormalStack();

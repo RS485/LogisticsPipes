@@ -93,7 +93,7 @@ public class PipeItemsProviderLogistics extends CoreRoutedPipe implements IProvi
 	}
 
 	@Override
-	public ModuleProvider getLogisticsModule() {
+	public @Nonnull ModuleProvider getLogisticsModule() {
 		return providerModule;
 	}
 

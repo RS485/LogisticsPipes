@@ -144,6 +144,14 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
         val result = when (container) {
             is HContainer -> HorizontalWidgetContainer(list, parent, container.margin, container.gap)
             is VContainer -> VerticalWidgetContainer(list, parent, container.margin, container.gap)
+            is OptionalComponent -> {
+                if (container.vertical) {
+                    VerticalWidgetContainer(list, parent, container.margin, container.gap)
+                } else {
+                    HorizontalWidgetContainer(list, parent, container.margin, container.gap)
+                }
+            }
+
             else -> throw IllegalArgumentException("")
         }
         container.children.forEach { child ->

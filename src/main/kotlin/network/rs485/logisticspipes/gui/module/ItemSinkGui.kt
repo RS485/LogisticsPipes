@@ -74,16 +74,19 @@ class ItemSinkWidgetScreen(private val guiReference: AtomicReference<ItemSinkGui
         }
         horizontal {
             margin = Margin(top = 3, bottom = 3)
-            button {
-                text = TextUtil.translate("${gui.prefix}import")
-                action = {
-                    if (!gui.inHand) {
-                        MainProxy.sendPacketToServer(
-                            PacketHandler.getPacket(ItemSinkImportPacket::class.java).setModulePos(gui.itemSinkModule),
-                        )
+            optionalComponent {
+                predicate = { gui.inHand }
+                inactiveComponents {
+                    button {
+                        text = TextUtil.translate("${gui.prefix}import")
+                        action = {
+                            MainProxy.sendPacketToServer(
+                                PacketHandler.getPacket(ItemSinkImportPacket::class.java).setModulePos(gui.itemSinkModule),
+                            )
+                        }
+                        enabled = true // TODO disable button if there is no attached inventory!
                     }
                 }
-                enabled = !gui.inHand // TODO disable button if there is no attached inventory!
             }
             staticLabel {
                 text = "${TextUtil.translate("${gui.prefix}Defaultroute")}:"

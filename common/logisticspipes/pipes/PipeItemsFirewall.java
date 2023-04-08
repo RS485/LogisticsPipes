@@ -24,6 +24,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import logisticspipes.utils.tuples.Pair;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class PipeItemsFirewall extends CoreRoutedPipe {
@@ -112,7 +113,8 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 
 				@Override
 				public boolean isFilteredItem(IResource resultItem) {
-					for (ItemIdentifierStack stack : moduleFirewall.inv) {
+					for (Pair<ItemIdentifierStack, Integer> pair : moduleFirewall.inv) {
+						ItemIdentifierStack stack = pair.getValue1();
 						if (stack != null && resultItem.matches(stack.getItem(), IResource.MatchSettings.NORMAL)) {
 							return true;
 						}
@@ -137,7 +139,7 @@ public class PipeItemsFirewall extends CoreRoutedPipe {
 		return moduleFirewall.blockCrafter.getValue();
 	}
 
-	public void setBlockCrafer(boolean blockCrafter) {
+	public void setBlockCrafer(boolean blockCrafer) {
 		moduleFirewall.blockCrafter.setValue(blockCrafter);
 		MainProxy.sendPacketToServer(PacketHandler.getPacket(FireWallFlag.class).setFlags(getFlags()).setPosX(getX()).setPosY(getY()).setPosZ(getZ()));
 	}

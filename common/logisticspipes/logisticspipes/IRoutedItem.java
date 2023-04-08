@@ -70,7 +70,7 @@ public interface IRoutedItem {
 
 	void readFromNBT(NBTTagCompound data);
 
-	void writeToNBT(NBTTagCompound tagentityitem);
+	void writeToNBT(NBTTagCompound tagEntityItem);
 
 	void setDistanceTracker(IDistanceTracker tracker);
 

@@ -70,9 +70,9 @@ class HomeButton(x: Int, y: Int, onClickAction: (Int) -> Boolean) : LPGuiButton(
         if (visible) {
             GlStateManager.enableAlpha()
             GlStateManager.enableBlend()
-            LPGuiDrawer.drawGuiTexturedRect(body, homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
+            GuiDrawer.drawGuiTexturedRect(body, homeButtonTexture, false, MinecraftColor.WHITE.colorCode)
             val hoverStateOffset = getHoverState(hovered) * homeIconTexture.roundedHeight
-            LPGuiDrawer.drawGuiTexturedRect(homeIconBody.translated(body), homeIconTexture.translated(0, hoverStateOffset), false, MinecraftColor.WHITE.colorCode)
+            GuiDrawer.drawGuiTexturedRect(homeIconBody.translated(body), homeIconTexture.translated(0, hoverStateOffset), false, MinecraftColor.WHITE.colorCode)
         }
     }
 

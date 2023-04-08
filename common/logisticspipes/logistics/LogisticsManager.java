@@ -121,7 +121,7 @@ public class LogisticsManager implements ILogisticsManager {
 		if (module == null) {
 			return null;
 		}
-		if (!(module.recievePassive() || activeRequest)) {
+		if (!(module.receivePassive() || activeRequest)) {
 			return null;
 		}
 		if (crp == null || !crp.isEnabled()) {
@@ -144,8 +144,8 @@ public class LogisticsManager implements ILogisticsManager {
 	}
 
 	/**
-	 * Will assign a destination for a IRoutedItem based on a best sink reply
-	 * recieved from other pipes.
+	 * Will assign a destination for a IRoutedItem based on the best sink reply
+	 * received from other pipes.
 	 *
 	 * @param item
 	 *            The item that needs to be routed.
@@ -154,7 +154,7 @@ public class LogisticsManager implements ILogisticsManager {
 	 *            routedItem will cache the UUID, and that the SimpleID belongs
 	 *            to the UUID will be checked when appropriate)
 	 * @param excludeSource
-	 *            Boolean, true means that it wont set the source as the
+	 *            Boolean, true means that it won't set the source as the
 	 *            destination.
 	 * @return IRoutedItem with a newly assigned destination
 	 */
@@ -259,7 +259,7 @@ public class LogisticsManager implements ILogisticsManager {
 	 */
 	@Override
 	public HashMap<ItemIdentifier, Integer> getAvailableItems(List<ExitRoute> validDestinations) {
-		//TODO: Replace this entire function wiht a fetch from the pre-built arrays (path incoming later)
+		//TODO: Replace this entire function with a fetch from the pre-built arrays (path incoming later)
 		List<Map<ItemIdentifier, Integer>> items = new ArrayList<>(ServerRouter.getBiggestSimpleID());
 		for (int i = 0; i < ServerRouter.getBiggestSimpleID(); i++) {
 			items.add(new HashMap<>());
@@ -345,7 +345,7 @@ public class LogisticsManager implements ILogisticsManager {
 
 	@Override
 	public int getAmountFor(ItemIdentifier itemType, List<ExitRoute> validDestinations) {
-		// TODO: Replace this entire function wiht a fetch from the pre-built arrays (path incoming later)
+		// TODO: Replace this entire function with a fetch from the pre-built arrays (path incoming later)
 		List<Map<ItemIdentifier, Integer>> items = new ArrayList<>(ServerRouter.getBiggestSimpleID());
 		for (int i = 0; i < ServerRouter.getBiggestSimpleID(); i++) {
 			items.add(new HashMap<>());

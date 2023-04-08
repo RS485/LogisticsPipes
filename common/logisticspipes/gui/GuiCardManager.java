@@ -5,7 +5,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import logisticspipes.LPItems;
 import logisticspipes.interfaces.IGuiOpenControler;
 import logisticspipes.items.ItemModule;
-import logisticspipes.utils.CardManagmentInventory;
+import logisticspipes.utils.CardManagementInventory;
 import logisticspipes.utils.Color;
 import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
@@ -15,7 +15,7 @@ public class GuiCardManager extends LogisticsBaseGuiScreen {
 
 	public GuiCardManager(EntityPlayer player) {
 		super(180, 180, 0, 0);
-		final CardManagmentInventory Cinv = new CardManagmentInventory();
+		final CardManagementInventory Cinv = new CardManagementInventory();
 		DummyContainer dummy = new DummyContainer(player, Cinv, new IGuiOpenControler() {
 
 			@Override

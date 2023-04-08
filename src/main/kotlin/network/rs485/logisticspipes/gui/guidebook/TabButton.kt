@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import logisticspipes.utils.MinecraftColor
 import net.minecraft.client.Minecraft
 import network.rs485.logisticspipes.gui.HorizontalAlignment
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.Rectangle
 
@@ -79,7 +79,7 @@ class TabButton(
         if (isInactive) {
             val yOffset = if (whisky.isPageActive()) 0 else 3
             val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
-            LPGuiDrawer.drawGuiTexturedRect(
+            GuiDrawer.drawGuiTexturedRect(
                 rect = body.translated(0, yOffset),
                 text = buttonTextureArea,
                 blend = true,
@@ -95,13 +95,13 @@ class TabButton(
     override fun drawButtonForegroundLayer(mouseX: Int, mouseY: Int) {
         if (isActive) {
             val color: Int = (MinecraftColor.values()[whisky.getColor()].colorCode and 0x00FFFFFF) or 0xFF000000.toInt()
-            LPGuiDrawer.drawGuiTexturedRect(
+            GuiDrawer.drawGuiTexturedRect(
                 rect = body,
                 text = buttonTextureArea,
                 blend = true,
                 color = -1
             )
-            LPGuiDrawer.drawGuiTexturedRect(
+            GuiDrawer.drawGuiTexturedRect(
                 rect = circleArea.translated(body),
                 text = circleAreaTexture,
                 blend = true,

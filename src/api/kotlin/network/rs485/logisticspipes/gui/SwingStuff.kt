@@ -37,12 +37,13 @@
 
 package network.rs485.logisticspipes.gui
 
-import network.rs485.logisticspipes.util.IRectangle
 import java.awt.Container
-import javax.swing.*
+import javax.swing.JButton
+import javax.swing.JLabel
+import javax.swing.JPanel
 
 interface WidgetRenderer<T : Any> {
-    fun render(componentContainer: ComponentContainer, body: IRectangle): T
+    fun render(componentContainer: ComponentContainer): T
 }
 
 object SwingRenderer : WidgetRenderer<JPanel> {
@@ -82,7 +83,7 @@ object SwingRenderer : WidgetRenderer<JPanel> {
         }
     }
 
-    override fun render(componentContainer: ComponentContainer, body: IRectangle): JPanel {
+    override fun render(componentContainer: ComponentContainer): JPanel {
         return JPanel().apply {
             addContainer(componentContainer)
         }

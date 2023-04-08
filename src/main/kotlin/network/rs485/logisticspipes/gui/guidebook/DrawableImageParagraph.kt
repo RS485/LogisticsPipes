@@ -46,7 +46,7 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.texture.PngSizeInfo
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
 import java.io.IOException
@@ -85,7 +85,7 @@ class DrawableImageParagraph(private val alternativeText: List<DrawableWord>, va
             super.draw(mouseX, mouseY, delta, visibleArea)
             for (drawableWord in alternativeText.filter { it.visible(visibleArea) }) {
                 drawableWord.draw(mouseX, mouseY, delta, visibleArea)
-                LPGuiDrawer.drawOutlineRect(absoluteBody, MinecraftColor.WHITE.colorCode)
+                GuiDrawer.drawOutlineRect(absoluteBody, MinecraftColor.WHITE.colorCode)
             }
         } else {
             image.draw(mouseX, mouseY, delta, visibleArea)
@@ -112,7 +112,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         if (imageSize != null) {
             drawImage(absoluteBody, visibleArea, imageResource)
         } else {
-            LPGuiDrawer.drawOutlineRect(absoluteBody, MinecraftColor.WHITE.colorCode)
+            GuiDrawer.drawOutlineRect(absoluteBody, MinecraftColor.WHITE.colorCode)
         }
     }
 

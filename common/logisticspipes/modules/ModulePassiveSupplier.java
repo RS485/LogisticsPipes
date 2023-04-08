@@ -180,8 +180,8 @@ public class ModulePassiveSupplier extends LogisticsModule
 	}
 
 	@Override
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {
-		itemidCollection.addAll(filterInventory.getItemsAndCount().keySet());
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdentifiers) {
+		itemIdentifiers.addAll(filterInventory.getItemsAndCount().keySet());
 	}
 
 	@Override
@@ -195,7 +195,7 @@ public class ModulePassiveSupplier extends LogisticsModule
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

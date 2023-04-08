@@ -4,7 +4,7 @@
     "description": "Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "http://www.minecraftforum.net/topic/1831791-",
+    "url": "https://github.com/RS485/LogisticsPipes",
     "updateUrl": "",
     "authorList": [ "RS485", "LP Team" ],
     "credits": "Contributors: https://github.com/RS485/LogisticsPipes/contributors. Original code and idea made by Krapht. Thanks!",

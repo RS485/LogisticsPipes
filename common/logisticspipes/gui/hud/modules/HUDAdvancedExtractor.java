@@ -63,8 +63,8 @@ public class HUDAdvancedExtractor implements IHUDModuleRenderer {
 
 		private final int mode;
 
-		public TabButton(String name, int mode, int x, int y, int width, int heigth) {
-			super(name, x, y, width, heigth);
+		public TabButton(String name, int mode, int x, int y, int width, int height) {
+			super(name, x, y, width, height);
 			this.mode = mode;
 		}
 

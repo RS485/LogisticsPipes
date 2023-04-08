@@ -1,4 +1,4 @@
-package logisticspipes.utils.gui.extention;
+package logisticspipes.utils.gui.extension;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
@@ -14,45 +14,45 @@ import lombok.Setter;
 
 import logisticspipes.utils.gui.GuiGraphics;
 
-public class GuiExtentionController {
+public class GuiExtensionController {
 
 	public enum GuiSide {
 		LEFT,
 		RIGHT
 	}
 
-	private final List<GuiExtention> extentions = new ArrayList<>();
-	private final List<GuiExtention> extentionsToRemove = new ArrayList<>();
+	private final List<GuiExtension> extensions = new ArrayList<>();
+	private final List<GuiExtension> extensionsToRemove = new ArrayList<>();
 	@Setter
 	private int maxBottom;
-	private GuiExtention currentlyExtended = null;
+	private GuiExtension currentlyExtended = null;
 	private Map<Slot, Integer> slotMap = new HashMap<>();
 	private Map<GuiButton, Integer> buttonMap = new HashMap<>();
 
 	private final GuiSide side;
 
-	public GuiExtentionController(GuiSide side) {
+	public GuiExtensionController(GuiSide side) {
 		this.side = side;
 	}
 
 	public void render(int xPos, int yPos) {
 		yPos += 4;
 		if (currentlyExtended == null) {
-			for (GuiExtention extention : extentions) {
-				extention.setExtending(false);
+			for (GuiExtension extension : extensions) {
+				extension.setExtending(false);
 				int left;
 				int right;
 				if (side == GuiSide.LEFT) {
-					left = xPos - extention.getCurrentWidth();
+					left = xPos - extension.getCurrentWidth();
 					right = xPos + 15;
 				} else {
 					left = xPos - 15;
-					right = xPos + extention.getCurrentWidth();
+					right = xPos + extension.getCurrentWidth();
 				}
-				int bottom = yPos + extention.getCurrentHeight();
-				extention.update(left, yPos);
+				int bottom = yPos + extension.getCurrentHeight();
+				extension.update(left, yPos);
 				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, yPos, right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
-				extention.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), yPos);
+				extension.renderForeground(left + (side == GuiSide.RIGHT ? 20 : 0), yPos);
 				yPos = bottom;
 			}
 		} else {
@@ -69,14 +69,14 @@ public class GuiExtentionController {
 				int bottom = currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight();
 				currentlyExtended.update(left, yPos);
 				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
-				currentlyExtended.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
+				currentlyExtended.renderForeground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
 			} else {
-				for (GuiExtention extention : extentions) {
-					if (extention == currentlyExtended) {
+				for (GuiExtension extension : extensions) {
+					if (extension == currentlyExtended) {
 						break;
 					}
-					extention.setExtending(false);
-					int bottom = yPos + extention.getCurrentHeight();
+					extension.setExtending(false);
+					int bottom = yPos + extension.getCurrentHeight();
 					yPos = bottom;
 				}
 				int left;
@@ -91,33 +91,33 @@ public class GuiExtentionController {
 				int bottom = currentlyExtended.getCurrentYPos() + currentlyExtended.getCurrentHeight();
 				currentlyExtended.update(left, yPos);
 				GuiGraphics.drawGuiBackGround(Minecraft.getMinecraft(), left, currentlyExtended.getCurrentYPos(), right, bottom, 0, true, true, side != GuiSide.RIGHT, true, side != GuiSide.LEFT);
-				currentlyExtended.renderForground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
+				currentlyExtended.renderForeground(left + (side == GuiSide.RIGHT ? 20 : 0), currentlyExtended.getCurrentYPos());
 				if (currentlyExtended.isFullyRetracted()) {
 					currentlyExtended = null;
 				}
 			}
 		}
-		if (currentlyExtended != null && extentionsToRemove.contains(currentlyExtended)) {
+		if (currentlyExtended != null && extensionsToRemove.contains(currentlyExtended)) {
 			currentlyExtended = null;
 		}
-		extentions.removeAll(extentionsToRemove);
-		extentionsToRemove.clear();
+		extensions.removeAll(extensionsToRemove);
+		extensionsToRemove.clear();
 	}
 
-	public void addExtention(GuiExtention extention) {
-		extentions.add(extention);
+	public void addExtension(GuiExtension extension) {
+		extensions.add(extension);
 	}
 
-	public void removeExtention(GuiExtention extention) {
-		extentionsToRemove.add(extention);
+	public void removeExtension(GuiExtension extension) {
+		extensionsToRemove.add(extension);
 	}
 
 	public void mouseClicked(int x, int y, int k) {
 		if (currentlyExtended == null) {
-			extentions.stream()
-					.filter(extention -> x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight())
-					.forEach(extention -> {
-						currentlyExtended = extention;
+			extensions.stream()
+					.filter(extension -> x > extension.getCurrentXPos() && x < extension.getCurrentXPos() + extension.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extension.getCurrentYPos() && y < extension.getCurrentYPos() + extension.getCurrentHeight())
+					.forEach(extension -> {
+						currentlyExtended = extension;
 						currentlyExtended.setExtending(true);
 					});
 		} else {
@@ -131,9 +131,9 @@ public class GuiExtentionController {
 		int x = i;
 		int y = j;
 		if (currentlyExtended == null) {
-			for (GuiExtention extention : extentions) {
-				if (x > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
-					extention.handleMouseOverAt(x, y);
+			for (GuiExtension extension : extensions) {
+				if (x > extension.getCurrentXPos() && x < extension.getCurrentXPos() + extension.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y > extension.getCurrentYPos() && y < extension.getCurrentYPos() + extension.getCurrentHeight()) {
+					extension.handleMouseOverAt(x, y);
 					return;
 				}
 			}
@@ -204,8 +204,8 @@ public class GuiExtentionController {
 	}
 
 	public void clear() {
-		extentions.clear();
-		extentionsToRemove.clear();
+		extensions.clear();
+		extensionsToRemove.clear();
 		currentlyExtended = null;
 	}
 
@@ -218,8 +218,8 @@ public class GuiExtentionController {
 	public List<Rectangle> getGuiExtraAreas() {
 		List<Rectangle> list = new ArrayList<>();
 		if (currentlyExtended == null) {
-			for (GuiExtention extention : extentions) {
-				list.add(new Rectangle(extention.getCurrentXPos(), extention.getCurrentYPos(), extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0), extention.getCurrentHeight()));
+			for (GuiExtension extension : extensions) {
+				list.add(new Rectangle(extension.getCurrentXPos(), extension.getCurrentYPos(), extension.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0), extension.getCurrentHeight()));
 			}
 		} else {
 			list.add(new Rectangle(currentlyExtended.getCurrentXPos(), currentlyExtended.getCurrentYPos(), currentlyExtended.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0), currentlyExtended.getCurrentHeight()));
@@ -229,8 +229,8 @@ public class GuiExtentionController {
 
 	public boolean isOverPanel(int x, int y, int w, int h) {
 		if (currentlyExtended == null) {
-			for (GuiExtention extention : extentions) {
-				if (x + w > extention.getCurrentXPos() && x < extention.getCurrentXPos() + extention.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y + h > extention.getCurrentYPos() && y < extention.getCurrentYPos() + extention.getCurrentHeight()) {
+			for (GuiExtension extension : extensions) {
+				if (x + w > extension.getCurrentXPos() && x < extension.getCurrentXPos() + extension.getCurrentWidth() + (side == GuiSide.RIGHT ? 15 : 0) && y + h > extension.getCurrentYPos() && y < extension.getCurrentYPos() + extension.getCurrentHeight()) {
 					return true;
 				}
 			}

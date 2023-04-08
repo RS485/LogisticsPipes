@@ -40,7 +40,7 @@ package network.rs485.logisticspipes.gui.guidebook
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiButton
 import network.rs485.logisticspipes.gui.HorizontalAlignment
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.util.Rectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
@@ -81,6 +81,6 @@ open class LPGuiButton(id: Int, x: Int, y: Int, width: Int, height: Int) : GuiBu
     open fun getTooltipText(): String = ""
 
     open fun drawTooltip(x: Int, y: Int, horizontalAlign: HorizontalAlignment, verticalAlign: VerticalAlignment) {
-        LPGuiDrawer.drawTextTooltip(listOf(getTooltipText()), x, y, GuideBookConstants.Z_TOOLTIP, horizontalAlign, verticalAlign)
+        GuiDrawer.drawTextTooltip(listOf(getTooltipText()), x, y, GuideBookConstants.Z_TOOLTIP, horizontalAlign, verticalAlign)
     }
 }

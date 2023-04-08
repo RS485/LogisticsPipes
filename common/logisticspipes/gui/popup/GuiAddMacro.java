@@ -34,21 +34,21 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	private final IDiskProvider diskProvider;
 	private int mousePosX = 0;
 	private int mousePosY = 0;
-	private int mousebutton = 0;
+	private int mouseButton = 0;
 	private int pageAll = 0;
 	private int maxPageAll = 0;
 	private int pageMacro = 0;
 	private int maxPageMacro = 0;
-	private int wheelup = 0;
-	private int wheeldown = 0;
-	private boolean editsearch = false;
-	private boolean editname = false;
+	private int wheelUp = 0;
+	private int wheelDown = 0;
+	private boolean editSearch = false;
+	private boolean editName = false;
 	private LinkedList<ItemIdentifierStack> macroItems = new LinkedList<>();
 	private String name1;
 	private String name2 = "";
 	private String Search1 = "";
 	private String Search2 = "";
-	private boolean displaycursor = false;
+	private boolean displayCursor = false;
 	private long oldSystemTime = 0;
 
 	private Object[] tooltip;
@@ -111,18 +111,18 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 	protected void mouseClicked(int i, int j, int k) throws IOException {
 		mousePosX = i;
 		mousePosY = j;
-		mousebutton = k;
+		mouseButton = k;
 		int x = i - guiLeft;
 		int y = j - guiTop;
 		if (50 < x && x < 188 && 118 < y && y < 133) {
-			editsearch = true;
-			editname = false;
+			editSearch = true;
+			editName = false;
 		} else if (37 < x && x < 159 && 176 < y && y < 190) {
-			editsearch = false;
-			editname = true;
+			editSearch = false;
+			editName = true;
 		} else {
-			editsearch = false;
-			editname = false;
+			editSearch = false;
+			editName = false;
 		}
 		super.mouseClicked(i, j, k);
 	}
@@ -134,9 +134,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			super.handleMouseInputSub();
 		}
 		if (wheel < 0) {
-			wheeldown = wheel * -1;
+			wheelDown = wheel * -1;
 		} else {
-			wheelup = wheel;
+			wheelUp = wheel;
 		}
 	}
 
@@ -149,8 +149,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 	@Override
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-		int panelxSize = 20;
-		int panelySize = 20;
+		int panelXSize = 20;
+		int panelYSize = 20;
 
 		int ppi = 0;
 		int column = 0;
@@ -159,9 +159,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 		int wheel = org.lwjgl.input.Mouse.getDWheel();
 		if (wheel != 0) {
 			if (wheel < 0) {
-				mousebutton = 0;
+				mouseButton = 0;
 			} else {
-				mousebutton = 1;
+				mouseButton = 1;
 			}
 			mousePosX = mouseX;
 			mousePosY = mouseY;
@@ -169,8 +169,8 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 		tooltip = null;
 
-		for (ItemIdentifierStack itemidStack : diskProvider.getItemDisplay()._allItems) {
-			ItemIdentifier item = itemidStack.getItem();
+		for (ItemIdentifierStack itemIdStack : diskProvider.getItemDisplay()._allItems) {
+			ItemIdentifier item = itemIdStack.getItem();
 			if (!itemSearched(item)) {
 				continue;
 			}
@@ -182,26 +182,26 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			if (ppi > 45 * (pageAll + 1)) {
 				continue;
 			}
-			ItemStack st = itemidStack.unsafeMakeNormalStack();
-			int x = guiLeft + 10 + panelxSize * column;
-			int y = guiTop + 18 + panelySize * row;
+			ItemStack st = itemIdStack.unsafeMakeNormalStack();
+			int x = guiLeft + 10 + panelXSize * column;
+			int y = guiTop + 18 + panelYSize * row;
 
 			if (!super.hasSubGui()) {
-				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
-					Gui.drawRect(x - 3, y - 1, x + panelxSize - 3, y + panelySize - 3, Color.getValue(Color.BLACK));
-					Gui.drawRect(x - 2, y - 0, x + panelxSize - 4, y + panelySize - 4, Color.getValue(Color.DARKER_GREY));
+				if (mouseX >= x && mouseX < x + panelXSize && mouseY >= y && mouseY < y + panelYSize) {
+					Gui.drawRect(x - 3, y - 1, x + panelXSize - 3, y + panelYSize - 3, Color.getValue(Color.BLACK));
+					Gui.drawRect(x - 2, y - 0, x + panelXSize - 4, y + panelYSize - 4, Color.getValue(Color.DARKER_GREY));
 					tooltip = new Object[] { mouseX + guiLeft, mouseY + guiTop, st, false };
 				}
 
 				if (mousePosX != 0 && mousePosY != 0) {
-					if ((mousePosX >= x && mousePosX < x + panelxSize && mousePosY >= y && mousePosY < y + panelySize) || (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize && (wheeldown != 0 || wheelup != 0))) {
+					if ((mousePosX >= x && mousePosX < x + panelXSize && mousePosY >= y && mousePosY < y + panelYSize) || (mouseX >= x && mouseX < x + panelXSize && mouseY >= y && mouseY < y + panelYSize && (wheelDown != 0 || wheelUp != 0))) {
 						boolean handled = false;
 						for (ItemIdentifierStack stack : macroItems) {
 							if (stack.getItem().equals(item)) {
-								if (mousebutton == 0 || wheelup != 0) {
-									stack.setStackSize(stack.getStackSize() + (1 + (wheelup != 0 ? wheelup - 1 : 0)));
-								} else if (mousebutton == 1 || wheeldown != 0) {
-									stack.setStackSize(stack.getStackSize() - (1 + (wheeldown != 0 ? wheeldown - 1 : 0)));
+								if (mouseButton == 0 || wheelUp != 0) {
+									stack.setStackSize(stack.getStackSize() + (1 + (wheelUp != 0 ? wheelUp - 1 : 0)));
+								} else if (mouseButton == 1 || wheelDown != 0) {
+									stack.setStackSize(stack.getStackSize() - (1 + (wheelDown != 0 ? wheelDown - 1 : 0)));
 									if (stack.getStackSize() <= 0) {
 										macroItems.remove(stack);
 									}
@@ -214,18 +214,18 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 							int i = 0;
 							for (ItemIdentifierStack stack : macroItems) {
 								if (item.equals(stack.getItem()) && item.itemDamage < stack.getItem().itemDamage) {
-									if (mousebutton == 0 || wheelup != 0) {
-										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
-									} else if (mousebutton == 2) {
+									if (mouseButton == 0 || wheelUp != 0) {
+										macroItems.add(i, item.makeStack(1 + (wheelUp != 0 ? wheelUp - 1 : 0)));
+									} else if (mouseButton == 2) {
 										macroItems.add(i, item.makeStack(64));
 									}
 									handled = true;
 									break;
 								}
 								if (Item.getIdFromItem(item.item) < Item.getIdFromItem(stack.getItem().item)) {
-									if (mousebutton == 0 || wheelup != 0) {
-										macroItems.add(i, item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
-									} else if (mousebutton == 2) {
+									if (mouseButton == 0 || wheelUp != 0) {
+										macroItems.add(i, item.makeStack(1 + (wheelUp != 0 ? wheelUp - 1 : 0)));
+									} else if (mouseButton == 2) {
 										macroItems.add(i, item.makeStack(64));
 									}
 									handled = true;
@@ -234,9 +234,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 								i++;
 							}
 							if (!handled) {
-								if (mousebutton == 0 || wheelup != 0) {
-									macroItems.addLast(item.makeStack(1 + (wheelup != 0 ? wheelup - 1 : 0)));
-								} else if (mousebutton == 2) {
+								if (mouseButton == 0 || wheelUp != 0) {
+									macroItems.addLast(item.makeStack(1 + (wheelUp != 0 ? wheelUp - 1 : 0)));
+								} else if (mouseButton == 2) {
 									macroItems.addLast(item.makeStack(64));
 								}
 							}
@@ -253,7 +253,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 			}
 		}
 
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 9, guiTop + 17, 9, 45, panelxSize, panelySize, 100.0F, DisplayAmount.NEVER);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(diskProvider.getItemDisplay()._allItems, this, pageAll, guiLeft + 9, guiTop + 17, 9, 45, panelXSize, panelYSize, 100.0F, DisplayAmount.NEVER);
 
 		ppi = 0;
 		column = 0;
@@ -273,11 +273,11 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				continue;
 			}
 			ItemStack st = itemStack.unsafeMakeNormalStack();
-			int x = guiLeft + 10 + panelxSize * column;
-			int y = guiTop + 150 + panelySize * row;
+			int x = guiLeft + 10 + panelXSize * column;
+			int y = guiTop + 150 + panelYSize * row;
 
 			if (!super.hasSubGui()) {
-				if (mouseX >= x && mouseX < x + panelxSize && mouseY >= y && mouseY < y + panelySize) {
+				if (mouseX >= x && mouseX < x + panelXSize && mouseY >= y && mouseY < y + panelYSize) {
 					tooltip = new Object[] { mouseX + guiLeft, mouseY + guiTop, st };
 				}
 			}
@@ -287,7 +287,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 				column = 0;
 			}
 		}
-		ItemStackRenderer.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelxSize, panelySize, 100.0F, DisplayAmount.ALWAYS);
+		ItemStackRenderer.renderItemIdentifierStackListIntoGui(macroItems, this, pageMacro, guiLeft + 10, guiTop + 150, 9, 9, panelXSize, panelYSize, 100.0F, DisplayAmount.ALWAYS);
 	}
 
 	@Override
@@ -321,7 +321,7 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 		mc.fontRenderer.drawString("Search:", guiLeft + 8, guiTop + 122, 0x404040);
 
-		if (editsearch) {
+		if (editSearch) {
 			Gui.drawRect(guiLeft + 50, bottom - 66, right - 10, bottom - 83, Color.getValue(Color.BLACK));
 			Gui.drawRect(guiLeft + 51, bottom - 67, right - 11, bottom - 82, Color.getValue(Color.WHITE));
 		} else {
@@ -331,20 +331,20 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 		mc.fontRenderer.drawString(Search1 + Search2, guiLeft + 55, guiTop + 122, 0xFFFFFF);
 
-		if (editsearch) {
-			int linex = guiLeft + 55 + mc.fontRenderer.getStringWidth(Search1);
+		if (editSearch) {
+			int lineX = guiLeft + 55 + mc.fontRenderer.getStringWidth(Search1);
 			if (System.currentTimeMillis() - oldSystemTime > 500) {
-				displaycursor = !displaycursor;
+				displayCursor = !displayCursor;
 				oldSystemTime = System.currentTimeMillis();
 			}
-			if (displaycursor) {
-				Gui.drawRect(linex, guiTop + 120, linex + 1, guiTop + 131, Color.getValue(Color.WHITE));
+			if (displayCursor) {
+				Gui.drawRect(lineX, guiTop + 120, lineX + 1, guiTop + 131, Color.getValue(Color.WHITE));
 			}
 		}
 
 		mc.fontRenderer.drawString("Name:", guiLeft + 8, bottom - 20, 0x404040);
 
-		if (editname) {
+		if (editName) {
 			Gui.drawRect(guiLeft + 36, bottom - 8, right - 40, bottom - 25, Color.getValue(Color.BLACK));
 			Gui.drawRect(guiLeft + 37, bottom - 9, right - 41, bottom - 24, Color.getValue(Color.WHITE));
 		} else {
@@ -354,14 +354,14 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 		mc.fontRenderer.drawString(name1 + name2, guiLeft + 41, bottom - 20, 0xFFFFFF);
 
-		if (editname) {
-			int linex = guiLeft + 41 + mc.fontRenderer.getStringWidth(name1);
+		if (editName) {
+			int lineX = guiLeft + 41 + mc.fontRenderer.getStringWidth(name1);
 			if (System.currentTimeMillis() - oldSystemTime > 500) {
-				displaycursor = !displaycursor;
+				displayCursor = !displayCursor;
 				oldSystemTime = System.currentTimeMillis();
 			}
-			if (displaycursor) {
-				Gui.drawRect(linex, bottom - 11, linex + 1, bottom - 22, Color.getValue(Color.WHITE));
+			if (displayCursor) {
+				Gui.drawRect(lineX, bottom - 11, lineX + 1, bottom - 22, Color.getValue(Color.WHITE));
 			}
 		}
 
@@ -490,9 +490,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 
 	@Override
 	protected void keyTyped(char c, int i) {
-		if (editname) {
+		if (editName) {
 			if (c == 13) {
-				editname = false;
+				editName = false;
 				return;
 			} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				name1 = name1 + GuiScreen.getClipboardString();
@@ -517,9 +517,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					name2 = name2.substring(1);
 				}
 			} else if (i == 1) { //ESC
-				editname = false;
+				editName = false;
 			} else if (i == 28) { //Enter
-				editname = false;
+				editName = false;
 			} else if (i == 199) { //Pos
 				name2 = name1 + name2;
 				name1 = "";
@@ -531,9 +531,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					name2 = name2.substring(1);
 				}
 			}
-		} else if (editsearch) {
+		} else if (editSearch) {
 			if (c == 13) {
-				editsearch = false;
+				editSearch = false;
 				return;
 			} else if (i == 47 && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL)) {
 				Search1 = Search1 + GuiScreen.getClipboardString();
@@ -558,9 +558,9 @@ public class GuiAddMacro extends SubGuiScreen implements IItemSearch {
 					Search2 = Search2.substring(1);
 				}
 			} else if (i == 1) { //ESC
-				editsearch = false;
+				editSearch = false;
 			} else if (i == 28) { //Enter
-				editsearch = false;
+				editSearch = false;
 			} else if (i == 199) { //Pos
 				Search2 = Search1 + Search2;
 				Search1 = "";

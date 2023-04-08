@@ -102,7 +102,7 @@ public class ChassisModule extends LogisticsModule implements Gui {
 		for (SlottedModule slottedModule : modules) {
 			final LogisticsModule module = slottedModule.getModule();
 			if (module != null) {
-				if (!forcePassive || module.recievePassive()) {
+				if (!forcePassive || module.receivePassive()) {
 					SinkReply result = module
 							.sinksItem(stack, item, bestPriority, bestCustomPriority, allowDefault, includeInTransit,
 									forcePassive);
@@ -247,10 +247,10 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		for (SlottedModule slottedModule : modules) {
 			final LogisticsModule module = slottedModule.getModule();
-			if (module != null && module.recievePassive()) {
+			if (module != null && module.receivePassive()) {
 				return true;
 			}
 		}

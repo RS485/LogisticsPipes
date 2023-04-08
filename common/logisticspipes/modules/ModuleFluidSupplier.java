@@ -146,7 +146,7 @@ public class ModuleFluidSupplier extends LogisticsModule implements IClientInfor
 	}
 
 	@Override
-	public boolean recievePassive() {
+	public boolean receivePassive() {
 		return true;
 	}
 

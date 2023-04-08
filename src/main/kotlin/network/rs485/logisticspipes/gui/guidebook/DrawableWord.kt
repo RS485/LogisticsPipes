@@ -37,7 +37,7 @@
 
 package network.rs485.logisticspipes.gui.guidebook
 
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
 import network.rs485.markdown.*
@@ -51,7 +51,7 @@ open class DrawableWord(
     private val scale: Float,
     state: InlineDrawableState,
     protected val linkInteractable: LinkInteractable?,
-) : Drawable, MouseInteractable {
+) : Drawable, GuideBookMouseInteractable {
 
     final override val relativeBody: MutableRectangle = MutableRectangle()
     override var parent: Drawable? = null
@@ -64,8 +64,8 @@ open class DrawableWord(
 
     init {
         relativeBody.setSize(
-            newWidth = LPGuiDrawer.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale),
-            newHeight = LPGuiDrawer.lpFontRenderer.getFontHeight(scale),
+            newWidth = GuiDrawer.lpFontRenderer.getStringWidth(str, format.italic(), format.bold(), scale),
+            newHeight = GuiDrawer.lpFontRenderer.getFontHeight(scale),
         )
     }
 
@@ -73,8 +73,8 @@ open class DrawableWord(
         if (linkInteractable != null) drawableParagraph.registerPreRenderCallback(linkInteractable::updateState)
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?) =
-        linkInteractable?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+    override fun inBookMouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?) =
+        linkInteractable?.inBookMouseClicked(mouseX, mouseY, mouseButton, guideActionListener) ?: super.mouseClicked(mouseX, mouseY, mouseButton)
 
     override fun isMouseHovering(mouseX: Float, mouseY: Float): Boolean =
         absoluteBody.contains(mouseX, mouseY)
@@ -84,9 +84,9 @@ open class DrawableWord(
         val updatedColor = linkInteractable?.updateColor(color) ?: color
         val updatedFormat = linkInteractable?.updateFormat(format) ?: format
         if (hovering) {
-            LPGuiDrawer.drawInteractionIndicator(mouseX, mouseY)
+            GuiDrawer.drawInteractionIndicator(mouseX, mouseY)
         }
-        LPGuiDrawer.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
+        GuiDrawer.lpFontRenderer.drawString(string = str, x = left, y = top, color = updatedColor, format = updatedFormat, scale = scale)
     }
 
     override fun setPos(x: Int, y: Int): Pair<Int, Int> {
@@ -113,7 +113,7 @@ class DrawableSpace(
             linkInteractable?.isMouseHovering(mouseX, mouseY)
             val updatedColor = linkInteractable?.updateColor(color) ?: color
             val updatedFormat = linkInteractable?.updateFormat(format) ?: format
-            LPGuiDrawer.lpFontRenderer.drawSpace(
+            GuiDrawer.lpFontRenderer.drawSpace(
                 x = left,
                 y = top,
                 width = width,
@@ -132,7 +132,7 @@ class DrawableSpace(
     }
 
     fun resetWidth() {
-        setWidth(newWidth = LPGuiDrawer.lpFontRenderer.getStringWidth(" ", format.italic(), format.bold(), scale))
+        setWidth(newWidth = GuiDrawer.lpFontRenderer.getStringWidth(" ", format.italic(), format.bold(), scale))
     }
 
     override fun toString(): String {

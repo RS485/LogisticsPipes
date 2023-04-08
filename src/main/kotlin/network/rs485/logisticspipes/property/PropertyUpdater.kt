@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui
+package network.rs485.logisticspipes.property
 
 import logisticspipes.modules.LogisticsModule
 import logisticspipes.network.PacketHandler
@@ -43,10 +43,6 @@ import logisticspipes.network.packets.module.ModulePropertiesUpdate
 import logisticspipes.proxy.MainProxy
 import net.minecraft.entity.player.EntityPlayer
 import network.rs485.grow.Coroutines.scheduleServerTask
-import network.rs485.logisticspipes.property.Property
-import network.rs485.logisticspipes.property.addObserver
-import network.rs485.logisticspipes.property.removeObserver
-import network.rs485.logisticspipes.property.writeToNBT
 import java.lang.ref.WeakReference
 import java.util.function.Consumer
 

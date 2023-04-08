@@ -135,7 +135,7 @@ object DrawablePageFactory {
             menuStructure: Map<String, List<String>>,
             drawableMenuTitle: List<DrawableWord>,
             drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
-    ) where T : Drawable, T : MouseInteractable = menuStructure.map { (groupTitle: String, groupEntries: List<String>) ->
+    ) where T : Drawable, T : GuideBookMouseInteractable = menuStructure.map { (groupTitle: String, groupEntries: List<String>) ->
         createDrawableParagraph(
                 paragraphConstructor = { drawableGroupTitle ->
                     createDrawableMenu(resolvePaths(page, groupEntries), drawableGroupTitle, drawableMenuEntryConstructor)
@@ -151,7 +151,7 @@ object DrawablePageFactory {
             menuGroupEntries: List<String>,
             drawableGroupTitle: List<DrawableWord>,
             drawableMenuEntryConstructor: DrawableMenuEntryFactory<T>,
-    ) where T : Drawable, T : MouseInteractable = menuGroupEntries
+    ) where T : Drawable, T : GuideBookMouseInteractable = menuGroupEntries
             .map { path ->
                 BookContents.get(path).metadata.let { metadata ->
                     drawableMenuEntryConstructor(path, metadata.title, metadata.icon)

@@ -144,11 +144,11 @@ public class ItemUpgrade extends LogisticsItem {
 				return currentUpgrade;
 			}
 		}
-		IPipeUpgrade newupgrade = upgradeType.getIPipeUpgrade();
-		if (newupgrade == null) {
+		IPipeUpgrade newUpgrade = upgradeType.getIPipeUpgrade();
+		if (newUpgrade == null) {
 			return null;
 		}
-		return newupgrade;
+		return newUpgrade;
 	}
 
 	@Override

@@ -16,10 +16,10 @@ import logisticspipes.utils.gui.GuiGraphics;
 public class DrawHandler implements IContainerDrawHandler {
 
 	@Override
-	public void renderObjects(GuiContainer gui, int mousex, int mousey) {}
+	public void renderObjects(GuiContainer gui, int mouseX, int mouseY) {}
 
 	@Override
-	public void postRenderObjects(GuiContainer gui, int mousex, int mousey) {}
+	public void postRenderObjects(GuiContainer gui, int mouseX, int mouseY) {}
 
 	//TODO: Find way to replicate this with the new api
 /*

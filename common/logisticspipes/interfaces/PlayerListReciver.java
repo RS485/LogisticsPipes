@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface PlayerListReciver {
 
-	void recivePlayerList(List<String> list);
+	void receivePlayerList(List<String> list);
 }

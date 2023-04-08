@@ -47,11 +47,11 @@ public class PipeItemsSystemDestinationLogistics extends CoreRoutedPipe {
 	}
 
 	public Object getTargetUUID() {
-		final ItemIdentifierStack itemident = module.inv.getIDStackInSlot(0);
+		final ItemIdentifierStack itemIdent = module.inv.getIDStackInSlot(0);
 		if (itemident == null) {
 			return null;
 		}
-		final ItemStack stack = itemident.makeNormalStack();
+		final ItemStack stack = itemIdent.makeNormalStack();
 		if (!stack.hasTagCompound()) {
 			return null;
 		}

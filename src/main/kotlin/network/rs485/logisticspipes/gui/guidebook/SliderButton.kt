@@ -38,7 +38,7 @@
 package network.rs485.logisticspipes.gui.guidebook
 
 import net.minecraft.client.Minecraft
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.util.Rectangle
 import network.rs485.logisticspipes.util.math.MutableRectangle
 import kotlin.math.roundToInt
@@ -57,7 +57,7 @@ class SliderButton(x: Int, y: Int, width: Int, railHeight: Int, private var prog
         if (!visible) return
         hoveredBar = sliderButton.translated(body).contains(mouseX, mouseY)
         hovered = body.contains(mouseX, mouseY)
-        LPGuiDrawer.drawSliderButton(
+        GuiDrawer.drawSliderButton(
             body = sliderButton.translated(body),
             texture = texture.translated(0, getHoverState(hoveredBar) * texture.roundedHeight),
         )

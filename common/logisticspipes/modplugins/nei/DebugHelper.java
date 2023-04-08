@@ -35,10 +35,10 @@ public class DebugHelper implements IContainerTooltipHandler {
 	private static long lastTime = 0;
 
 	@Override
-	public void handleTooltip(GuiScreen gui, int mousex, int mousey, List<String> currenttip) {}
+	public void handleTooltip(GuiScreen gui, int mouseX, int mouseY, List<String> currentTip) {}
 
 	@Override
-	public void handleItemDisplayName(GuiScreen gui, @Nonnull ItemStack itemstack, List<String> currenttip) {
+	public void handleItemDisplayName(GuiScreen gui, @Nonnull ItemStack itemstack, List<String> currentTip) {
 		if (Configs.TOOLTIP_INFO && !itemstack.isEmpty()) {
 			if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) && Keyboard.isKeyDown(Keyboard.KEY_LCONTROL) && Keyboard.isKeyDown(Keyboard.KEY_H)) {
 				if (DebugHelper.lastTime + 1000 < System.currentTimeMillis()) {

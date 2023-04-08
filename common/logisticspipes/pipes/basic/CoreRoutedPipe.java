@@ -953,7 +953,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	/* ITrackStatistics */
 
 	@Override
-	public void recievedItem(int count) {
+	public void receivedItem(int count) {
 		stat_session_recieved += count;
 		stat_lifetime_recieved += count;
 		updateStats();
@@ -1173,7 +1173,7 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		return getRouter().getSimpleID();
 	}
 
-	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemidCollection) {}
+	public void collectSpecificInterests(@Nonnull Collection<ItemIdentifier> itemIdentifiers) {}
 
 	public boolean hasGenericInterests() {
 		return false;

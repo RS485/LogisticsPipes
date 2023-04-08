@@ -202,9 +202,9 @@ import network.rs485.grow.ServerTickDispatcher;
 import network.rs485.logisticspipes.compat.TheOneProbeIntegration;
 import network.rs485.logisticspipes.config.ClientConfiguration;
 import network.rs485.logisticspipes.config.ServerConfigurationManager;
-import network.rs485.logisticspipes.gui.PropertyUpdaterEventListener;
 import network.rs485.logisticspipes.gui.font.LPFontRenderer;
 import network.rs485.logisticspipes.guidebook.ItemGuideBook;
+import network.rs485.logisticspipes.property.PropertyUpdaterEventListener;
 import network.rs485.util.SystemUtilKt;
 
 //@formatter:off

@@ -1,5 +1,7 @@
 package logisticspipes.modplugins.jei;
 
+import javax.annotation.Nonnull;
+
 import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fml.relauncher.Side;
@@ -13,6 +15,9 @@ import mezz.jei.api.recipe.IFocus;
 import mezz.jei.api.recipe.transfer.IRecipeTransferRegistry;
 
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
+import network.rs485.logisticspipes.compat.JEIAdvancedGuiHandler;
+import network.rs485.logisticspipes.compat.JEIGhostIngredientHandler;
+import network.rs485.logisticspipes.gui.BaseGuiContainer;
 
 @JEIPlugin
 public class JEIPluginLoader implements IModPlugin {
@@ -24,11 +29,12 @@ public class JEIPluginLoader implements IModPlugin {
 		IRecipeTransferRegistry recipeTransferRegistry = registry.getRecipeTransferRegistry();
 		recipeTransferRegistry.addUniversalRecipeTransferHandler(new RecipeTransferHandler(registry.getJeiHelpers().recipeTransferHandlerHelper()));
 		registry.addGhostIngredientHandler(LogisticsBaseGuiScreen.class, new GhostIngredientHandler());
-		registry.addAdvancedGuiHandlers(new AdvancedGuiHandler());
+		registry.addGhostIngredientHandler(BaseGuiContainer.class, new JEIGhostIngredientHandler());
+		registry.addAdvancedGuiHandlers(new AdvancedGuiHandler(), new JEIAdvancedGuiHandler());
 	}
 
 	@Override
-	public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+	public void onRuntimeAvailable(@Nonnull IJeiRuntime jeiRuntime) {
 		JEIPluginLoader.jeiRuntime = jeiRuntime;
 	}
 

@@ -49,8 +49,8 @@ class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableP
 
     private val horizontalLine = createChild { DrawableHorizontalLine(1) }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-        words.find { it.isMouseHovering(mouseX, mouseY) }?.mouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
+    override fun inBookMouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+        words.find { it.isMouseHovering(mouseX, mouseY) }?.inBookMouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
             ?: false
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {

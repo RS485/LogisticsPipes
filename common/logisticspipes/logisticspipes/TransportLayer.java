@@ -18,7 +18,7 @@ public abstract class TransportLayer {
 
 	public abstract boolean stillWantItem(IRoutedItem item);
 
-	public abstract EnumFacing itemArrived(IRoutedItem item, EnumFacing denyed);
+	public abstract EnumFacing itemArrived(IRoutedItem item, EnumFacing denied);
 
 	public void handleItem(IRoutedItem item) {}
 

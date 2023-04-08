@@ -41,7 +41,7 @@ import logisticspipes.utils.MinecraftColor
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.markdown.*
 
-interface LinkInteractable : MouseInteractable {
+interface LinkInteractable : GuideBookMouseInteractable {
     /**
      * Returns an updated color depending on any mouse interaction.
      */
@@ -59,6 +59,19 @@ interface LinkInteractable : MouseInteractable {
 
 }
 
+interface GuideBookMouseInteractable : MouseInteractable {
+    /**
+     * A mouse click event should run this and the implementation checks if
+     * any actions on guideActionListener should be run.
+     * @param mouseX position of the mouse (absolute, screen)
+     * @param mouseY position of the mouse (absolute, screen)
+     * @param mouseButton button of the mouse that was pressed.
+     * @param guideActionListener actions to run from outside this scope? (ben knows it best)
+     * @return true, if action was taken.
+     */
+    fun inBookMouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean = false
+}
+
 class LinkGroup(private val link: Link) : LinkInteractable {
     private val orderedChildren: MutableList<DrawableWord> = mutableListOf()
     var hovered: Boolean = false
@@ -74,7 +87,7 @@ class LinkGroup(private val link: Link) : LinkInteractable {
     override fun updateState(mouseX: Float, mouseY: Float, visibleArea: IRectangle) =
             isMouseHovering(mouseX, mouseY).let { hovered = it }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean {
+    override fun inBookMouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean {
         if (guideActionListener != null) {
             when (link) {
                 is PageLink -> guideActionListener.onPageLinkClick(link.page)

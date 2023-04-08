@@ -1,7 +1,6 @@
 package logisticspipes.gui.hud;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.item.ItemStack;
 
 import net.minecraftforge.fml.client.FMLClientHandler;
 
@@ -222,8 +221,8 @@ public class HudChassisPipe extends BasicHUDGui {
 		private ItemIdentifierInventory inv;
 		private int position;
 
-		public ItemButton(ItemIdentifierInventory inv, int position, int x, int y, int width, int heigth) {
-			super("item." + position, x, y, width, heigth);
+		public ItemButton(ItemIdentifierInventory inv, int position, int x, int y, int width, int height) {
+			super("item." + position, x, y, width, height);
 			this.inv = inv;
 			this.position = position;
 		}

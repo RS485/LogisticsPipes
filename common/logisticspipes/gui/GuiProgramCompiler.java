@@ -261,8 +261,8 @@ public class GuiProgramCompiler extends LogisticsBaseGuiScreen {
 				NBTTagList list = compiler.getNBTTagListForKey("compilerCategories");
 				ResourceLocation sel = getProgramListForSelectionIndex(list).get(selIndex);
 
-				NBTTagList listProgramms = compiler.getNBTTagListForKey("compilerPrograms");
-				if (StreamSupport.stream(listProgramms.spliterator(), false).anyMatch(it -> new ResourceLocation(((NBTTagString) it).getString()).equals(sel))) {
+				NBTTagList listPrograms = compiler.getNBTTagListForKey("compilerPrograms");
+				if (StreamSupport.stream(listPrograms.spliterator(), false).anyMatch(it -> new ResourceLocation(((NBTTagString) it).getString()).equals(sel))) {
 					programmerButton.displayString = "Flash";
 					programmerButton.enabled = !compiler.getInventory().getStackInSlot(1).isEmpty();
 				} else {

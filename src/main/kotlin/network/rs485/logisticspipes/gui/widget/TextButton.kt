@@ -37,10 +37,13 @@
 
 package network.rs485.logisticspipes.gui.widget
 
+import logisticspipes.utils.Color
 import net.minecraft.client.renderer.GlStateManager
-import network.rs485.logisticspipes.gui.*
+import network.rs485.logisticspipes.gui.HorizontalAlignment
+import network.rs485.logisticspipes.gui.Margin
+import network.rs485.logisticspipes.gui.Size
+import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.gui.guidebook.Drawable
-import network.rs485.logisticspipes.gui.guidebook.GuiGuideBook
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
 import kotlin.math.roundToInt
@@ -53,6 +56,7 @@ open class TextButton(
     ySize: Size,
     margin: Margin,
     text: String,
+    enabled: Boolean,
     onClickAction: (Int) -> Boolean
 ) : LPGuiButton(
     parent = parent,
@@ -65,6 +69,10 @@ open class TextButton(
 ), Tooltipped {
 
     override val minHeight: Int = 20
+
+    init {
+        this.enabled = enabled
+    }
 
     var text: String = text
         set(value) {
@@ -87,20 +95,25 @@ open class TextButton(
 
     override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
         super.draw(mouseX, mouseY, delta, visibleArea)
-        val color = if (isMouseHovering(mouseX, mouseY)) {
-            helper.TEXT_HOVERED
+        val color = if (!enabled) {
+            Color.TEXT_DISABLED
+        } else if (isMouseHovering(mouseX, mouseY)) {
+            Color.TEXT_HOVERED
         } else {
-            helper.TEXT_WHITE
+            Color.TEXT_WHITE
         }
         val yOffset: Int = ((relativeBody.roundedHeight - helper.mcFontRenderer.FONT_HEIGHT) / 2) + 1
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA)
-        helper.drawCenteredString(trimmedText, (absoluteBody.left + centerX).roundToInt(), absoluteBody.roundedY + yOffset, color, true)
+        helper.drawCenteredString(trimmedText, (absoluteBody.left + centerX).roundToInt(), absoluteBody.roundedY + yOffset, color.value, true)
         GlStateManager.disableBlend()
     }
 
-    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
+    override fun mouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int): Boolean = if (enabled) {
         onClickAction.invoke(mouseButton)
+    } else {
+        false
+    }
 
     override fun getTooltipText(): List<String> = if (trimmedText != text) listOf(text) else emptyList()
 }

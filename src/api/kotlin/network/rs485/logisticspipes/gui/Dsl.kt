@@ -53,8 +53,9 @@ abstract class GuiComponent {
     var verticalAlignment: VerticalAlignment = VerticalAlignment.TOP
     var horizontalSize: Size = Size.GROW
     var verticalSize: Size = Size.GROW
+    var enabled: Boolean = true
 
-    fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
+    open fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
         component.apply(init)
         children.add(component)
         return component
@@ -76,6 +77,8 @@ abstract class ComponentContainer : GuiComponent() {
      */
     fun vertical(init: VContainer.() -> Unit) = initComponent(VContainer(), init)
 
+    fun optionalComponent(init: OptionalComponent.() -> Unit) = initComponent(OptionalComponent(), init)
+
     /**
      * Represents a label with the text value based on a property.
      */
@@ -84,7 +87,8 @@ abstract class ComponentContainer : GuiComponent() {
     /**
      * Represents a button with the text value based on a property.
      */
-    fun <V : Any, P : Property<V>> propertyButton(init: PropertyButton<V, P>.() -> Unit) = initComponent(PropertyButton(), init)
+    fun <V : Any, P : Property<V>> propertyButton(init: PropertyButton<V, P>.() -> Unit) =
+        initComponent(PropertyButton(), init)
 
     /**
      * Represents a static button.
@@ -111,11 +115,47 @@ class VContainer : ComponentContainer() {
     var alignment: VerticalAlignment = VerticalAlignment.TOP
 }
 
+/**
+ * Adds component to hierarchy if the predicate returns true.
+ */
+class OptionalComponent : ComponentContainer() {
+    var predicate: () -> Boolean = { false }
+    var vertical: Boolean = true
+    private var addComponents: Boolean = false
+
+    override fun <T : GuiComponent> initComponent(component: T, init: T.() -> Unit): T {
+        if (addComponents) {
+            component.apply(init)
+            children.add(component)
+        }
+        return component
+    }
+
+    fun activeComponents(init: OptionalComponent.() -> Unit): OptionalComponent {
+        if (predicate.invoke()) {
+            addComponents = true
+        }
+        init(this)
+        addComponents = false
+        return this
+    }
+
+    fun inactiveComponents(init: OptionalComponent.() -> Unit): OptionalComponent {
+        if (!predicate.invoke()) {
+            addComponents = true
+        }
+        init(this)
+        addComponents = false
+        return this
+    }
+}
+
 open class Label : GuiComponent() {
     var text: String = ""
     var textAlignment: HorizontalAlignment = HorizontalAlignment.LEFT
     var textColor: Int = 0
-    var extendable: Int = 0
+    var extendable: Boolean = false
+    var backgroundColor: Int = 0
 }
 
 interface PropertyAware {

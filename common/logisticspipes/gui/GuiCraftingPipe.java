@@ -40,7 +40,7 @@ import logisticspipes.utils.gui.DummyContainer;
 import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.gui.extention.GuiExtention;
-import network.rs485.logisticspipes.gui.widget.module.Label;
+import network.rs485.logisticspipes.gui.widget.Label;
 import network.rs485.logisticspipes.gui.widget.VerticalLabel;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.property.BooleanProperty;

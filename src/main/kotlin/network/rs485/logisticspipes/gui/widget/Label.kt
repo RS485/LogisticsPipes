@@ -35,7 +35,7 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.widget.module
+package network.rs485.logisticspipes.gui.widget
 
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen
 import net.minecraft.client.Minecraft

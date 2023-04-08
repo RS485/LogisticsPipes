@@ -7,7 +7,9 @@ import javax.annotation.Nullable;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 
-import logisticspipes.gui.modules.GuiItemSink;
+import lombok.Getter;
+import lombok.Setter;
+
 import logisticspipes.modules.ModuleItemSink;
 import logisticspipes.network.PacketHandler;
 import logisticspipes.network.abstractpackets.ModernPacket;
@@ -15,6 +17,7 @@ import logisticspipes.network.abstractpackets.ModuleCoordinatesPacket;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.StaticResolve;
 import logisticspipes.utils.item.ItemIdentifier;
+import network.rs485.logisticspipes.gui.module.ItemSinkGui;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -22,12 +25,9 @@ import network.rs485.logisticspipes.util.LPDataOutput;
 public class ItemSinkImportPacket extends ModuleCoordinatesPacket {
 
 	@Nullable
+	@Setter
+	@Getter
 	public List<ItemIdentifier> importedItems = null;
-
-	public ItemSinkImportPacket setImportedItems(@Nullable List<ItemIdentifier> importedItems) {
-		this.importedItems = importedItems;
-		return this;
-	}
 
 	public ItemSinkImportPacket(int id) {
 		super(id);
@@ -58,14 +58,14 @@ public class ItemSinkImportPacket extends ModuleCoordinatesPacket {
 				return;
 			}
 			MainProxy.sendPacketToPlayer(PacketHandler.getPacket(ItemSinkImportPacket.class)
-					.setImportedItems(module.getAdjacentInventoriesItems()
-							.limit(module.filterInventory.getSizeInventory())
-							.collect(Collectors.toList()))
-					.setPacketPos(this), player);
+				.setImportedItems(module.getAdjacentInventoriesItems()
+					.limit(module.filterInventory.getSizeInventory())
+					.collect(Collectors.toList()))
+				.setPacketPos(this), player);
 		} else if (MainProxy.isClient(player.world)) {
 			if (importedItems == null) return;
-			if (Minecraft.getMinecraft().currentScreen instanceof GuiItemSink) {
-				((GuiItemSink) Minecraft.getMinecraft().currentScreen).importFromInventory(importedItems.stream());
+			if (Minecraft.getMinecraft().currentScreen instanceof ItemSinkGui) {
+				((ItemSinkGui) Minecraft.getMinecraft().currentScreen).importFromInventory(importedItems);
 			}
 		}
 	}

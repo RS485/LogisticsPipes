@@ -35,19 +35,21 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.widget.module
+package network.rs485.logisticspipes.inventory.container
 
+import logisticspipes.modules.ModuleProvider
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.LPBaseContainer
 import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
 
 class ProviderContainer(
+    providerModule: ModuleProvider,
     playerInventoryIn: IInventory,
     filterInventoryIn: IInventory,
-    moduleInHand: ItemStack) : LPBaseContainer() {
+    moduleInHand: ItemStack,
+) : LPBaseContainer(providerModule) {
 
     val playerSlots = addPlayerSlotsToContainer(playerInventoryIn, 0, 0, moduleInHand)
     val filterSlots = addDummySlotsToContainer(filterInventoryIn, 0, 0)
@@ -64,7 +66,7 @@ class ProviderContainer(
                         slotId = column + row * 3,
                         posX = startX + column * slotSize,
                         posY = startY + row * slotSize
-                    )
+                    ) as GhostItemSlot
                 )
             }
         }
@@ -72,23 +74,32 @@ class ProviderContainer(
         return filterSlots
     }
 
-    override fun transferStackInSlot(player: EntityPlayer, index: Int): ItemStack {
-
-        // Try to add to filter inventory
-        val slot = inventorySlots[index]
-        if(playerSlots.contains(slot) && filterSlots.none { it.stack.isItemEqual(slot.stack) } && filterSlots.any { !it.hasStack } ){
-            filterSlots.firstOrNull { targetSlot -> !targetSlot.hasStack }?.also { ghostSlot ->
-                applyItemStackToGhostItemSlot(slot.stack, ghostSlot as GhostItemSlot)
-                return ItemStack.EMPTY
+    override fun tryTransferSlotToGhostSlot(slotIdx: Int): Boolean {
+        val playerInvSlot = inventorySlots.getOrNull(slotIdx)?.takeIf { playerSlots.contains(it) } ?: return false
+        var firstFreeSlotId = Int.MAX_VALUE
+        for (filterSlot in filterSlots.withIndex()) {
+            if (filterSlot.value.hasStack) {
+                if (filterSlot.value.stack.isItemEqual(playerInvSlot.stack)) {
+                    // item already in filter slots
+                    return false
+                }
+            } else {
+                firstFreeSlotId = minOf(firstFreeSlotId, filterSlot.index)
             }
         }
 
-        return super.transferStackInSlot(player, index)
+        return firstFreeSlotId.takeIf { it in filterSlots.indices }
+            ?.let { filterSlots[it] as? GhostItemSlot }
+            ?.let { firstFreeSlot ->
+                applyItemStackToGhostItemSlot(playerInvSlot.stack, firstFreeSlot)
+                true
+            }
+            ?: false
     }
 
     override fun canInteractWith(playerIn: EntityPlayer): Boolean = true
 
-    override fun applyItemStackToGhostItemSlot(itemStack: ItemStack, slot: GhostItemSlot) {
+    override fun applyItemStackToGhostItemSlot(itemStack: ItemStack, slot: GhostSlot) {
         val copiedStack = itemStack.copy().apply { count = 1 }
         slot.putStack(copiedStack)
     }

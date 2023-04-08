@@ -50,7 +50,7 @@ import net.minecraft.client.gui.GuiScreen
 import net.minecraft.client.renderer.GlStateManager
 import net.minecraft.item.ItemStack
 import network.rs485.logisticspipes.gui.HorizontalAlignment
-import network.rs485.logisticspipes.gui.LPGuiDrawer
+import network.rs485.logisticspipes.gui.GuiDrawer
 import network.rs485.logisticspipes.gui.VerticalAlignment
 import network.rs485.logisticspipes.gui.widget.Tooltipped
 import network.rs485.logisticspipes.guidebook.BookContents
@@ -271,7 +271,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         GlStateManager.depthFunc(GL11.GL_ALWAYS)
         SimpleGraphics.drawGradientRect(0, 0, width, height, Color.BLANK, Color.BLANK, 450.0)
 
-        LPGuiDrawer.drawGuideBookBackground(outerGui)
+        GuiDrawer.drawGuideBookBackground(outerGui)
 
         GlStateManager.depthFunc(GL11.GL_LEQUAL)
         state.currentPage.run {
@@ -280,7 +280,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         }
         GlStateManager.depthFunc(GL11.GL_ALWAYS)
         tabButtons.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
-        LPGuiDrawer.drawGuideBookFrame(outerGui, sliderSeparator)
+        GuiDrawer.drawGuideBookFrame(outerGui, sliderSeparator)
         buttonList.forEach { it.drawButton(mc, mouseX, mouseY, partialTicks) }
 
         (buttonList + tabButtons).reversed().forEach { it.drawButtonForegroundLayer(mouseX, mouseY) }
@@ -290,7 +290,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
             val hovered = state.currentPage.getHovered(mouseX.toFloat(), mouseY.toFloat())
             hovered?.also {
                 if (it is Tooltipped) {
-                    LPGuiDrawer.drawTextTooltip(
+                    GuiDrawer.drawTextTooltip(
                         text = it.getTooltipText(),
                         x = mouseX,
                         y = min(mouseY - 5f, visibleArea.bottom).roundToInt(),
@@ -357,7 +357,7 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
         if (state.currentPage.getExtraHeight(visibleArea) > 0) {
             val mouseDWheel = Mouse.getDWheel() / -120
             if (mouseDWheel != 0) {
-                slider.changeProgress(mouseDWheel * LPGuiDrawer.lpFontRenderer.getFontHeight(1.0f))
+                slider.changeProgress(mouseDWheel * GuiDrawer.lpFontRenderer.getFontHeight(1.0f))
             }
         }
     }
@@ -426,10 +426,10 @@ class GuiGuideBook(private val state: ItemGuideBook.GuideBookState) : GuiScreen(
     }
 
     private fun drawTitle() {
-        LPGuiDrawer.lpFontRenderer.drawCenteredString(
+        GuiDrawer.lpFontRenderer.drawCenteredString(
             state.currentPage.title,
             floor(width / 2.0f),
-            outerGui.y0 + (innerGui.y0 - outerGui.y0 - LPGuiDrawer.lpFontRenderer.getFontHeight()) / 2.0f,
+            outerGui.y0 + (innerGui.y0 - outerGui.y0 - GuiDrawer.lpFontRenderer.getFontHeight()) / 2.0f,
             MinecraftColor.WHITE.colorCode,
             EnumSet.of(TextFormat.Shadow),
             1.0f

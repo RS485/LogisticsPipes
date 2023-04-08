@@ -37,8 +37,22 @@
 
 package network.rs485.logisticspipes.gui
 
+import network.rs485.logisticspipes.gui.font.LPFontRenderer
+import network.rs485.logisticspipes.gui.guidebook.Screen
+import network.rs485.logisticspipes.gui.guidebook.x
+import network.rs485.logisticspipes.gui.guidebook.y
+import network.rs485.logisticspipes.gui.widget.FuzzyItemSlot
+import network.rs485.logisticspipes.util.FuzzyFlag
+import network.rs485.logisticspipes.util.FuzzyUtil
+import network.rs485.logisticspipes.util.IRectangle
+import network.rs485.logisticspipes.util.Rectangle
+import network.rs485.logisticspipes.util.math.BorderedRectangle
+import network.rs485.logisticspipes.util.math.MutableRectangle
+import network.rs485.markdown.defaultDrawableState
 import logisticspipes.LPConstants
+import logisticspipes.utils.Color
 import logisticspipes.utils.MinecraftColor
+import org.lwjgl.opengl.GL11
 import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.FontRenderer
 import net.minecraft.client.renderer.BufferBuilder
@@ -47,39 +61,28 @@ import net.minecraft.client.renderer.Tessellator
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats
 import net.minecraft.client.renderer.vertex.VertexFormat
 import net.minecraft.inventory.Container
+import net.minecraft.inventory.Slot
 import net.minecraft.util.ResourceLocation
-import network.rs485.logisticspipes.gui.font.LPFontRenderer
-import network.rs485.logisticspipes.gui.guidebook.Screen
-import network.rs485.logisticspipes.gui.guidebook.x
-import network.rs485.logisticspipes.gui.guidebook.y
-import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.Rectangle
-import network.rs485.logisticspipes.util.math.BorderedRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
-import network.rs485.markdown.defaultDrawableState
-import org.lwjgl.opengl.GL11
 import java.lang.Float.min
+import kotlin.math.abs
 
 /**
  * Drawing methods to help with Guis
  */
-object LPGuiDrawer {
+object GuiDrawer {
 
-    const val TEXT_DARK: Int = 0xff404040.toInt()
-    const val TEXT_WHITE: Int = 0xffffffff.toInt()
-    const val TEXT_HOVERED: Int = 0xffffffa0.toInt()
-    const val BACKGROUND_LIGHT: Int = 0xffc6c6c6.toInt()
-    const val BACKGROUND_DARK: Int = 0xff8b8b8b.toInt()
+    private const val BORDER: Int = 4
+    private const val NORMAL_SLOT_SIZE = 18
 
     private val guiAtlas = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/gui.png"), 256)
-    private val guiNormalPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/normal.png"), 64)
+    private val guiNormalPatternTexture =
+        Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/normal.png"), 64)
     private val guiLightPattern = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/light.png"), 64)
     private val guiHoveredPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/blue.png"), 64)
+
     private val guiDarkPatternTexture = Texture(ResourceLocation(LPConstants.LP_MOD_ID, "textures/gui/dark.png"), 64)
 
     private var currentTexture: Texture = guiAtlas
-
-    private const val border: Int = 4
 
     // TODO update constructor params
     private val guiBackgroundTexture = Rectangle(0, 96, 16, 16)
@@ -100,8 +103,8 @@ object LPGuiDrawer {
 
     private val tessellator: Tessellator get() = Tessellator.getInstance()
     private val buffer: BufferBuilder get() = tessellator.buffer
-    private var isDrawing: Boolean = false
     private val textureManager = Minecraft.getMinecraft().renderEngine
+    private var isDrawing: Boolean = false
 
     val lpFontRenderer: LPFontRenderer by lazy {
         LPFontRenderer.get("ter-u12n")
@@ -110,14 +113,23 @@ object LPGuiDrawer {
         Minecraft.getMinecraft().fontRenderer
     }
 
+    fun getFuzzyColor(fuzzyFlag: FuzzyFlag) = when (fuzzyFlag) {
+        FuzzyFlag.IGNORE_DAMAGE -> Color.FUZZY_IGNORE_DAMAGE_COLOR.value
+        FuzzyFlag.IGNORE_NBT -> Color.FUZZY_IGNORE_NBT_COLOR.value
+        FuzzyFlag.USE_ORE_DICT -> Color.FUZZY_ORE_DICT_COLOR.value
+        FuzzyFlag.USE_ORE_CATEGORY -> Color.FUZZY_ORE_CATEGORY_COLOR.value
+    }
+
     /**
      * Draws the default minecraft gui look matching the given rectangle and renders the
      * inventory slots based on the point to match minecraft's guiTop and guiLeft variables
      * which might not match the rectangle's position.
-     *
+     * @param guiArea rectangle representing the background panel.
+     * @param topLeft point defining the origin of the slots.
+     * @param container container with slots to draw.
      */
 
-    fun drawGuiBackground(guiArea: IRectangle, topLeft: Pair<Int, Int>, container: Container) {
+    fun drawGuiContainerBackground(guiArea: IRectangle, topLeft: Pair<Int, Int>, container: Container) {
         setTexture(guiAtlas)
         start()
         putGuiBackgroundBase(guiArea)
@@ -125,28 +137,117 @@ object LPGuiDrawer {
         finish()
     }
 
+    /**
+     * Draws the default minecraft gui look in the given rectangle area.
+     * @param guiArea rectangle representing the background panel.
+     */
+    fun drawGuiBackground(guiArea: IRectangle) {
+        setTexture(guiAtlas)
+        start()
+        putGuiBackgroundBase(guiArea)
+        finish()
+    }
+
     // Container specific buffer code
 
     private fun putGuiBackgroundBase(guiArea: IRectangle) {
-        val borderedGuiQuads = BorderedRectangle(guiArea, border).quads
-        val borderedTexQuads = BorderedRectangle(guiBackgroundTexture, border).quads
+        val borderedGuiQuads = BorderedRectangle(guiArea, BORDER).quads
+        val borderedTexQuads = BorderedRectangle(guiBackgroundTexture, BORDER).quads
         for ((i, quad) in borderedGuiQuads.withIndex()) {
             putTexturedQuad(quad, borderedTexQuads[i], -1)
         }
     }
 
-    private fun putContainerSlots(topLeft: Pair<Int, Int>, container: Container) {
+    private fun putContainerSlots(offset: Pair<Int, Int>, container: Container) {
         for (slot in container.inventorySlots) {
-            putNormalSlot(topLeft.x + slot.xPos, topLeft.y + slot.yPos)
+            when (slot) {
+                is FuzzyItemSlot -> putFuzzySlot(slot, offset)
+                else -> putNormalSlot(slot, offset)
+            }
         }
     }
 
-    private fun putNormalSlot(x: Int, y: Int) {
-        val normalSlotSize = 18
+    private fun putFuzzySlot(slot: FuzzyItemSlot, offset: Pair<Int, Int>) {
+        putNormalSlot(slot, offset)
+        val slotTopLeft = slot.xPos + offset.x to slot.yPos + offset.y
+        val flags = slot.flagGetter.invoke()
+        slot.usedFlags.filter { flag -> FuzzyUtil.get(flags, flag) }.forEach { flag: FuzzyFlag ->
+            val color = getFuzzyColor(flag)
+            when (flag) {
+                FuzzyFlag.IGNORE_DAMAGE -> {
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y - 1f),
+                        size = 9f,
+                        color = color,
+                        vertical = false,
+                    )
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y - 1f),
+                        size = 9f,
+                        color = color,
+                        vertical = true,
+                    )
+                }
+
+                FuzzyFlag.IGNORE_NBT -> {
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y + 16f),
+                        size = 9f,
+                        color = color,
+                        vertical = false,
+                    )
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y + 16f),
+                        size = -8f,
+                        color = color,
+                        vertical = true,
+                    )
+                }
+
+                FuzzyFlag.USE_ORE_DICT -> {
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y - 1f),
+                        size = 9f,
+                        color = color,
+                        vertical = false,
+                    )
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y - 1f),
+                        size = 9f,
+                        color = color,
+                        vertical = true,
+                    )
+                }
+
+                FuzzyFlag.USE_ORE_CATEGORY -> {
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y - 1f),
+                        size = 9f,
+                        color = color,
+                        vertical = false,
+                    )
+                    putLine(
+                        from = (slotTopLeft.x - 1f to slotTopLeft.y - 1f),
+                        size = 9f,
+                        color = color,
+                        vertical = true,
+                    )
+                }
+            }
+
+        }
+    }
+
+    private fun putNormalSlot(slot: Slot, offset: Pair<Int, Int>) {
         putTexturedQuad(
-            MutableRectangle(x, y, normalSlotSize, normalSlotSize).translate(-1),
+            MutableRectangle(
+                slot.xPos + offset.x,
+                slot.yPos + offset.y,
+                NORMAL_SLOT_SIZE,
+                NORMAL_SLOT_SIZE,
+            ).translate(-1),
             slotNormalTexture,
-            MinecraftColor.WHITE.colorCode
+            MinecraftColor.WHITE.colorCode,
         )
     }
 
@@ -166,7 +267,13 @@ object LPGuiDrawer {
         if (blend) GlStateManager.disableBlend()
     }
 
-    fun drawBorderedTile(rect: IRectangle, hovered: Boolean, enabled: Boolean, light: Boolean, thickerBottomBorder: Boolean) {
+    fun drawBorderedTile(
+        rect: IRectangle,
+        hovered: Boolean,
+        enabled: Boolean,
+        light: Boolean,
+        thickerBottomBorder: Boolean,
+    ) {
         GlStateManager.enableBlend()
         GlStateManager.blendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA)
         GlStateManager.color(1.0f, 1.0f, 1.0f, 1.0f)
@@ -218,7 +325,8 @@ object LPGuiDrawer {
         val borderedGui = BorderedRectangle(rect, 24)
         val borderedGuiTexQuads = BorderedRectangle(guiGuidebookFrame, 24).borderQuads
         val borderedSlider = BorderedRectangle(slider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
-        val borderedSliderTexQuads = BorderedRectangle(guiGuidebookSlider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
+        val borderedSliderTexQuads =
+            BorderedRectangle(guiGuidebookSlider, 1, 0, 1, 0).quads.filter { it.width > 0.5 && it.height > 0.5 }
 
         setTexture(guiAtlas)
         start()
@@ -268,7 +376,7 @@ object LPGuiDrawer {
                 VerticalAlignment.CENTER -> y - outerArea.roundedHeight / 2
                 VerticalAlignment.TOP -> y
                 VerticalAlignment.BOTTOM -> y - outerArea.roundedHeight
-            }
+            },
         )
 
         // Constrain position to available screen space
@@ -281,11 +389,11 @@ object LPGuiDrawer {
         // Define required quads and texture quads.
         val borderedTooltipQuads = BorderedRectangle(
             outerArea,
-            border
+            border,
         ).quads
         val borderedTexQuads = BorderedRectangle(
             Rectangle(112, 32, 16, 16),
-            border
+            border,
         ).quads
 
         GlStateManager.translate(0.0f, 0.0f, z)
@@ -310,7 +418,7 @@ object LPGuiDrawer {
                 yOffset.toFloat(),
                 defaultDrawableState.color,
                 defaultDrawableState.format,
-                1.0f
+                1.0f,
             )
         }
         GlStateManager.translate(0.0f, 0.0f, -z)
@@ -327,14 +435,20 @@ object LPGuiDrawer {
     fun drawSliderButton(body: IRectangle, texture: IRectangle) {
         setTexture(guiAtlas)
 
-        val quads = BorderedRectangle(MutableRectangle.fromRectangle(body).apply {
-            grow(4, 0)
-            translate(-2, 0)
-        }, 2)
-        val textures = BorderedRectangle(MutableRectangle.fromRectangle(texture).apply {
-            grow(4, 0)
-            translate(-2, 0)
-        }, 2)
+        val quads = BorderedRectangle(
+            MutableRectangle.fromRectangle(body).apply {
+                grow(4, 0)
+                translate(-2, 0)
+            },
+            2,
+        )
+        val textures = BorderedRectangle(
+            MutableRectangle.fromRectangle(texture).apply {
+                grow(4, 0)
+                translate(-2, 0)
+            },
+            2,
+        )
 
         start()
         putTexturedQuad(quads.top, textures.top, -1)
@@ -359,11 +473,11 @@ object LPGuiDrawer {
         start(DefaultVertexFormats.POSITION_COLOR)
         putQuad(
             Rectangle(mouseX + 4f to mouseY - 5f, mouseX + 5f to mouseY - 2f),
-            MinecraftColor.WHITE.colorCode
+            MinecraftColor.WHITE.colorCode,
         )
         putQuad(
             Rectangle(mouseX + 3f to mouseY - 4f, mouseX + 6f to mouseY - 3f),
-            MinecraftColor.WHITE.colorCode
+            MinecraftColor.WHITE.colorCode,
         )
         finish()
         GlStateManager.enableTexture2D()
@@ -408,7 +522,13 @@ object LPGuiDrawer {
         GlStateManager.enableTexture2D()
     }
 
-    fun drawGradientQuad(area: IRectangle, colorTopRight: Int, colorTopLeft: Int, colorBottomLeft: Int, colorBottomRight: Int) {
+    private fun drawGradientQuad(
+        area: IRectangle,
+        colorTopRight: Int,
+        colorTopLeft: Int,
+        colorBottomLeft: Int,
+        colorBottomRight: Int,
+    ) {
         GlStateManager.disableTexture2D()
         GlStateManager.enableBlend()
         GlStateManager.disableAlpha()
@@ -416,7 +536,7 @@ object LPGuiDrawer {
             GlStateManager.SourceFactor.SRC_ALPHA,
             GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
             GlStateManager.SourceFactor.ONE,
-            GlStateManager.DestFactor.ZERO
+            GlStateManager.DestFactor.ZERO,
         )
         GlStateManager.shadeModel(GL11.GL_SMOOTH)
         start(DefaultVertexFormats.POSITION_COLOR)
@@ -449,7 +569,7 @@ object LPGuiDrawer {
                         rect.overlap(tile)
                     },
                     texture = texture.topLeft,
-                    color = color
+                    color = color,
                 )
                 tile.translate(0f, tile.height)
             }
@@ -472,15 +592,40 @@ object LPGuiDrawer {
         }
     }
 
-    private fun putLine(from: Pair<Float, Float>, to: Pair<Float, Float>, color: Int, thickness: Float = 1.0f, vertical: Boolean = false) {
-        if (buffer.vertexFormat == DefaultVertexFormats.POSITION_COLOR) {
-            if (!vertical) {
-                putQuad(Rectangle(from, to.first to to.second + thickness), color)
-            } else {
-                putQuad(Rectangle(from, to.first + thickness to to.second), color)
-            }
+    private fun putLine(
+        from: Pair<Float, Float>,
+        to: Pair<Float, Float>,
+        color: Int,
+        thickness: Float = 1.0f,
+        vertical: Boolean = false,
+    ) {
+        if (!vertical) {
+            putQuad(Rectangle(from, to.first to to.second + thickness), color)
+        } else {
+            putQuad(Rectangle(from, to.first + thickness to to.second), color)
         }
     }
+
+    private fun putLine(from: Pair<Float, Float>, size: Float, color: Int, thickness: Float = 1.0f, vertical: Boolean) {
+        var newFrom = from
+        var newSize = size
+        if (size == 0f) {
+            return
+        } else if (size < 0f) {
+            if (vertical) {
+                newFrom = newFrom.x to newFrom.y + newSize
+                newSize = abs(newSize)
+            }
+        }
+        putLine(
+            from = newFrom,
+            to = (if (!vertical) newFrom.x + newSize else newFrom.x) to (if (!vertical) newFrom.y else newFrom.y + newSize),
+            color = color,
+            thickness = thickness,
+            vertical = vertical,
+        )
+    }
+
 
     private fun putOutlineQuad(rect: IRectangle, color: Int, thickness: Float = 1.0f) {
         putLine(rect.topLeft, rect.topRight, color, thickness)
@@ -549,7 +694,8 @@ object LPGuiDrawer {
      * @param point coordinate on the texture (scaled from 0-1)
      * @return the buffer itself.
      */
-    private fun BufferBuilder.tex(point: Pair<Float, Float>): BufferBuilder = tex(point.first.toDouble(), point.second.toDouble())
+    private fun BufferBuilder.tex(point: Pair<Float, Float>): BufferBuilder =
+        tex(point.first.toDouble(), point.second.toDouble())
 
     /**
      * Takes in a Float pair to insert screen coordinates onto the draw buffer
@@ -557,7 +703,8 @@ object LPGuiDrawer {
      * @param point coordinate to be inserted in the buffer.
      * @return the buffer itself.
      */
-    private fun BufferBuilder.pos(point: Pair<Float, Float>): BufferBuilder = pos(point.first.toDouble(), point.second.toDouble(), 0.0)
+    private fun BufferBuilder.pos(point: Pair<Float, Float>): BufferBuilder =
+        pos(point.first.toDouble(), point.second.toDouble(), 0.0)
 }
 
 private class Texture(val resource: ResourceLocation, size: Int) {

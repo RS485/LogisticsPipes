@@ -37,11 +37,24 @@
 
 package network.rs485.logisticspipes.gui.widget
 
+import network.rs485.logisticspipes.property.IBitSet
+import network.rs485.logisticspipes.util.FuzzyFlag
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.inventory.Slot
+import java.util.*
 
-sealed class GhostSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int) : Slot(inventoryIn, index, xPosition, yPosition) {
+interface Fuzzy
+interface Unmodifiable
+interface Item
+interface Fluid
+
+sealed class GhostSlot(
+    inventoryIn: IInventory,
+    index: Int,
+    xPosition: Int,
+    yPosition: Int,
+) : Slot(inventoryIn, index, xPosition, yPosition) {
     override fun getSlotStackLimit(): Int {
         return 0
     }
@@ -51,4 +64,48 @@ sealed class GhostSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPos
     }
 }
 
-class GhostItemSlot(inventoryIn: IInventory, index: Int, xPosition: Int, yPosition: Int) : GhostSlot(inventoryIn, index, xPosition, yPosition)
+class GhostItemSlot(
+    inventoryIn: IInventory,
+    index: Int,
+    xPosition: Int,
+    yPosition: Int,
+) : GhostSlot(
+    inventoryIn = inventoryIn,
+    index = index,
+    xPosition = xPosition,
+    yPosition = yPosition,
+), Item
+
+open class FuzzyItemSlot(
+    inventoryIn: IInventory,
+    index: Int,
+    xPosition: Int,
+    yPosition: Int,
+    val usedFlags: EnumSet<FuzzyFlag>,
+    val flagGetter: () -> IBitSet,
+) : GhostSlot(
+    inventoryIn = inventoryIn,
+    index = index,
+    xPosition = xPosition,
+    yPosition = yPosition,
+), Fuzzy, Item
+
+class UnmodifiableItemSlot(
+    slot: Slot,
+) : GhostSlot(
+    inventoryIn = slot.inventory,
+    index = slot.slotIndex,
+    xPosition = slot.xPos,
+    yPosition = slot.yPos,
+), Unmodifiable, Item
+
+class FuzzyUnmodifiableItemSlot(
+    fuzzySlot: FuzzyItemSlot,
+) : FuzzyItemSlot(
+    inventoryIn = fuzzySlot.inventory,
+    index = fuzzySlot.slotIndex,
+    xPosition = fuzzySlot.xPos,
+    yPosition = fuzzySlot.yPos,
+    usedFlags = fuzzySlot.usedFlags,
+    flagGetter = fuzzySlot.flagGetter,
+), Unmodifiable

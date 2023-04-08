@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2022  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2020  RS485
+ * Copyright (c) 2022  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,39 +35,18 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.gui.guidebook
+package network.rs485.logisticspipes.compat
 
-import network.rs485.logisticspipes.util.IRectangle
-import network.rs485.logisticspipes.util.math.MutableRectangle
+import network.rs485.logisticspipes.gui.BaseGuiContainer
+import mezz.jei.api.gui.IGhostIngredientHandler
 
-/**
- * Header token, stores all the tokens that are apart of the header.
- */
-class DrawableHeaderParagraph(private val words: List<DrawableWord>) : DrawableParagraph() {
-    override val relativeBody: MutableRectangle = MutableRectangle()
-    override var parent: Drawable? = null
+class JEIGhostIngredientHandler : IGhostIngredientHandler<BaseGuiContainer> {
 
-    private val horizontalLine = createChild { DrawableHorizontalLine(1) }
+    override fun <I : Any?> getTargets(
+        gui: BaseGuiContainer,
+        ingredient: I,
+        doStart: Boolean,
+    ): MutableList<IGhostIngredientHandler.Target<I>> = gui.getFilterSlots()
 
-    override fun inBookMouseClicked(mouseX: Float, mouseY: Float, mouseButton: Int, guideActionListener: GuiGuideBook.ActionListener?): Boolean =
-        words.find { it.isMouseHovering(mouseX, mouseY) }?.inBookMouseClicked(mouseX, mouseY, mouseButton, guideActionListener)
-            ?: false
-
-    override fun draw(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
-        super.draw(mouseX, mouseY, delta, visibleArea)
-        drawChildren(mouseX, mouseY, delta, visibleArea)
-    }
-
-    override fun drawChildren(mouseX: Float, mouseY: Float, delta: Float, visibleArea: IRectangle) {
-        (this.words + horizontalLine).filter { it.visible(visibleArea) }.forEach { it.draw(mouseX, mouseY, delta, visibleArea) }
-    }
-
-    override fun getHovered(mouseX: Float, mouseY: Float): Drawable? =
-        (words + horizontalLine).firstOrNull { it.isMouseHovering(mouseX, mouseY) }
-
-    override fun setChildrenPos(): Int {
-        var currentY = splitAndInitialize(words, 0, 0, width, true)
-        currentY += horizontalLine.setPos(0, currentY).y
-        return currentY
-    }
+    override fun onComplete() {}
 }

@@ -39,7 +39,7 @@ package network.rs485.logisticspipes.gui.guidebook
 
 import network.rs485.logisticspipes.util.IRectangle
 
-abstract class DrawableParagraph : Drawable, MouseInteractable {
+abstract class DrawableParagraph : Drawable, GuideBookMouseInteractable {
     private val preRenderCallbacks = mutableSetOf<(mouseX: Float, mouseY: Float, visibleArea: IRectangle) -> Unit>()
 
     override fun setPos(x: Int, y: Int): Pair<Int, Int> {

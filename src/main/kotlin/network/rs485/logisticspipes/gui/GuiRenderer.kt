@@ -39,26 +39,25 @@ package network.rs485.logisticspipes.gui
 
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.widget.*
-import network.rs485.logisticspipes.util.IRectangle
 
 object GuiRenderer : WidgetRenderer<WidgetContainer> {
 
     private fun createWidget(container: WidgetContainer, component: GuiComponent): LPGuiWidget? = when (component) {
-        is PropertyLabel<*, *> -> LPGuiLabel(
+        is PropertyLabel<*, *> -> LabelWidget(
             parent = container,
+            width = component.width,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
             xSize = component.horizontalSize,
             margin = component.margin,
-            textColor = component.textColor,
             text = component.text,
+            textColor = component.textColor,
+            textAlignment = component.textAlignment,
+            extendable = component.extendable,
+            backgroundColor = component.backgroundColor,
         ).apply {
-            setTextAlignment(component.textAlignment)
-            if (component.extendable != 0) {
-                setExtendable(true, component.extendable)
-            }
             component.onPropertyUpdate { newText ->
-                text = newText
+                updateText(newText)
             }
         }
 
@@ -70,27 +69,30 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             ySize = Size.FIXED,
             margin = component.margin,
             text = component.text,
+            enabled = component.enabled,
             onClickAction = {
                 component.action.invoke()
                 return@TextButton true
-            }
+            },
         ).apply {
             component.onPropertyUpdate { newText ->
                 text = newText
             }
         }
 
-        is Label -> LPGuiLabel(
+        is Label -> LabelWidget(
             parent = container,
+            width = component.width,
             xPosition = component.horizontalAlignment,
             yPosition = component.verticalAlignment,
             xSize = component.horizontalSize,
             margin = component.margin,
-            textColor = LPGuiDrawer.TEXT_DARK,
             text = component.text,
-        ).apply {
-            setTextAlignment(component.textAlignment)
-        }
+            textColor = component.textColor,
+            textAlignment = component.textAlignment,
+            extendable = component.extendable,
+            backgroundColor = component.backgroundColor,
+        )
 
         is Button -> TextButton(
             parent = container,
@@ -100,11 +102,12 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
             ySize = Size.FIXED,
             margin = component.margin,
             text = component.text,
+            enabled = component.enabled,
             onClickAction = {
                 // FIXME: filter mouse button
                 component.action.invoke()
                 return@TextButton true
-            }
+            },
         )
 
         is CustomSlots -> SlotGroup(
@@ -141,6 +144,14 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
         val result = when (container) {
             is HContainer -> HorizontalWidgetContainer(list, parent, container.margin, container.gap)
             is VContainer -> VerticalWidgetContainer(list, parent, container.margin, container.gap)
+            is OptionalComponent -> {
+                if (container.vertical) {
+                    VerticalWidgetContainer(list, parent, container.margin, container.gap)
+                } else {
+                    HorizontalWidgetContainer(list, parent, container.margin, container.gap)
+                }
+            }
+
             else -> throw IllegalArgumentException("")
         }
         container.children.forEach { child ->
@@ -149,6 +160,6 @@ object GuiRenderer : WidgetRenderer<WidgetContainer> {
         return result
     }
 
-    override fun render(componentContainer: ComponentContainer, body: IRectangle): WidgetContainer =
+    override fun render(componentContainer: ComponentContainer): WidgetContainer =
         createContainer(componentContainer)
 }

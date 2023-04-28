@@ -42,8 +42,6 @@ import java.util.concurrent.CopyOnWriteArraySet
 
 interface Property<V> : IStore {
     val tagKey: String
-    val oldTagKey: String
-        get() = ""
     val propertyObservers: CopyOnWriteArraySet<ObserverCallback<V>>
 
     fun iChanged() = propertyObservers.forEach { observer -> observer.invoke(this) }

@@ -24,7 +24,7 @@ public class ModuleSatellite extends LogisticsModule {
 
 	private final SinkReply _sinkReply = new SinkReply(FixedPriority.ItemSink, 0, true, false, 1, 0, null);
 
-	public final StringProperty satellitePipeName = new StringProperty("", "satellitePipeName", "satelliteid");
+	public final StringProperty satellitePipeName = new StringProperty("", "satellitePipeName");
 	private final List<Property<?>> properties = ImmutableList.<Property<?>>builder()
 		.add(satellitePipeName)
 		.build();
@@ -97,6 +97,11 @@ public class ModuleSatellite extends LogisticsModule {
 	@Override
 	public void readFromNBT(@NotNull NBTTagCompound tag) {
 		super.readFromNBT(tag);
+
+		// FIXME: remove after 1.12
+		if (tag.hasKey("satelliteId"))
+			satellitePipeName.setValue(tag.getString("satelliteId"));
+
 		if (MainProxy.isServer(getWorld()) && _service != null) {
 			((SatellitePipe) _service).ensureAllSatelliteStatus();
 		}

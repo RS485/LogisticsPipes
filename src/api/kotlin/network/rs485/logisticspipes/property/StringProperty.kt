@@ -39,13 +39,10 @@ package network.rs485.logisticspipes.property
 
 import net.minecraft.nbt.NBTTagCompound
 
-class StringProperty(initialValue: String, override val tagKey: String, override val oldTagKey: String) : ValueProperty<String>(initialValue) {
-
-    constructor(initialValue: String, tagKey: String) : this(initialValue, tagKey, "")
+class StringProperty(initialValue: String, override val tagKey: String) : ValueProperty<String>(initialValue) {
 
     override fun readFromNBT(tag: NBTTagCompound) {
-        if (!oldTagKey.isEmpty() && tag.hasKey(oldTagKey)) value = tag.getString(oldTagKey)
-        else if (tag.hasKey(tagKey)) value = tag.getString(tagKey)
+        if (tag.hasKey(tagKey)) value = tag.getString(tagKey)
     }
 
     override fun writeToNBT(tag: NBTTagCompound) = tag.setString(tagKey, value)

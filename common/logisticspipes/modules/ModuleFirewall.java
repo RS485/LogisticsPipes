@@ -3,6 +3,9 @@ package logisticspipes.modules;
 import com.google.common.collect.ImmutableList;
 
 import logisticspipes.utils.item.ItemIdentifierInventory;
+
+import net.minecraft.nbt.NBTTagCompound;
+
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.InventoryProperty;
 
@@ -15,7 +18,7 @@ import java.util.List;
 public class ModuleFirewall extends LogisticsModule {
 	public final InventoryProperty inv = new InventoryProperty(new ItemIdentifierInventory(6 * 6, "Filter Inv", 1), "");
 	public final BooleanProperty blockProvider = new BooleanProperty(false, "blockProvider");
-	public final BooleanProperty blockCrafter = new BooleanProperty(false, "blockCrafter", "blockCrafer");
+	public final BooleanProperty blockCrafter = new BooleanProperty(false, "blockCrafter");
 	public final BooleanProperty blockSorting = new BooleanProperty(false, "blockSorting");
 	public final BooleanProperty blockPower = new BooleanProperty(true, "blockPower");
 	public final BooleanProperty isBlocking = new BooleanProperty(true, "isBlocking");
@@ -60,5 +63,14 @@ public class ModuleFirewall extends LogisticsModule {
 	@Override
 	public boolean receivePassive() {
 		return false;
+	}
+
+	@Override
+	public void readFromNBT(@NotNull NBTTagCompound tag) {
+		super.readFromNBT(tag);
+
+		// FIXME: remove after 1.12
+		if (tag.hasKey("blockCrafer"))
+			blockCrafter.setValue(tag.getBoolean("blockCrafer"));
 	}
 }

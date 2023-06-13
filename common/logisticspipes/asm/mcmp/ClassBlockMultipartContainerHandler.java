@@ -27,7 +27,7 @@ public class ClassBlockMultipartContainerHandler {
 
 		boolean noChecksumMatch = false;
 		final String sumHandleEvent = ASMHelper.getCheckSumForMethod(reader, "getTile", "(Lnet/minecraft/world/IBlockAccess;Lnet/minecraft/util/math/BlockPos;)Ljava/util/Optional;");
-		if (!"C755146A0F8F81CCE6637174E17B6D48EC967D59".equals(sumHandleEvent) && !"570C0380BCA4C6B6BBB32CE0D400B8DE13E6D800".equals(sumHandleEvent)) {
+		if (!"C755146A0F8F81CCE6637174E17B6D48EC967D59".equals(sumHandleEvent) && !"570C0380BCA4C6B6BBB32CE0D400B8DE13E6D800".equals(sumHandleEvent) && !"D5F32B535E068F8D3B355A81B68C2938A2473D6F".equals(sumHandleEvent)) {
 			noChecksumMatch = true;
 		}
 		if (noChecksumMatch) {

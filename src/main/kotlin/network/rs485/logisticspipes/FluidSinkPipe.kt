@@ -50,7 +50,7 @@ import logisticspipes.utils.item.ItemIdentifierInventory
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
 import net.minecraft.nbt.NBTTagCompound
-import network.rs485.logisticspipes.property.InventoryProperty
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
 import network.rs485.logisticspipes.property.Property
 import network.rs485.logisticspipes.property.PropertyHolder
 import network.rs485.logisticspipes.property.addObserver
@@ -62,7 +62,7 @@ abstract class FluidSinkPipe(
     private val guiOpenedBy = PlayerCollectionList()
 
     // FIXME: after 1.12 give this a proper tag key
-    val sinkInv = InventoryProperty(ItemIdentifierInventory(inventorySize, inventoryName, 1, true), "")
+    val sinkInv = ItemIdentifierInventoryProperty(ItemIdentifierInventory(inventorySize, inventoryName, 1, true), "")
 
     override val properties: List<Property<*>> = listOf(sinkInv)
 

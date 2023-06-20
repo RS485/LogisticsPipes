@@ -54,7 +54,7 @@ import network.rs485.logisticspipes.module.SimpleFilter;
 import network.rs485.logisticspipes.property.BitSetProperty;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.IBitSet;
-import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.util.FuzzyFlag;
 import network.rs485.logisticspipes.util.FuzzyUtil;
@@ -64,7 +64,7 @@ public class ModuleItemSink extends LogisticsModule
 	implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 	ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
-	public final InventoryProperty filterInventory = new InventoryProperty(
+	public final ItemIdentifierInventoryProperty filterInventory = new ItemIdentifierInventoryProperty(
 		new ItemIdentifierInventory(9, "Requested items", 1), "");
 	public final BooleanProperty defaultRoute = new BooleanProperty(false, "defaultdestination");
 

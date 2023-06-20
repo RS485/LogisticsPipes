@@ -37,14 +37,14 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
 import network.rs485.logisticspipes.module.SimpleFilter;
-import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
 public class ModulePassiveSupplier extends LogisticsModule
 		implements Gui, SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		IModuleInventoryReceive, ISimpleInventoryEventHandler {
 
-	public final InventoryProperty filterInventory = new InventoryProperty(
+	public final ItemIdentifierInventoryProperty filterInventory = new ItemIdentifierInventoryProperty(
 			new ItemIdentifierInventory(9, "Requested items", 64), "");
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();

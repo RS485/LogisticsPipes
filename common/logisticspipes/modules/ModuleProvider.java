@@ -72,7 +72,7 @@ import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SneakyDirection;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.EnumProperty;
-import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty;
 import network.rs485.logisticspipes.property.NullableEnumProperty;
 import network.rs485.logisticspipes.property.Property;
 
@@ -81,7 +81,7 @@ public class ModuleProvider extends LogisticsModule implements SneakyDirection, 
 		IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive, Gui {
 
 	public final ArrayList<ItemIdentifierStack> displayList = new ArrayList<>();
-	public final InventoryProperty filterInventory = new InventoryProperty(
+	public final ItemIdentifierInventoryProperty filterInventory = new ItemIdentifierInventoryProperty(
 			new ItemIdentifierInventory(9, "Items to provide (or empty for all)", 1), "");
 	public final BooleanProperty isActive = new BooleanProperty(false, "isActive");
 	public final BooleanProperty isExclusionFilter = new BooleanProperty(false, "filterisexclude");

@@ -65,7 +65,7 @@ import net.minecraft.util.EnumFacing
 import net.minecraft.world.IBlockAccess
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.property.BooleanProperty
-import network.rs485.logisticspipes.property.InventoryProperty
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
 import network.rs485.logisticspipes.property.Property
 import network.rs485.logisticspipes.util.matchingSequence
 
@@ -78,7 +78,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         val name: String = "extractor_advanced"
     }
 
-    private val filterInventory = InventoryProperty(ItemIdentifierInventory(9, "Item list", 1), "")
+    private val filterInventory = ItemIdentifierInventoryProperty(ItemIdentifierInventory(9, "Item list", 1), "")
     val itemsIncluded = BooleanProperty(true, "itemsIncluded")
     override val properties: List<Property<*>>
         get() = extractor.properties + listOf(filterInventory, itemsIncluded)

@@ -41,7 +41,7 @@ import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.widget.FuzzySelectionWidget
 import network.rs485.logisticspipes.inventory.container.ItemSinkContainer
 import network.rs485.logisticspipes.property.BooleanProperty
-import network.rs485.logisticspipes.property.InventoryProperty
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
 import network.rs485.logisticspipes.property.PropertyLayer
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
@@ -168,7 +168,7 @@ class ItemSinkGui private constructor(
 
     fun importFromInventory(importedItems: List<ItemIdentifier>) {
         if (importedItems.isEmpty()) return
-        filterInventoryOverlay.write { filterInventory: InventoryProperty ->
+        filterInventoryOverlay.write { filterInventory: ItemIdentifierInventoryProperty ->
             for (i in filterInventory.indices) {
                 if (i < importedItems.size) {
                     filterInventory.setInventorySlotContents(i, importedItems[i].makeStack(1))

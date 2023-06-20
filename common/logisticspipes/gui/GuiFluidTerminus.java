@@ -11,14 +11,14 @@ import logisticspipes.utils.gui.GuiGraphics;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
-import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty;
 import network.rs485.logisticspipes.property.PropertyLayer;
 
 public class GuiFluidTerminus extends LogisticsBaseGuiScreen {
 
 	private final PropertyLayer propertyLayer;
 	private final BlockPos pipePosition;
-	private final PropertyLayer.PropertyOverlay<ItemIdentifierInventory, InventoryProperty> sinkInventoryOverlay;
+	private final PropertyLayer.PropertyOverlay<ItemIdentifierInventory, ItemIdentifierInventoryProperty> sinkInventoryOverlay;
 
 	public GuiFluidTerminus(EntityPlayer player, PipeFluidTerminus pipe) {
 		super(null);

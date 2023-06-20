@@ -114,7 +114,7 @@ import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.IBitSet;
 import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.IntegerProperty;
-import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.UUIDListProperty;
 import network.rs485.logisticspipes.property.UUIDProperty;
@@ -125,11 +125,11 @@ public class ModuleCrafter extends LogisticsModule
 		implements ICraftItems, IHUDModuleHandler, IModuleWatchReciver, IGuiOpenControler, Gui {
 
 	// TODO: after 1.12.2 add a tagKey
-	public final InventoryProperty dummyInventory = new InventoryProperty(
+	public final ItemIdentifierInventoryProperty dummyInventory = new ItemIdentifierInventoryProperty(
 			new ItemIdentifierInventory(11, "Requested items", 127), "");
-	public final InventoryProperty liquidInventory = new InventoryProperty(
+	public final ItemIdentifierInventoryProperty liquidInventory = new ItemIdentifierInventoryProperty(
 			new ItemIdentifierInventory(ItemUpgrade.MAX_LIQUID_CRAFTER, "Fluid items", 1, true), "FluidInv");
-	public final InventoryProperty cleanupInventory = new InventoryProperty(
+	public final ItemIdentifierInventoryProperty cleanupInventory = new ItemIdentifierInventoryProperty(
 			new ItemIdentifierInventory(ItemUpgrade.MAX_CRAFTING_CLEANUP * 3, "Cleanup Filter Items", 1), "CleanupInv");
 	public final UUIDProperty satelliteUUID = new UUIDProperty(null, "satelliteUUID");
 	public final UUIDListProperty advancedSatelliteUUIDList = new UUIDListProperty("advancedSatelliteUUIDList");

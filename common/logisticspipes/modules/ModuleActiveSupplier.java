@@ -57,7 +57,7 @@ import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.EnumProperty;
 import network.rs485.logisticspipes.property.IntListProperty;
-import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
 public class ModuleActiveSupplier extends LogisticsModule
@@ -75,8 +75,8 @@ public class ModuleActiveSupplier extends LogisticsModule
 			new EnumProperty<>(PatternMode.Bulk50, "patternmode", PatternMode.values());
 
 	// properties for the regular configuration
-	public final InventoryProperty inventory =
-			new InventoryProperty(new ItemIdentifierInventory(SUPPLIER_SLOTS, "", 127), "");
+	public final ItemIdentifierInventoryProperty inventory =
+			new ItemIdentifierInventoryProperty(new ItemIdentifierInventory(SUPPLIER_SLOTS, "", 127), "");
 	public final EnumProperty<SupplyMode> requestMode =
 			new EnumProperty<>(SupplyMode.Bulk50, "requestmode", SupplyMode.values());
 	public final BooleanProperty isLimited = new BooleanProperty(true, "limited");

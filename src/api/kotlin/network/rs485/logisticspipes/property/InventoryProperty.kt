@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -37,16 +37,8 @@
 
 package network.rs485.logisticspipes.property
 
-import network.rs485.logisticspipes.IStore
-import java.util.concurrent.CopyOnWriteArraySet
+import net.minecraft.inventory.IInventory
 
-interface Property<V> : IStore {
-    val tagKey: String
-    val propertyObservers: CopyOnWriteArraySet<ObserverCallback<V>>
-
-    fun iChanged() = propertyObservers.forEach { observer -> observer.invoke(this) }
-    fun <T> T.alsoIChanged(): T = this.also { iChanged() }
-    fun addObserver(callback: ObserverCallback<V>) = propertyObservers.add(callback)
-    fun copyValue(): V
-    fun copyProperty(): Property<V>
+interface InventoryProperty<T : IInventory> : Property<T>, IInventory {
+    override fun copyProperty(): InventoryProperty<T>
 }

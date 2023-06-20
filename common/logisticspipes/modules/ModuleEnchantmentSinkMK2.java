@@ -37,7 +37,7 @@ import logisticspipes.utils.item.ItemIdentifierStack;
 import network.rs485.logisticspipes.inventory.IItemIdentifierInventory;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.module.SimpleFilter;
-import network.rs485.logisticspipes.property.InventoryProperty;
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty;
 import network.rs485.logisticspipes.property.Property;
 
 @CCType(name = "EnchantmentSink Module MK2")
@@ -45,7 +45,7 @@ public class ModuleEnchantmentSinkMK2 extends LogisticsModule
 		implements SimpleFilter, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver,
 		ISimpleInventoryEventHandler, IModuleInventoryReceive, Gui {
 
-	public final InventoryProperty filterInventory = new InventoryProperty(
+	public final ItemIdentifierInventoryProperty filterInventory = new ItemIdentifierInventoryProperty(
 			new ItemIdentifierInventory(9, "Requested Enchanted items", 1), "");
 
 	private final PlayerCollectionList localModeWatchers = new PlayerCollectionList();

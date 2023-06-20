@@ -130,20 +130,16 @@ class ProviderGui private constructor(
         fun create(playerInventory: IInventory, providerModule: ModuleProvider, lockedStack: ItemStack): ProviderGui {
             val propertyLayer = PropertyLayer(providerModule.propertyList)
             val filterInventoryOverlay = propertyLayer.overlay(providerModule.filterInventory)
-            // FIXME: we don't know if read or write, so write is the fallback -- overlay needs IInventory compatibility. Ben will work on this
-            val gui = filterInventoryOverlay.write { filterInventory ->
-                ProviderGui(
+            return ProviderGui(
+                providerModule = providerModule,
+                providerContainer = ProviderContainer(
                     providerModule = providerModule,
-                    providerContainer = ProviderContainer(
-                        providerModule = providerModule,
-                        playerInventoryIn = playerInventory,
-                        filterInventoryIn = filterInventory,
-                        moduleInHand = lockedStack,
-                    ),
-                    propertyLayer = propertyLayer,
-                )
-            }
-            return gui
+                    playerInventoryIn = playerInventory,
+                    filterInventoryPropertyOverlay = filterInventoryOverlay,
+                    moduleInHand = lockedStack,
+                ),
+                propertyLayer = propertyLayer,
+            )
         }
     }
 
@@ -164,7 +160,7 @@ class ProviderGui private constructor(
 
     override fun <I> getFilterSlots(): MutableList<IGhostIngredientHandler.Target<I>> {
         // TODO create method to turn list of filter slots into list of Target<I>
-        return (inventorySlots as ProviderContainer).filterSlots.map { slot ->
+        return providerContainer.filterSlots.map { slot ->
             object : IGhostIngredientHandler.Target<I> {
                 override fun accept(ingredient: I) {
                     if (ingredient is ItemStack) {

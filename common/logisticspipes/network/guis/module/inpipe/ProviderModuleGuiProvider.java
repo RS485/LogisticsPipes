@@ -11,9 +11,10 @@ import logisticspipes.modules.ModuleProvider;
 import logisticspipes.network.abstractguis.GuiProvider;
 import logisticspipes.network.abstractguis.ModuleCoordinatesGuiProvider;
 import logisticspipes.utils.StaticResolve;
-import network.rs485.logisticspipes.inventory.container.ProviderContainer;
 import network.rs485.logisticspipes.gui.module.ProviderGui;
 import network.rs485.logisticspipes.inventory.ProviderMode;
+import network.rs485.logisticspipes.inventory.container.ProviderContainer;
+import network.rs485.logisticspipes.property.layer.SimplePropertyOverlay;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 
@@ -59,7 +60,7 @@ public class ProviderModuleGuiProvider extends ModuleCoordinatesGuiProvider {
 		if (module == null) {
 			return null;
 		}
-		return new ProviderContainer(module, player.inventory, module.filterInventory, ItemStack.EMPTY);
+		return new ProviderContainer(module, player.inventory, new SimplePropertyOverlay<>(module.filterInventory), ItemStack.EMPTY);
 	}
 
 	@Override

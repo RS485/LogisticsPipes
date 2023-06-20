@@ -42,4 +42,5 @@ import network.rs485.logisticspipes.property.Property
 interface PropertyOverlay<T, P : Property<T>> {
     fun <V> read(func: (P) -> V): V
     fun <V> write(func: (P) -> V): V
+    fun isWriteMode(): Boolean
 }

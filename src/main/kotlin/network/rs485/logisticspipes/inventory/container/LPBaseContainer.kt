@@ -44,15 +44,12 @@ import logisticspipes.LogisticsPipes
 import logisticspipes.modules.LogisticsModule
 import logisticspipes.utils.gui.ModuleSlot
 import net.minecraft.entity.player.EntityPlayer
-import net.minecraft.inventory.ClickType
-import net.minecraft.inventory.Container
-import net.minecraft.inventory.IInventory
-import net.minecraft.inventory.Slot
+import net.minecraft.inventory.*
 import net.minecraft.item.ItemStack
 import java.util.*
 import kotlin.math.min
 
-abstract class LPBaseContainer(val module: LogisticsModule) : Container() {
+abstract class LPBaseContainer<out M : LogisticsModule>(val module: M) : Container() {
 
     val slotSize = 18
 

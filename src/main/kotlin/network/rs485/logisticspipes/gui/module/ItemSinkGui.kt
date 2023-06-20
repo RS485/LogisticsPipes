@@ -191,7 +191,7 @@ class ItemSinkGui private constructor(
     }
 
     override fun <I : Any?> getFilterSlots(): MutableList<IGhostIngredientHandler.Target<I>> {
-        return (inventorySlots as ItemSinkContainer).filterSlots.map { slot ->
+        return itemSinkContainer.filterSlots.map { slot ->
             object : IGhostIngredientHandler.Target<I> {
                 override fun accept(ingredient: I) {
                     if (ingredient is ItemStack) {

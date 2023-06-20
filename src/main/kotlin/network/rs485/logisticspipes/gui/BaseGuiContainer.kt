@@ -46,6 +46,7 @@ import network.rs485.logisticspipes.gui.widget.GhostSlot
 import network.rs485.logisticspipes.gui.widget.Tooltipped
 import network.rs485.logisticspipes.inventory.container.LPBaseContainer
 import network.rs485.logisticspipes.util.IRectangle
+import logisticspipes.modules.LogisticsModule
 import logisticspipes.utils.gui.DummySlot
 import mezz.jei.api.gui.IGhostIngredientHandler
 import net.minecraft.client.Minecraft
@@ -57,7 +58,7 @@ import net.minecraft.inventory.Slot
 import kotlin.math.roundToInt
 
 abstract class BaseGuiContainer(
-    private val baseContainer: LPBaseContainer,
+    private val baseContainer: LPBaseContainer<LogisticsModule>,
     val xOffset: Int = 0,
     val yOffset: Int = 0,
     private val widgetScreen: WidgetScreen,

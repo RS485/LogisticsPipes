@@ -55,7 +55,7 @@ class ItemSinkContainer(
     propertyLayer: PropertyLayer,
     val isFuzzy: Boolean,
     val moduleInHand: ItemStack,
-) : LPBaseContainer(itemSinkModule) {
+) : LPBaseContainer<ModuleItemSink>(itemSinkModule) {
 
     private val flags = EnumSet.of(FuzzyFlag.IGNORE_NBT, FuzzyFlag.IGNORE_DAMAGE)
 
@@ -76,8 +76,6 @@ class ItemSinkContainer(
 
     override fun addDummySlotsToContainer(dummyInventoryIn: IInventory, startX: Int, startY: Int): List<GhostSlot> {
         val filterSlots = mutableListOf<GhostSlot>()
-
-        module as ModuleItemSink
 
         for (column in 0 until 9) {
             filterSlots.add(

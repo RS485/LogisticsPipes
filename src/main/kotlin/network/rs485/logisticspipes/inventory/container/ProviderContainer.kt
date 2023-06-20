@@ -37,22 +37,47 @@
 
 package network.rs485.logisticspipes.inventory.container
 
+import network.rs485.logisticspipes.gui.widget.GhostItemSlot
+import network.rs485.logisticspipes.gui.widget.GhostSlot
+import network.rs485.logisticspipes.property.InventoryProperty
+import network.rs485.logisticspipes.property.layer.PropertyOverlay
+import network.rs485.logisticspipes.property.layer.PropertyOverlayInventoryAdapter
 import logisticspipes.modules.ModuleProvider
+import logisticspipes.utils.item.ItemIdentifierInventory
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.gui.widget.GhostItemSlot
-import network.rs485.logisticspipes.gui.widget.GhostSlot
 
 class ProviderContainer(
     providerModule: ModuleProvider,
     playerInventoryIn: IInventory,
-    filterInventoryIn: IInventory,
+    filterInventoryPropertyOverlay: PropertyOverlay<ItemIdentifierInventory, out InventoryProperty<ItemIdentifierInventory>>,
     moduleInHand: ItemStack,
-) : LPBaseContainer(providerModule) {
+) : LPBaseContainer<ModuleProvider>(providerModule) {
+
+    private val filterInventoryOverlayAdapter = PropertyOverlayInventoryAdapter(filterInventoryPropertyOverlay)
 
     val playerSlots = addPlayerSlotsToContainer(playerInventoryIn, 0, 0, moduleInHand)
-    val filterSlots = addDummySlotsToContainer(filterInventoryIn, 0, 0)
+    val filterSlots = addDummySlotsToContainer(filterInventoryOverlayAdapter, 0, 0)
+
+    override fun putStackInSlot(slotID: Int, stack: ItemStack) {
+        // external change, access underlying property directly
+        val slot = inventorySlots.getOrNull(slotID)
+        if (slot != null && slot in filterSlots) {
+            module.filterInventory.setInventorySlotContents(slot.slotIndex, stack)
+        } else {
+            super.putStackInSlot(slotID, stack)
+        }
+    }
+
+    @SideOnly(Side.CLIENT)
+    override fun setAll(slotStacks: MutableList<ItemStack>) {
+        for (slotIdx in slotStacks.indices) {
+            putStackInSlot(slotIdx, slotStacks[slotIdx])
+        }
+    }
 
     // Add 3x3 grid of dummy slots.
     override fun addDummySlotsToContainer(dummyInventoryIn: IInventory, startX: Int, startY: Int): List<GhostSlot> {
@@ -65,8 +90,8 @@ class ProviderContainer(
                         dummyInventoryIn = dummyInventoryIn,
                         slotId = column + row * 3,
                         posX = startX + column * slotSize,
-                        posY = startY + row * slotSize
-                    ) as GhostItemSlot
+                        posY = startY + row * slotSize,
+                    ) as GhostItemSlot,
                 )
             }
         }

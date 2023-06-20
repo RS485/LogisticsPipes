@@ -45,9 +45,14 @@ import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
 import network.rs485.logisticspipes.inventory.SlotAccess
 import java.util.concurrent.CopyOnWriteArraySet
 
-// TODO: after 1.12.2 check that tagKey is notEmptyOrBlank
 class ItemIdentifierInventoryProperty(private val inv: ItemIdentifierInventory, override val tagKey: String) :
     InventoryProperty<ItemIdentifierInventory>, IItemIdentifierInventory by inv, Collection<ItemIdentifierStack> {
+
+    /* FIXME: after 1.12
+    init {
+        require(tagKey.isNotBlank())
+    }
+    */
 
     override val slotAccess: SlotAccess = object : SlotAccess by inv.slotAccess {
         override fun mergeSlots(intoSlot: Int, fromSlot: Int) =
@@ -82,7 +87,7 @@ class ItemIdentifierInventoryProperty(private val inv: ItemIdentifierInventory, 
 
     override fun readFromNBT(tag: NBTTagCompound) {
         // FIXME: after 1.12 remove this items appending crap
-        if (tagKey.isEmpty() || tag.hasKey(tagKey + "items")) inv.readFromNBT(tag, tagKey).alsoIChanged()
+        if (tag.hasKey(tagKey + "items")) inv.readFromNBT(tag, tagKey).alsoIChanged()
     }
 
     override fun writeToNBT(tag: NBTTagCompound) = inv.writeToNBT(tag, tagKey)

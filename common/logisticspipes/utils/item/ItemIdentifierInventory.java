@@ -227,6 +227,7 @@ public class ItemIdentifierInventory
 	}
 
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
+		// FIXME: after 1.12 remove this items appending crap
 		NBTTagList nbttaglist = nbttagcompound.getTagList(prefix + "items", nbttagcompound.getId());
 
 		Arrays.fill(_contents, null);

@@ -121,6 +121,8 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
 
         override fun <V> write(func: (P) -> V): V = func(lookupWrite())
 
+        override fun isWriteMode(): Boolean = changedIndices.get(idx)
+
     }
 
     inner class ValuePropertyOverlayImpl<T, P : ValueProperty<T>>(idx: Int) :

@@ -19,15 +19,16 @@ import logisticspipes.utils.gui.SimpleGraphics;
 import logisticspipes.utils.gui.SmallGuiButton;
 import logisticspipes.utils.item.ItemIdentifierInventory;
 import logisticspipes.utils.item.ItemIdentifierStack;
-import network.rs485.logisticspipes.property.PropertyLayer;
 import network.rs485.logisticspipes.property.StringListProperty;
+import network.rs485.logisticspipes.property.layer.PropertyLayer;
+import network.rs485.logisticspipes.property.layer.PropertyOverlay;
 
 public class GuiStringBasedItemSink extends ModuleBaseGui {
 
 	private final ItemIdentifierInventory tmpInv;
 	private final PropertyLayer propertyLayer;
 	private final IStringBasedModule stringBasedModule;
-	private final PropertyLayer.PropertyOverlay<List<String>, StringListProperty> stringListOverlay;
+	private final PropertyOverlay<List<String>, StringListProperty> stringListOverlay;
 	private String name = "";
 	private int mouseX = 0;
 	private int mouseY = 0;

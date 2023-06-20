@@ -41,7 +41,7 @@ import network.rs485.logisticspipes.gui.*
 import network.rs485.logisticspipes.gui.guidebook.Drawable
 import network.rs485.logisticspipes.gui.guidebook.MouseInteractable
 import network.rs485.logisticspipes.property.BitSetProperty
-import network.rs485.logisticspipes.property.PropertyLayer
+import network.rs485.logisticspipes.property.layer.PropertyOverlay
 import network.rs485.logisticspipes.util.FuzzyFlag
 import network.rs485.logisticspipes.util.FuzzyUtil
 import network.rs485.logisticspipes.util.IRectangle
@@ -52,7 +52,7 @@ import java.util.*
 
 class FuzzySelectionWidget(
     parent: Drawable,
-    private val fuzzyFlagOverlay: PropertyLayer.PropertyOverlay<BitSet, BitSetProperty>,
+    private val fuzzyFlagOverlay: PropertyOverlay<BitSet, BitSetProperty>,
 ) : LPGuiWidget(
     parent = parent,
     xPosition = HorizontalAlignment.LEFT,

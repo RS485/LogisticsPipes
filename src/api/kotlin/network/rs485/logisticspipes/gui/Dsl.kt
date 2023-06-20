@@ -38,7 +38,7 @@
 package network.rs485.logisticspipes.gui
 
 import network.rs485.logisticspipes.property.Property
-import network.rs485.logisticspipes.property.PropertyLayer
+import network.rs485.logisticspipes.property.layer.PropertyLayer
 
 @DslMarker
 annotation class GuiComponentMarker

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * "LogisticsPipes" is distributed under the terms of the Minecraft Mod Public
  * License 1.0.1, or MMPL. Please check the contents of the license located in
@@ -8,7 +8,7 @@
  * This file can instead be distributed under the license terms of the
  * MIT license:
  *
- * Copyright (c) 2021  RS485
+ * Copyright (c) 2023  RS485
  *
  * This MIT license was reworded to only match this file. If you use the regular
  * MIT license in your project, replace this copyright notice (this line and any
@@ -35,8 +35,12 @@
  * SOFTWARE.
  */
 
-package network.rs485.logisticspipes.property
+package network.rs485.logisticspipes.property.layer
 
+import network.rs485.logisticspipes.property.ObserverCallback
+import network.rs485.logisticspipes.property.Property
+import network.rs485.logisticspipes.property.PropertyHolder
+import network.rs485.logisticspipes.property.ValueProperty
 import java.util.*
 import kotlin.streams.toList
 
@@ -70,8 +74,11 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
         propList.indexOfFirst { other -> prop === other }.takeUnless { it == -1 }
             ?: throw IllegalArgumentException("Property <$prop> not in this layer")
 
-    fun <T, P : ValueProperty<T>> overlay(valueProp: P) = ValuePropertyOverlay<T, P>(lookupIndex(valueProp, lowerLayer))
-    fun <T, P : Property<T>> overlay(prop: P) = PropertyOverlay<T, P>(lookupIndex(prop, lowerLayer))
+    fun <T, P : ValueProperty<T>> overlay(valueProp: P): ValuePropertyOverlay<T, P> =
+        ValuePropertyOverlayImpl(lookupIndex(valueProp, lowerLayer))
+
+    fun <T, P : Property<T>> overlay(prop: P): PropertyOverlay<T, P> =
+        PropertyOverlayImpl(lookupIndex(prop, lowerLayer))
 
     @Suppress("UNCHECKED_CAST")
     fun <T, P : Property<T>> writeProp(prop: P): P {
@@ -95,7 +102,7 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
 
     fun unregister() = observersToRemove.forEach { lowerLayer[it.key].propertyObservers.remove(it.value) }
 
-    open inner class PropertyOverlay<T, P : Property<T>>(private val idx: Int) {
+    open inner class PropertyOverlayImpl<T, P : Property<T>>(private val idx: Int) : PropertyOverlay<T, P> {
 
         @Suppress("UNCHECKED_CAST")
         protected fun lookupRead(): P = if (changedIndices.get(idx)) {
@@ -110,16 +117,18 @@ open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder
             return upperLayer[idx]!! as P
         }
 
-        fun <V> read(func: (P) -> V): V = func(lookupRead())
+        override fun <V> read(func: (P) -> V): V = func(lookupRead())
 
-        fun <V> write(func: (P) -> V): V = func(lookupWrite())
+        override fun <V> write(func: (P) -> V): V = func(lookupWrite())
 
     }
 
-    inner class ValuePropertyOverlay<T, P : ValueProperty<T>>(idx: Int) : PropertyOverlay<T, P>(idx) {
-        fun get(): T = lookupRead().value
+    inner class ValuePropertyOverlayImpl<T, P : ValueProperty<T>>(idx: Int) :
+        PropertyOverlayImpl<T, P>(idx), ValuePropertyOverlay<T, P> {
 
-        fun set(value: T) {
+        override fun get(): T = lookupRead().value
+
+        override fun set(value: T) {
             lookupWrite().value = value
         }
 

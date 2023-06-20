@@ -21,13 +21,14 @@ import logisticspipes.utils.gui.GuiStringHandlerButton;
 import logisticspipes.utils.gui.LogisticsBaseGuiScreen;
 import network.rs485.logisticspipes.module.AsyncAdvancedExtractor;
 import network.rs485.logisticspipes.property.BooleanProperty;
-import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.property.layer.PropertyLayer;
+import network.rs485.logisticspipes.property.layer.ValuePropertyOverlay;
 
 public class GuiAdvancedExtractor extends ModuleBaseGui {
 
 	private final AsyncAdvancedExtractor _advancedExtractor;
 	private final PropertyLayer propertyLayer;
-	private final PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> itemsIncludedOverlay;
+	private final ValuePropertyOverlay<Boolean, BooleanProperty> itemsIncludedOverlay;
 
 	public GuiAdvancedExtractor(IInventory playerInventory, AsyncAdvancedExtractor advancedExtractor) {
 		super(null, advancedExtractor);

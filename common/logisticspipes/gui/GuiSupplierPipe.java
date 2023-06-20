@@ -33,7 +33,9 @@ import logisticspipes.utils.gui.SmallGuiButton;
 import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.EnumProperty;
 import network.rs485.logisticspipes.property.IntListProperty;
-import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.property.layer.PropertyLayer;
+import network.rs485.logisticspipes.property.layer.PropertyOverlay;
+import network.rs485.logisticspipes.property.layer.ValuePropertyOverlay;
 import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
@@ -43,10 +45,10 @@ public class GuiSupplierPipe extends LogisticsBaseGuiScreen {
 	private final boolean hasPatternUpgrade;
 	private final PropertyLayer propertyLayer;
 	private final ModuleActiveSupplier supplierModule;
-	private final PropertyLayer.PropertyOverlay<List<Integer>, IntListProperty> slotAssignmentPatternOverlay;
-	private final PropertyLayer.ValuePropertyOverlay<SupplyMode, EnumProperty<SupplyMode>> requestModeOverlay;
-	private final PropertyLayer.ValuePropertyOverlay<PatternMode, EnumProperty<PatternMode>> patternModeOverlay;
-	private PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> limitedPropertyOverlay;
+	private final PropertyOverlay<List<Integer>, IntListProperty> slotAssignmentPatternOverlay;
+	private final ValuePropertyOverlay<SupplyMode, EnumProperty<SupplyMode>> requestModeOverlay;
+	private final ValuePropertyOverlay<PatternMode, EnumProperty<PatternMode>> patternModeOverlay;
+	private ValuePropertyOverlay<Boolean, BooleanProperty> limitedPropertyOverlay;
 
 	public GuiSupplierPipe(IInventory playerInventory, IInventory dummyInventory, ModuleActiveSupplier module,
 			Boolean flag, int[] slots) {

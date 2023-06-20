@@ -47,7 +47,9 @@ import network.rs485.logisticspipes.property.BooleanProperty;
 import network.rs485.logisticspipes.property.IntListProperty;
 import network.rs485.logisticspipes.property.IntegerProperty;
 import network.rs485.logisticspipes.property.Property;
-import network.rs485.logisticspipes.property.PropertyLayer;
+import network.rs485.logisticspipes.property.layer.PropertyLayer;
+import network.rs485.logisticspipes.property.layer.PropertyOverlay;
+import network.rs485.logisticspipes.property.layer.ValuePropertyOverlay;
 import network.rs485.logisticspipes.util.TextUtil;
 
 public class GuiCraftingPipe extends ModuleBaseGui {
@@ -68,9 +70,9 @@ public class GuiCraftingPipe extends ModuleBaseGui {
 	private final int byproductSlotID;
 	private final int[] cleanupSlotIDs;
 	private final PropertyLayer propertyLayer;
-	private final PropertyLayer.ValuePropertyOverlay<Boolean, BooleanProperty> cleanupModeIsExcludeOverlay;
-	private final PropertyLayer.ValuePropertyOverlay<Integer, IntegerProperty> craftingPriorityOverlay;
-	private final PropertyLayer.PropertyOverlay<List<Integer>, IntListProperty> liquidAmountsOverlay;
+	private final ValuePropertyOverlay<Boolean, BooleanProperty> cleanupModeIsExcludeOverlay;
+	private final ValuePropertyOverlay<Integer, IntegerProperty> craftingPriorityOverlay;
+	private final PropertyOverlay<List<Integer>, IntListProperty> liquidAmountsOverlay;
 
 	private GuiButton cleanupModeButton;
 	private final Label[] satellitePipeLabels;

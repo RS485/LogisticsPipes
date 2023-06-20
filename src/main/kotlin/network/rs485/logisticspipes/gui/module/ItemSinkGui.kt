@@ -42,7 +42,7 @@ import network.rs485.logisticspipes.gui.widget.FuzzySelectionWidget
 import network.rs485.logisticspipes.inventory.container.ItemSinkContainer
 import network.rs485.logisticspipes.property.BooleanProperty
 import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
-import network.rs485.logisticspipes.property.PropertyLayer
+import network.rs485.logisticspipes.property.layer.PropertyLayer
 import network.rs485.logisticspipes.util.IRectangle
 import network.rs485.logisticspipes.util.TextUtil
 import logisticspipes.modules.ModuleItemSink

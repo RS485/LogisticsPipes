@@ -37,12 +37,14 @@
 
 package network.rs485.logisticspipes.inventory.container
 
-import network.rs485.logisticspipes.gui.widget.FuzzyItemSlot
-import network.rs485.logisticspipes.gui.widget.GhostItemSlot
 import network.rs485.logisticspipes.gui.widget.GhostSlot
+import network.rs485.logisticspipes.property.InventoryProperty
 import network.rs485.logisticspipes.property.layer.PropertyLayer
+import network.rs485.logisticspipes.property.layer.PropertyOverlay
+import network.rs485.logisticspipes.property.layer.PropertyOverlayInventoryAdapter
 import network.rs485.logisticspipes.util.FuzzyFlag
 import logisticspipes.modules.ModuleItemSink
+import logisticspipes.utils.item.ItemIdentifierInventory
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
 import net.minecraft.item.ItemStack
@@ -50,9 +52,9 @@ import java.util.*
 
 class ItemSinkContainer(
     playerInventory: IInventory,
-    filterInventory: IInventory,
+    filterInventoryOverlay: PropertyOverlay<ItemIdentifierInventory, out InventoryProperty<ItemIdentifierInventory>>,
     itemSinkModule: ModuleItemSink,
-    propertyLayer: PropertyLayer,
+    propertyLayer: PropertyLayer, // FIXME: property layer should not be passed into the container, it is a client GUI thing
     val isFuzzy: Boolean,
     val moduleInHand: ItemStack,
 ) : LPBaseContainer<ModuleItemSink>(itemSinkModule) {
@@ -69,19 +71,26 @@ class ItemSinkContainer(
     )
 
     val filterSlots = addDummySlotsToContainer(
-        dummyInventoryIn = filterInventory,
+        overlayInventory = PropertyOverlayInventoryAdapter(filterInventoryOverlay),
+        baseProperty = module.filterInventory,
         startX = 0,
         startY = 0,
     )
 
-    override fun addDummySlotsToContainer(dummyInventoryIn: IInventory, startX: Int, startY: Int): List<GhostSlot> {
+    override fun addDummySlotsToContainer(
+        overlayInventory: IInventory,
+        baseProperty: InventoryProperty<*>?,
+        startX: Int,
+        startY: Int
+    ): List<GhostSlot> {
         val filterSlots = mutableListOf<GhostSlot>()
 
         for (column in 0 until 9) {
             filterSlots.add(
                 if (isFuzzy) {
                     addFuzzyItemSlotToContainer(
-                        dummyInventoryIn = dummyInventoryIn,
+                        dummyInventoryIn = overlayInventory,
+                        baseProperty = baseProperty,
                         slotId = column,
                         posX = startX + column * slotSize,
                         posY = startY,
@@ -90,14 +99,15 @@ class ItemSinkContainer(
                         fuzzyFlagOverlay.read { p ->
                             p.get(column * 4, column * 4 + 3)
                         }
-                    } as FuzzyItemSlot
+                    }
                 } else {
                     addGhostItemSlotToContainer(
-                        dummyInventoryIn = dummyInventoryIn,
+                        dummyInventoryIn = overlayInventory,
+                        baseProperty = baseProperty,
                         slotId = column,
                         posX = startX + column * slotSize,
                         posY = startY,
-                    ) as GhostItemSlot
+                    )
                 },
             )
         }

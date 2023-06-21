@@ -135,23 +135,19 @@ class ItemSinkGui private constructor(
         ): ItemSinkGui {
             val propertyLayer = PropertyLayer(itemSinkModule.properties)
             val filterInventoryOverlay = propertyLayer.overlay(itemSinkModule.filterInventory)
-            // FIXME: we don't know if read or write, so write is the fallback -- overlay needs IInventory compatibility. Ben will work on this
-            val gui = filterInventoryOverlay.write { filterInventory ->
-                ItemSinkGui(
+            return ItemSinkGui(
+                itemSinkModule = itemSinkModule,
+                itemSinkContainer = ItemSinkContainer(
+                    playerInventory = playerInventory,
+                    filterInventoryOverlay = filterInventoryOverlay,
                     itemSinkModule = itemSinkModule,
-                    itemSinkContainer = ItemSinkContainer(
-                        playerInventory = playerInventory,
-                        filterInventory = filterInventory,
-                        itemSinkModule = itemSinkModule,
-                        propertyLayer = propertyLayer,
-                        isFuzzy = isFuzzy,
-                        moduleInHand = lockedStack,
-                    ),
                     propertyLayer = propertyLayer,
-                    inHand = inHand,
-                )
-            }
-            return gui
+                    isFuzzy = isFuzzy,
+                    moduleInHand = lockedStack,
+                ),
+                propertyLayer = propertyLayer,
+                inHand = inHand,
+            )
         }
     }
 

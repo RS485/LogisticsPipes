@@ -39,10 +39,13 @@ package network.rs485.logisticspipes.inventory.container
 
 import network.rs485.logisticspipes.gui.widget.*
 import network.rs485.logisticspipes.property.IBitSet
+import network.rs485.logisticspipes.property.InventoryProperty
 import network.rs485.logisticspipes.util.FuzzyFlag
 import logisticspipes.LogisticsPipes
 import logisticspipes.modules.LogisticsModule
 import logisticspipes.utils.gui.ModuleSlot
+import net.minecraftforge.fml.relauncher.Side
+import net.minecraftforge.fml.relauncher.SideOnly
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.*
 import net.minecraft.item.ItemStack
@@ -53,52 +56,70 @@ abstract class LPBaseContainer<out M : LogisticsModule>(val module: M) : Contain
 
     val slotSize = 18
 
-    val playerHotbarSlots: MutableList<Slot> = mutableListOf()
-    val playerBackpackSlots: MutableList<Slot> = mutableListOf()
+    private val playerHotbarSlots = mutableListOf<Slot>()
+    private val playerBackpackSlots = mutableListOf<Slot>()
+    private val directSlotPropertyMap = mutableMapOf<Slot, InventoryProperty<*>>()
 
     /**
      * Add container-specific's DummySlots to the Container's slot list.
      * This should be implemented in a per-container basis.
-     * @param dummyInventoryIn  dummy inventory from which the slots will be grabbed.
+     * @param overlayInventory  dummy inventory from which the slots will be grabbed.
      * @param startX            starting leftmost position.
      * @param startY            starting bottommost position.
      * @return the list of added lots.
      */
-    abstract fun addDummySlotsToContainer(dummyInventoryIn: IInventory, startX: Int, startY: Int): List<GhostSlot>
+    abstract fun addDummySlotsToContainer(
+        overlayInventory: IInventory,
+        baseProperty: InventoryProperty<*>? = null,
+        startX: Int,
+        startY: Int
+    ): List<GhostSlot>
 
     /**
      * Add DummySlot to the Container's slot list.
      * @param dummyInventoryIn slot's inventory.
      * @param slotId id to be given to the slot
      */
-    fun addGhostItemSlotToContainer(dummyInventoryIn: IInventory, slotId: Int, posX: Int, posY: Int): Slot =
-        addSlotToContainer(
-            GhostItemSlot(
-                inventoryIn = dummyInventoryIn,
-                index = slotId,
-                xPosition = posX,
-                yPosition = posY,
-            ),
+    fun addGhostItemSlotToContainer(
+        dummyInventoryIn: IInventory,
+        baseProperty: InventoryProperty<*>?,
+        slotId: Int,
+        posX: Int,
+        posY: Int
+    ): GhostItemSlot {
+        val slot = GhostItemSlot(
+            inventoryIn = dummyInventoryIn,
+            index = slotId,
+            xPosition = posX,
+            yPosition = posY,
         )
+        addSlotToContainer(slot)
+        baseProperty?.let { directSlotPropertyMap[slot] = it }
+        return slot
+    }
 
 
     fun addFuzzyItemSlotToContainer(
         dummyInventoryIn: IInventory,
+        baseProperty: InventoryProperty<*>?,
         slotId: Int,
         posX: Int,
         posY: Int,
         usedFlags: EnumSet<FuzzyFlag>,
         flagGetter: () -> IBitSet,
-    ): Slot = addSlotToContainer(
-        FuzzyItemSlot(
+    ): FuzzyItemSlot {
+        val slot = FuzzyItemSlot(
             inventoryIn = dummyInventoryIn,
             index = slotId,
             xPosition = posX,
             yPosition = posY,
             usedFlags = usedFlags,
             flagGetter = flagGetter,
-        ),
-    )
+        )
+        addSlotToContainer(slot)
+        baseProperty?.let { directSlotPropertyMap[slot] = it }
+        return slot
+    }
 
 
     override fun slotClick(slotId: Int, dragType: Int, clickTypeIn: ClickType, player: EntityPlayer): ItemStack {
@@ -312,5 +333,20 @@ abstract class LPBaseContainer<out M : LogisticsModule>(val module: M) : Contain
     open fun applyItemStackToGhostItemSlot(itemStack: ItemStack, slot: GhostSlot) {
         val copiedItemStack = itemStack.copy()
         slot.putStack(copiedItemStack)
+    }
+
+    override fun putStackInSlot(slotID: Int, stack: ItemStack) {
+        // external change, access underlying property directly
+        val slot = inventorySlots.getOrNull(slotID)
+        slot?.let { directSlotPropertyMap[slot] }?.also { property ->
+            property.setInventorySlotContents(slot.slotIndex, stack)
+        } ?: super.putStackInSlot(slotID, stack)
+    }
+
+    @SideOnly(Side.CLIENT)
+    override fun setAll(slotStacks: MutableList<ItemStack>) {
+        for (slotIdx in slotStacks.indices) {
+            putStackInSlot(slotIdx, slotStacks[slotIdx])
+        }
     }
 }

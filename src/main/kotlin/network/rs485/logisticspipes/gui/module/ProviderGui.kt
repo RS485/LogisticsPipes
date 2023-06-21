@@ -135,7 +135,7 @@ class ProviderGui private constructor(
                 providerContainer = ProviderContainer(
                     providerModule = providerModule,
                     playerInventoryIn = playerInventory,
-                    filterInventoryPropertyOverlay = filterInventoryOverlay,
+                    filterInventoryOverlay = filterInventoryOverlay,
                     moduleInHand = lockedStack,
                 ),
                 propertyLayer = propertyLayer,

@@ -53,7 +53,7 @@ class EnumProperty<E : Enum<E>>(
 
     override fun copyValue(): E = value
 
-    override fun copyProperty(): EnumProperty<E> =
+    override fun copyProperty(): EnumProperty<out E> =
         EnumProperty(defaultValue, tagKey, enumValues).also { it.value = copyValue() }
 
     fun next() = (enumValues.getOrNull(value.ordinal + 1) ?: enumValues[0]).also { value = it }

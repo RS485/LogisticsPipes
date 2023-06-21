@@ -37,20 +37,20 @@
 
 package network.rs485.logisticspipes.property.layer
 
-import network.rs485.logisticspipes.property.InventoryProperty
-import net.minecraft.inventory.IInventory
+import network.rs485.logisticspipes.property.Property
 
-class SimplePropertyOverlay<T : IInventory>(private val sourceProperty: InventoryProperty<T>) :
-    PropertyOverlay<T, InventoryProperty<T>> {
+class SimplePropertyOverlay<T : Any, P : Property<T>>(private val sourceProperty: P) :
+    PropertyOverlay<T, P> {
     private var isPropertyCopied: Boolean = false
-    private lateinit var copiedProperty: InventoryProperty<T>
+    private lateinit var copiedProperty: P
 
-    override fun <V> read(func: (InventoryProperty<T>) -> V): V =
+    override fun <V> read(func: (P) -> V): V =
         if (isPropertyCopied) func(copiedProperty) else func(sourceProperty)
 
-    override fun <V> write(func: (InventoryProperty<T>) -> V): V {
+    override fun <V> write(func: (P) -> V): V {
         if (!isPropertyCopied) {
-            copiedProperty = sourceProperty.copyProperty()
+            @Suppress("UNCHECKED_CAST") // as specified by copyProperty
+            copiedProperty = sourceProperty.copyProperty() as P
             isPropertyCopied = true
         }
         return func(copiedProperty)

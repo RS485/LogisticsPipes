@@ -55,7 +55,7 @@ class UUIDProperty(initialValue: UUID?, override val tagKey: String) : ValueProp
 
     override fun copyValue(): UUID = value
 
-    override fun copyProperty(): Property<UUID> = UUIDProperty(copyValue(), tagKey)
+    override fun copyProperty(): UUIDProperty = UUIDProperty(copyValue(), tagKey)
 
     fun isZero() = isZero(value)
 
@@ -86,7 +86,7 @@ class UUIDListProperty : ListProperty<UUID> {
     // UUID objects are immutable
     override fun copyValue(obj: UUID): UUID = obj
 
-    override fun copyProperty(): Property<MutableList<UUID>> = UUIDListProperty(tagKey, list)
+    override fun copyProperty(): UUIDListProperty = UUIDListProperty(tagKey, list)
 
     fun isZero(idx: Int) = isZero(get(idx))
 

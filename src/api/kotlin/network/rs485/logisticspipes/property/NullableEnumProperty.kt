@@ -61,7 +61,7 @@ class NullableEnumProperty<E : Enum<E>>(
 
     override fun copyValue(): E? = value
 
-    override fun copyProperty(): NullableEnumProperty<E> =
+    override fun copyProperty(): NullableEnumProperty<out E> =
         NullableEnumProperty(defaultValue, tagKey, enumValues).also { it.value = copyValue() }
 
     /**

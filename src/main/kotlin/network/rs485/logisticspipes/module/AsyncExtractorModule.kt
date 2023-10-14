@@ -37,11 +37,13 @@
 
 package network.rs485.logisticspipes.module
 
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import network.rs485.grow.ChunkedChannel
+import network.rs485.grow.Coroutines
+import network.rs485.logisticspipes.logistics.LogisticsManager
+import network.rs485.logisticspipes.property.NullableEnumProperty
+import network.rs485.logisticspipes.property.Property
+import network.rs485.logisticspipes.util.equalsWithNBT
+import network.rs485.logisticspipes.util.getExtractionMax
 import logisticspipes.config.Configs
 import logisticspipes.interfaces.*
 import logisticspipes.network.NewGuiHandler
@@ -61,20 +63,19 @@ import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.PlayerCollectionList
 import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
+import net.minecraftforge.fml.client.FMLClientHandler
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
-import net.minecraftforge.fml.client.FMLClientHandler
-import network.rs485.grow.ChunkedChannel
-import network.rs485.logisticspipes.logistics.LogisticsManager
-import network.rs485.logisticspipes.property.NullableEnumProperty
-import network.rs485.logisticspipes.property.Property
-import network.rs485.logisticspipes.util.equalsWithNBT
-import network.rs485.logisticspipes.util.getExtractionMax
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.collections.ArrayList
 import kotlin.math.pow
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.withContext
 
 data class ExtractorAsyncResult(
     val slot: Int,
@@ -271,13 +272,15 @@ class AsyncExtractorModule(
             var stackLeft = pair.second.count
             val itemid = ItemIdentifier.get(pair.second)
             AsyncRouting.updateRoutingTable(serverRouter)
-            LogisticsManager.allDestinations(pair.second, itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
-                .map { reply ->
-                    val maxExtraction = getExtractionMax(stackLeft, itemsLeft, reply.second)
-                    stackLeft -= maxExtraction
-                    itemsLeft -= maxExtraction
-                    ExtractorAsyncResult(pair.first, itemid, reply.first, reply.second)
-                }.asFlow()
+            withContext(Coroutines.serverScope.coroutineContext) {
+                LogisticsManager.allDestinations(pair.second, itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
+                    .map { reply ->
+                        val maxExtraction = getExtractionMax(stackLeft, itemsLeft, reply.second)
+                        stackLeft -= maxExtraction
+                        itemsLeft -= maxExtraction
+                        ExtractorAsyncResult(pair.first, itemid, reply.first, reply.second)
+                    }.asFlow()
+            }
         }.toList()
     }
 

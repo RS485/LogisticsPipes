@@ -37,8 +37,11 @@
 
 package network.rs485.logisticspipes.module
 
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import network.rs485.grow.Coroutines
+import network.rs485.logisticspipes.logistics.LogisticsManager
+import network.rs485.logisticspipes.property.Property
+import network.rs485.logisticspipes.util.equalsWithNBT
+import network.rs485.logisticspipes.util.getExtractionMax
 import logisticspipes.config.Configs.ASYNC_THRESHOLD
 import logisticspipes.interfaces.IInventoryUtil
 import logisticspipes.network.PacketHandler
@@ -53,10 +56,9 @@ import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
-import network.rs485.logisticspipes.logistics.LogisticsManager
-import network.rs485.logisticspipes.property.Property
-import network.rs485.logisticspipes.util.equalsWithNBT
-import network.rs485.logisticspipes.util.getExtractionMax
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.withContext
 
 const val STALLED_DELAY = 24
 const val NORMAL_DELAY = 6
@@ -87,8 +89,6 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     override val properties: List<Property<*>>
         get() = emptyList()
 
-    private val stacksToExtract: Int
-        get() = 1 + upgradeManager.itemStackExtractionUpgrade
     private val energyPerStack: Int
         get() = upgradeManager.let { 500 + 1000 * it.itemStackExtractionUpgrade }.toInt()
     override val everyNthTick: Int
@@ -122,8 +122,9 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         val serverRouter = this._service?.router as? ServerRouter ?: return null
         AsyncRouting.updateRoutingTable(serverRouter)
         val itemid = ItemIdentifier.get(setupObject.second)
-        val result =
-            LogisticsManager.getDestination(setupObject.second, itemid, false, serverRouter, emptyList()) ?: return null
+        val result = withContext(Coroutines.serverScope.coroutineContext) {
+            LogisticsManager.getDestination(setupObject.second, itemid, false, serverRouter, emptyList())
+        } ?: return null
         return QuicksortAsyncResult(setupObject.first, itemid, result.first, result.second)
     }
 

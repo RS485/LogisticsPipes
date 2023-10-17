@@ -80,7 +80,7 @@ public class LogisticsNewPipeModel implements IModel {
 		public boolean accepts(ResourceLocation modelLocation) {
 			if (modelLocation.getNamespace().equals("logisticspipes")) {
 				if (modelLocation instanceof ModelResourceLocation) {
-					ResourceLocation rl = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getNamespace());
+					ResourceLocation rl = new ResourceLocation(modelLocation.getNamespace(), modelLocation.getPath());
 					if (((ModelResourceLocation) modelLocation).getVariant().equals("inventory")) {
 						Item item = ForgeRegistries.ITEMS.getValue(rl);
 						if (item instanceof ItemLogisticsPipe) {

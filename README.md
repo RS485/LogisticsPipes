@@ -1,16 +1,27 @@
-## TemplateDevEnv
+# LogisticsPipes
 
-Template workspace for modding Minecraft 1.12.2. Licensed under MIT, it is made for public use.
+[//]: # ([![Jenkins]&#40;https://img.shields.io/jenkins/build?jobUrl=https%3A%2F%2Fci.rs485.network%2Fview%2Fall%2Fjob%2FLogisticsPipes-0.10-mc112&#41;]&#40;https://ci.rs485.network/&#41;)
+![Lines of Code](https://tokei.rs/b1/github/RS485/LogisticsPipes?category=code)
 
-This template currently utilizies **Gradle 8.1.1** + **[RetroFuturaGradle](https://github.com/GTNewHorizons/RetroFuturaGradle) 1.3.19** + **Forge 14.23.5.2860**.
+Logistics Pipes is an extensive overhaul of the Buildcraft pipe system. It allows for better distribution of items via pipes, more organised stockkeeping and easier automated crafting.
 
-With **coremod and mixin support** that is easy to configure.
+Please check out the original mod [CurseForge Page](https://www.curseforge.com/minecraft/mc-mods/logistics-pipes) for more information.
 
-### Instructions:
+This repo is not maintain by same author, please refrain from report issue to them. If the issue comes from the original mod, I ~~and other~~ will try cooperative and fix it if possible.
 
-1. Click `use this template` at the top.
-2. Clone the repository you have created with this template.
-3. In the local repository, run the command `gradlew setupDecompWorkspace`
-4. Open the project folder in IDEA.
-5. Right-click in IDEA `build.gradle` of your project, and select `Link Gradle Project`, after completion, hit `Refresh All` in the gradle tab on the right.
-6. Run `gradlew runClient` and `gradlew runServer`, or use the auto-imported run configurations in IntelliJ like `1. Run Client`.
+Credits to the original author and to all [contributors](https://github.com/RS485/LogisticsPipes/contributors).
+Credits for the idea and basic code goes to Krapht.
+
+## Translate
+
+[//]: # (TODO change it to own repo if possible)
+See [this repo](https://github.com/RS485/LogisticsPipes-Language) for translations.
+
+## Builds
+
+Artifacts build using Github Action, which can be found from [here](https://github.com/JP-HellParadise/LogisticsPipes/actions)
+
+[//]: # (## Contact)
+[//]: # (TODO add new way for support)
+[//]: # ()
+[//]: # (Get in touch with us on [Matrix]&#40;https://matrix.to/#/#lp:rs485.network&#41; or the [RS485 Discord]&#40;https://discord.gg/6vPP3A8&#41;)

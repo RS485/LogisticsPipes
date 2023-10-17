@@ -5,6 +5,10 @@
 // If you wish to use the default helper methods, uncomment the line below
 // apply from: 'gradle/scripts/helpers.gradle'
 
+kotlinLombok {
+    lombokConfigurationFile file("lombok.config")
+}
+
 abstract class DownloadTask extends DefaultTask {
     @Input
     String url

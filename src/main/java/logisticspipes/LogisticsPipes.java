@@ -213,7 +213,6 @@ import network.rs485.util.SystemUtilKt;
 @Mod(
 		name = "Logistics Pipes",
 		modid = LPConstants.LP_MOD_ID,
-		certificateFingerprint = "e0c86912b2f7cc0cc646ad57799574aea43dbd45",
 		useMetadata = true)
 public class LogisticsPipes {
 	//@formatter:on

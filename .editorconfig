@@ -12,11 +12,6 @@ indent_style = space
 indent_size = 2
 indent_style = space
 
-[common/**.java]
-indent_size = 4
-indent_style = tab
-ij_java_imports_layout = java.**,javax.**,|,net.minecraft.**,|,net.minecraftforge.**,|,*,|,logisticspipes.**,network.rs485.**
-
 [src/**.java]
 indent_size = 4
 indent_style = space

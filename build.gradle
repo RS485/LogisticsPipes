@@ -81,8 +81,8 @@ configurations {
     for (config in [compileClasspath, runtimeClasspath, testCompileClasspath, testRuntimeClasspath, testImplementation]) {
         config.extendsFrom(shadowImplementation)
     }
-
-    testImplementation.extendsFrom(compileOnly)
+    
+    testCompileOnly.extendsFrom (compileOnly)
 
     ktlint
 }

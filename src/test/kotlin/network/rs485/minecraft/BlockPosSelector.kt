@@ -94,7 +94,7 @@ class BlockPosSelector(val worldBuilder: WorldBuilder) {
             val translated = worldBuilder.finalPosition(this@BlockPosSelector)
             val configurators = placersToOffsets.map {
                 (translated + it.second).let { pos ->
-                    worldBuilder.loadChunk(worldBuilder.world.getChunkFromBlockCoords(pos).pos)
+                    worldBuilder.loadChunk(worldBuilder.world.getChunk(pos).pos)
                     async {
                         it.first.place(worldBuilder.world, pos)
                     }

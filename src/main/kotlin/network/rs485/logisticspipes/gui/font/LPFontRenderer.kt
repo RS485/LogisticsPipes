@@ -95,7 +95,7 @@ class LPFontRenderer(private val fontName: String) {
     private val fontPlain: IFont by lazy {
         val initialTime = System.currentTimeMillis()
         val fontResourcePlain = ResourceLocation(LPConstants.LP_MOD_ID, "fonts/$fontName.bdf")
-        FontParser.read(fontResourcePlain).also {  LogisticsPipes.log.info("Elapsed time parsing font: ${System.currentTimeMillis() - initialTime}ms") } ?: throw IOException("Failed to load ${fontResourcePlain.resourcePath}, this is not tolerated.")
+        FontParser.read(fontResourcePlain).also {  LogisticsPipes.log.info("Elapsed time parsing font: ${System.currentTimeMillis() - initialTime}ms") } ?: throw IOException("Failed to load ${fontResourcePlain.path}, this is not tolerated.")
     }
 
     private val wrapperPlain: FontWrapper by lazy {

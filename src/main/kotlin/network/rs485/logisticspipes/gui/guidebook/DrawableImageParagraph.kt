@@ -102,7 +102,7 @@ class DrawableImage(private var imageResource: ResourceLocation) : Drawable {
         val resource = Minecraft.getMinecraft().resourceManager.getResource(imageResource)
         PngSizeInfo.makeFromResource(resource)
     } catch (e: IOException) {
-        LogisticsPipes.log.error("File not found: ${imageResource.resourcePath}")
+        LogisticsPipes.log.error("File not found: ${imageResource.path}")
         null
     }
     val broken: Boolean get() = imageSize == null

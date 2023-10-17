@@ -1,0 +1,93 @@
+apply from: 'gradle/scripts/helpers.gradle'
+
+repositories {
+    // Other repositories described by default:
+    // CleanroomMC: https://maven.cleanroommc.com
+    mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven {
+                name 'CurseMaven'
+                url 'https://cursemaven.com'
+            }
+        }
+        filter {
+            includeGroup 'curse.maven'
+        }
+    }
+    exclusiveContent {
+        forRepository {
+            maven {
+                name 'Modrinth'
+                url 'https://api.modrinth.com/maven'
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+    maven {
+        url = "https://maven.removeco.de/"
+    }
+    maven {
+        name "Ellpeck"
+        url "https://maven.ellpeck.de"
+    }
+    maven {
+        url 'https://jitpack.io'
+    }
+    mavenLocal() // Must be last for caching to work
+}
+
+dependencies {
+    if (project.use_mixins.toBoolean()) {
+        String mixinDep = modUtils.enableMixins('zone.rong:mixinbooter:8.4')
+        api (mixinDep) {transitive = false}
+        annotationProcessor('org.ow2.asm:asm-debug-all:5.2')
+        annotationProcessor('com.google.guava:guava:24.1.1-jre')
+        annotationProcessor('com.google.code.gson:gson:2.8.6')
+        annotationProcessor (mixinDep) {transitive = false}
+    }
+
+    dummyCompileOnly 'com.google.code.findbugs:jsr305:2.0.1'
+
+    shadowImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: kotlin_version
+    shadowImplementation group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib-jdk8', version: kotlin_version
+    shadowImplementation group: 'org.jetbrains', name: 'annotations', version: kannotations_version
+    shadowImplementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: kcoroutines_version
+    shadowImplementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-jdk8', version: kcoroutines_version
+    shadowImplementation group: 'org.jetbrains.kotlinx', name: 'kotlinx-serialization-json', version: kserialization_version
+    shadowImplementation group: 'com.charleskorn.kaml', name: 'kaml', version: kaml_version
+
+    implementation 'curse.maven:CodeChickenLib-242818:2779848'
+    api rfg.deobf('curse.maven:AE2Unofficial-570458:4632516') // v0.53.4
+
+    compileOnly group: 'mcjty.theoneprobe', name: 'TheOneProbe-1.12', version: '1.12-1.4.28-17', classifier: 'api'
+    compileOnly group: 'mezz.jei', name: 'jei_1.12.2', version: '4.15.0.293'
+    compileOnly group: 'MCMultiPart2', name: 'MCMultiPart', version: '2.5.4', classifier: 'deobf'
+    compileOnly group: 'com.mod-buildcraft', name: 'buildcraft-all', version: '7.99.24.6', transitive: false
+    compileOnly group: 'net.industrial-craft', name: 'industrialcraft-2', version: '2.8.170-ex112', classifier: 'api'
+    compileOnly group: 'codechicken', name: 'NotEnoughItems', version: '1.12.2-2.4.3.245', classifier: 'deobf', transitive: false
+    compileOnly group: 'codechicken', name: 'EnderStorage', version: '1.12.2-2.4.6.137', classifier: 'deobf', transitive: false
+    compileOnly group: 'li.cil.oc', name: 'OpenComputers', version: 'MC1.12.2-1.7.5.205', classifier: 'api'
+    compileOnly group: 'cofh', name: 'CoFHCore', version: '1.12.2-4.6.3.27', classifier: 'deobf', transitive: false
+    compileOnly group: 'cofh', name: 'RedstoneFlux', version: '1.12-2.1.0.7', classifier: 'deobf', transitive: false
+    compileOnly group: 'cofh', name: 'CoFHWorld', version: '1.12.2-1.2.0.5', classifier: 'deobf', transitive: false
+    compileOnly group: 'cofh', name: 'ThermalDynamics', version: '1.12.2-2.5.5.21', classifier: 'deobf', transitive: false
+    compileOnly group: 'cofh', name: 'ThermalFoundation', version: '1.12.2-2.6.3.27', classifier: 'deobf', transitive: false
+    compileOnly group: 'cofh', name: 'ThermalExpansion', version: '1.12.2-5.5.4.43', classifier: 'deobf', transitive: false
+    compileOnly group: 'org.squiddev', name: 'cc-tweaked-1.12.2', version: '1.89.2', transitive: false
+    compileOnly group: 'com.jaquadro.minecraft.storagedrawers', name: 'StorageDrawers', version: '1.12.2-5.4.2', transitive: false
+    compileOnly group: 'pl.asie.charset', name: 'Charset', version: '0.5.6.6', classifier: 'api', transitive: false
+    compileOnly rfg.deobf('curse.maven:CodeChickenLib-242818:2779848')
+
+    ktlint("com.pinterest:ktlint:0.47.1") {
+        attributes {
+            attribute(Bundling.BUNDLING_ATTRIBUTE, getObjects().named(Bundling, Bundling.EXTERNAL))
+        }
+    }
+
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+//    testImplementation 'org.jetbrains.kotlin:kotlin-test-junit5'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+}

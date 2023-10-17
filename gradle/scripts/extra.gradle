@@ -1,0 +1,70 @@
+
+// You may write any gradle buildscript component in this file
+// This file is automatically applied after build.gradle + dependencies.gradle is ran
+
+// If you wish to use the default helper methods, uncomment the line below
+// apply from: 'gradle/scripts/helpers.gradle'
+
+abstract class DownloadTask extends DefaultTask {
+    @Input
+    String url
+
+    @OutputFile
+    final RegularFileProperty outputFile = project.objects.fileProperty()
+
+    @TaskAction
+    void download() {
+        ant.get(src: url, dest: outputFile.get().asFile)
+    }
+}
+
+tasks.register('downloadLanguage', DownloadTask) {
+    url = "https://github.com/RS485/LogisticsPipes-Language/archive/master.zip"
+    outputFile.set(layout.buildDirectory.file("language.zip"))
+}
+
+tasks.register('languageMain', Copy) {
+    dependsOn downloadLanguage
+    from zipTree(downloadLanguage.outputFile)
+    into "src/main/resources/assets/logisticspipes/lang/"
+    include "*/*.lang"
+
+    includeEmptyDirs false
+    eachFile { FileCopyDetails fcd ->
+        fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(1))
+    }
+}
+
+tasks.register('languageBook', Copy) {
+    dependsOn downloadLanguage
+    from zipTree(downloadLanguage.outputFile)
+    into "src/main/resources/assets/logisticspipes/book/"
+    include "*/book/"
+
+    includeEmptyDirs false
+    eachFile { FileCopyDetails fcd ->
+        fcd.relativePath = new RelativePath(!fcd.isDirectory(), fcd.relativePath.segments.drop(2))
+    }
+}
+
+tasks.register('language', Copy) {
+    dependsOn 'languageMain', 'languageBook'
+    processResources.dependsOn language
+}
+
+for (runTask in ["runClient", "runServer"]) {
+    tasks.named(runTask).configure {
+        dependsOn("shadowJar")
+    }
+}
+
+tasks.named("ideVirtualMainClasses").configure {
+    // Make IntelliJ "Build project" build the mod jars
+    dependsOn("jar", "reobfJar")
+}
+
+for (runTask in ["runClient", "runServer"]) {
+    tasks.named(runTask).configure {
+        extraJvmArgs.add('-Dfml.coreMods.load=logisticspipes.asm.LogisticsPipesCoreLoader')
+    }
+}

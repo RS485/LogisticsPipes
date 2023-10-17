@@ -37,11 +37,11 @@
 
 package network.rs485.logisticspipes.config
 
+import logisticspipes.utils.FastUUID
 import com.google.gson.*
 import com.google.gson.annotations.JsonAdapter
 import logisticspipes.utils.PlayerIdentifier
 import java.lang.reflect.Type
-import java.util.*
 
 private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, PlayerConfiguration>>, JsonDeserializer<Map<PlayerIdentifier, PlayerConfiguration>> {
     override fun deserialize(json: JsonElement, typeOfT: Type, context: JsonDeserializationContext): Map<PlayerIdentifier, PlayerConfiguration>? {
@@ -54,7 +54,7 @@ private class ServerConfigurationAdapter : JsonSerializer<Map<PlayerIdentifier, 
         return json.asJsonObject.entrySet().associate { (key, value) ->
             if (value !is JsonObject) throw JsonParseException("Expected values in map object to be objects")
             Pair(
-                    PlayerIdentifier.get(value["name"].asString, UUID.fromString(key)),
+                    PlayerIdentifier.get(value["name"].asString, FastUUID.parseUUID(key)),
                     context.deserialize<PlayerConfiguration>(value["config"], PlayerConfiguration::class.java)
             )
         }

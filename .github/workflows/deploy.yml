@@ -1,0 +1,58 @@
+# A deployment template that works out of the box
+# It supports these objectives:
+# - Deploy to Maven (Build Job) [Secrets: MAVEN_USER, MAVEN_PASS]
+# - Deploy to CurseForge (Upload Job) [Secrets: CURSEFORGE_TOKEN]
+# - Deploy to Modrinth (Upload Job) [Secrets: MODRINTH_TOKEN]
+
+name: Deploy
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Grant Execute Permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Read gradle.properties
+        uses: BrycensRanch/read-properties-action@v1
+        id: properties
+        with:
+          file: gradle.properties
+          all: true
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'zulu'
+          cache: gradle
+
+      - name: Publish to Maven
+        if: steps.properties.outputs.publish_to_maven == 'true' && steps.properties.outputs.publish_to_local_maven == 'true'
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: |
+            publish
+            -P${{ steps.properties.outputs.maven_name }}Username=${{ secrets.MAVEN_USER }}
+            -P${{ steps.properties.outputs.maven_name }}Password=${{ secrets.MAVEN_PASS }}
+
+      - name: Publish to CurseForge
+        if: steps.properties.outputs.publish_to_curseforge == 'true'
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: curseforge
+
+      - name: Publish to Modrinth
+        if: steps.properties.outputs.publish_to_modrinth == 'true'
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: modrinth

@@ -120,12 +120,12 @@ object TextUtil {
     fun addTooltipInformation(stack: ItemStack, tooltip: MutableList<String>, extended: Boolean){
         if(extended) {
             var tooltipLine = 1
-            while(I18n.hasKey("${stack.unlocalizedName}.tip$tooltipLine")){
-                tooltip += translate("${stack.unlocalizedName}.tip$tooltipLine")
+            while(I18n.hasKey("${stack.translationKey}.tip$tooltipLine")){
+                tooltip += translate("${stack.translationKey}.tip$tooltipLine")
                 tooltipLine++
             }
         } else {
-            if(I18n.hasKey("${stack.unlocalizedName}.tip1")){
+            if(I18n.hasKey("${stack.translationKey}.tip1")){
                 tooltip += translate(holdShiftTooltip)
             }
         }

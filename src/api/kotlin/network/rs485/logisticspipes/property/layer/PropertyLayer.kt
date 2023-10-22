@@ -44,6 +44,13 @@ import network.rs485.logisticspipes.property.ValueProperty
 import java.util.*
 import kotlin.streams.toList
 
+/**
+ * The property is created with a list of properties that are not being written to.
+ * A layer of a property can be retrieved by calling [overlay] with the original property.
+ * Whenever a layer receives a write access, the underlying property will be copied to a new property on the [upperLayer].
+ * A list of changed properties can be retrieved with [properties],
+ * which e.g. can be used with [logisticspipes.network.packets.pipe.PipePropertiesUpdate].
+ */
 open class PropertyLayer(propertiesIn: Collection<Property<*>>) : PropertyHolder {
     private val lowerLayer: List<Property<*>> = propertiesIn.toList()
     private val upperLayer: MutableList<Property<*>?> = MutableList(propertiesIn.size) { null }

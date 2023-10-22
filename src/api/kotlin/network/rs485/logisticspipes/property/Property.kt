@@ -40,6 +40,9 @@ package network.rs485.logisticspipes.property
 import network.rs485.logisticspipes.IStore
 import java.util.concurrent.CopyOnWriteArraySet
 
+/**
+ * Properties follow a standard observer pattern by notifying on every write access.
+ */
 interface Property<V> : IStore {
     val tagKey: String
     val propertyObservers: CopyOnWriteArraySet<ObserverCallback<V>>

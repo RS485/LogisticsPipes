@@ -7,9 +7,11 @@
 
 package logisticspipes.utils.item;
 
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 import net.minecraft.entity.item.EntityItem;
@@ -25,10 +27,10 @@ import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 
 import logisticspipes.LogisticsPipes;
-import network.rs485.logisticspipes.IStore;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.tuples.Pair;
+import network.rs485.logisticspipes.IStore;
 import network.rs485.logisticspipes.util.items.ItemStackLoader;
 
 public class SimpleStackInventory implements IInventory, IStore, Iterable<Pair<ItemStack, Integer>> {
@@ -40,6 +42,13 @@ public class SimpleStackInventory implements IInventory, IStore, Iterable<Pair<I
 	private final int _stackLimit;
 
 	private final LinkedList<ISimpleInventoryEventHandler> _listener = new LinkedList<>();
+
+	public SimpleStackInventory(SimpleStackInventory copy) {
+		this(copy.getSizeInventory(), copy._name, copy._stackLimit);
+		for (int i = 0; i < copy.getSizeInventory(); i++) {
+			stackList.set(i, copy.getStackInSlot(i).copy());
+		}
+	}
 
 	public SimpleStackInventory(int size, String name, int stackLimit) {
 		stackList = NonNullList.withSize(size, ItemStack.EMPTY);
@@ -263,20 +272,25 @@ public class SimpleStackInventory implements IInventory, IStore, Iterable<Pair<I
 	}
 
 	@Override
+	@kotlin.Deprecated(message = "not implemented")
 	public int getField(int id) {
 		return 0;
 	}
 
 	@Override
+	@kotlin.Deprecated(message = "not implemented")
 	public void setField(int id, int value) {}
 
 	@Override
+	@kotlin.Deprecated(message = "not implemented")
 	public int getFieldCount() {
 		return 0;
 	}
 
 	@Override
-	public void clear() {}
+	public void clear() {
+		Collections.fill(stackList, ItemStack.EMPTY);
+	}
 
 	public void clearInventorySlotContents(int i) {
 		stackList.set(i, ItemStack.EMPTY);
@@ -311,6 +325,14 @@ public class SimpleStackInventory implements IInventory, IStore, Iterable<Pair<I
 				throw new UnsupportedOperationException();
 			}
 		};
+	}
+
+	/**
+	 * Returns a stream over all non-empty item stacks in this inventory.
+	 */
+	@Nonnull
+	public Stream<ItemStack> stackStream() {
+		return stackList.stream().filter(itemStack -> !itemStack.isEmpty());
 	}
 
 }

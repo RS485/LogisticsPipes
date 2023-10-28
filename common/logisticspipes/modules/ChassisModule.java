@@ -1,7 +1,6 @@
 package logisticspipes.modules;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Stream;
@@ -11,6 +10,8 @@ import javax.annotation.Nullable;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 
+import com.google.common.collect.ImmutableList;
+
 import logisticspipes.interfaces.IInventoryUtil;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.network.NewGuiHandler;
@@ -19,6 +20,7 @@ import logisticspipes.network.abstractguis.ModuleInHandGuiProvider;
 import logisticspipes.network.guis.pipe.ChassisGuiProvider;
 import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.pipes.PipeLogisticsChassis.ChassiTargetInformation;
+import logisticspipes.pipes.upgrades.ModuleUpgradeManager;
 import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
@@ -28,15 +30,18 @@ import network.rs485.logisticspipes.module.PipeServiceProviderUtilKt;
 import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.SlottedModule;
 import network.rs485.logisticspipes.property.SlottedModuleListProperty;
+import network.rs485.logisticspipes.property.UpgradeManagerListProperty;
 
 public class ChassisModule extends LogisticsModule implements Gui {
 
 	private final PipeLogisticsChassis parentChassis;
 	private final SlottedModuleListProperty modules;
+	private final UpgradeManagerListProperty slotUpgradeManagers;
 
 	public ChassisModule(int moduleCount, PipeLogisticsChassis parentChassis) {
-		modules = new SlottedModuleListProperty(moduleCount, "modules");
 		this.parentChassis = parentChassis;
+		modules = new SlottedModuleListProperty(moduleCount, "modules");
+		slotUpgradeManagers = new UpgradeManagerListProperty(moduleCount, parentChassis, "chassisUpgradeManagers");
 		registerPosition(ModulePositionType.IN_PIPE, 0);
 	}
 
@@ -49,7 +54,10 @@ public class ChassisModule extends LogisticsModule implements Gui {
 	@Nonnull
 	@Override
 	public List<Property<?>> getProperties() {
-		return Collections.singletonList(modules);
+		return ImmutableList.<Property<?>>builder()
+			.add(modules)
+			.add(slotUpgradeManagers)
+			.build();
 	}
 
 	public void installModule(int slot, LogisticsModule module) {
@@ -138,6 +146,11 @@ public class ChassisModule extends LogisticsModule implements Gui {
 				.filter(slottedModule -> !slottedModule.isEmpty() && tag.hasKey("slot" + slottedModule.getSlot()))
 				.forEach(slottedModule -> Objects.requireNonNull(slottedModule.getModule())
 						.readFromNBT(tag.getCompoundTag("slot" + slottedModule.getSlot())));
+
+		// FIXME: remove after 1.12.2 update, backwards compatibility
+		for (int i = 0; i < parentChassis.getChassisSize(); i++) {
+			slotUpgradeManagers.get(i).readFromNBT(tag, Integer.toString(i));
+		}
 	}
 
 	@Override
@@ -208,4 +221,8 @@ public class ChassisModule extends LogisticsModule implements Gui {
 		throw new UnsupportedOperationException("Chassis GUI can never be opened in hand");
 	}
 
+	@Nonnull
+	public ModuleUpgradeManager getModuleUpgradeManager(int slot) {
+		return slotUpgradeManagers.get(slot);
+	}
 }

@@ -13,15 +13,17 @@ import logisticspipes.pipes.PipeLogisticsChassis;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.utils.ISimpleInventoryEventHandler;
 import logisticspipes.utils.item.SimpleStackInventory;
+import network.rs485.logisticspipes.property.SimpleInventoryProperty;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
 
 public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlotUpgradeManager {
 
 	private final UpgradeManager parent;
+	private final SimpleStackInventory internalInv;
 	@Getter
-	private final SimpleStackInventory inv = new SimpleStackInventory(2, "UpgradeInventory", 16);
+	private final SimpleInventoryProperty inv;
 	private final IPipeUpgrade[] upgrades = new IPipeUpgrade[2];
-	private final PipeLogisticsChassis pipe;
+	private final PipeLogisticsChassis pipe; // FIXME: get rid of this pipe reference
 
 	private EnumFacing sneakyOrientation = null;
 	private boolean isAdvancedCrafter = false;
@@ -36,10 +38,21 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 
 	private boolean[] guiUpgrades = new boolean[2];
 
-	public ModuleUpgradeManager(PipeLogisticsChassis pipe, UpgradeManager parent) {
+	private ModuleUpgradeManager(PipeLogisticsChassis pipe, UpgradeManager parentUpgradeManager, SimpleStackInventory internalInv) {
+		this.internalInv = internalInv;
+		this.inv = new SimpleInventoryProperty(this.internalInv, "moduleUpgrades");
+		this.internalInv.addListener(this);
 		this.pipe = pipe;
-		this.parent = parent;
-		inv.addListener(this);
+		this.parent = parentUpgradeManager;
+	}
+
+	public ModuleUpgradeManager(PipeLogisticsChassis pipe, UpgradeManager parentUpgradeManager) {
+		this(pipe, parentUpgradeManager, new SimpleStackInventory(2, "UpgradeInventory", 16));
+	}
+
+	public ModuleUpgradeManager(ModuleUpgradeManager copy) {
+		this(copy.pipe, copy.parent, new SimpleStackInventory(copy.internalInv));
+		InventoryChanged(internalInv);
 	}
 
 	@Override
@@ -107,8 +120,7 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	public void InventoryChanged(IInventory inventory) {
 		boolean needUpdate = false;
 		for (int i = 0; i < inv.getSizeInventory(); i++) {
-			ItemStack item = inv.getStackInSlot(i);
-			if (item.isEmpty()) {
+			if (inv.isSlotEmpty(i)) {
 				if (upgrades[i] != null) {
 					needUpdate |= removeUpgrade(i, upgrades);
 				}
@@ -171,12 +183,11 @@ public class ModuleUpgradeManager implements ISimpleInventoryEventHandler, ISlot
 	}
 
 	public void readFromNBT(NBTTagCompound nbttagcompound, String prefix) {
-		inv.readFromNBT(nbttagcompound, "ModuleUpgradeInventory_" + prefix);
-		InventoryChanged(inv);
+		internalInv.readFromNBT(nbttagcompound, "ModuleUpgradeInventory_" + prefix);
 	}
 
 	public void writeToNBT(NBTTagCompound nbttagcompound, String prefix) {
-		inv.writeToNBT(nbttagcompound, "ModuleUpgradeInventory_" + prefix);
+		internalInv.writeToNBT(nbttagcompound, "ModuleUpgradeInventory_" + prefix);
 		InventoryChanged(inv);
 	}
 

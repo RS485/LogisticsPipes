@@ -45,6 +45,8 @@ import java.util.*
 interface Adjacent {
     fun connectedPos(): Map<BlockPos, ConnectionType>
 
+    operator fun get(direction: EnumFacing): ConnectionType?
+
     fun optionalGet(direction: EnumFacing): Optional<ConnectionType>
 
     fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType>

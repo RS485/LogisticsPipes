@@ -46,7 +46,15 @@ import java.util.*
 class SingleAdjacent(private val parent: CoreRoutedPipe, val dir: EnumFacing, private val adjacentType: ConnectionType) : Adjacent {
     override fun connectedPos(): Map<BlockPos, ConnectionType> = mapOf(parent.pos.offset(dir) to adjacentType)
 
-    override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> = Optional.of(adjacentType)
+    override fun get(direction: EnumFacing): ConnectionType? = adjacentType.takeIf { dir == direction }
+
+    override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> {
+        return if (dir == direction) {
+            Optional.of(adjacentType)
+        } else {
+            Optional.empty()
+        }
+    }
 
     override fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType> =
         parent.world.getTileEntity(parent.pos.offset(dir))

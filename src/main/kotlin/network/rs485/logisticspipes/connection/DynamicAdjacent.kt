@@ -42,12 +42,13 @@ import net.minecraft.tileentity.TileEntity
 import net.minecraft.util.EnumFacing
 import net.minecraft.util.math.BlockPos
 import java.util.*
-import kotlin.collections.LinkedHashMap
 
 class DynamicAdjacent(private val parent: CoreRoutedPipe, private val cache: Array<ConnectionType?>) : Adjacent {
     override fun connectedPos(): Map<BlockPos, ConnectionType> = cache
         .mapIndexedNotNull { index, type -> type?.let { parent.pos.offset(EnumFacing.VALUES[index]) to type } }
         .let { it.associateTo(LinkedHashMap(it.size)) { pair -> pair } }
+
+    override fun get(direction: EnumFacing): ConnectionType? = cache[direction.index]
 
     override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> = Optional.ofNullable(cache[direction.index])
 

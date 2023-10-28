@@ -44,6 +44,7 @@ import java.util.*
 
 object NoAdjacent : Adjacent {
     override fun connectedPos(): Map<BlockPos, ConnectionType> = emptyMap()
+    override fun get(direction: EnumFacing): ConnectionType? = null
     override fun optionalGet(direction: EnumFacing): Optional<ConnectionType> = Optional.empty()
     override fun neighbors(): Map<NeighborTileEntity<TileEntity>, ConnectionType> = emptyMap()
     override fun inventories(): List<NeighborTileEntity<TileEntity>> = emptyList()

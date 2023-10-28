@@ -37,7 +37,6 @@
 
 package network.rs485.logisticspipes.module
 
-import network.rs485.logisticspipes.property.Property
 import logisticspipes.interfaces.IClientInformationProvider
 import logisticspipes.interfaces.IModuleWatchReciver
 import logisticspipes.interfaces.IPipeServiceProvider
@@ -62,9 +61,6 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
 
     private val quicksort = AsyncQuicksortModule()
     private val localModeWatchers = PlayerCollectionList()
-
-    override val properties: List<Property<*>>
-        get() = quicksort.properties
 
     private var _timeout: Int = 100
     var timeout: Int
@@ -123,13 +119,20 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
     override fun runSyncWork() = quicksort.runSyncWork()
 
     override fun readFromNBT(tag: NBTTagCompound) {
+        super.readFromNBT(tag)
         quicksort.readFromNBT(tag)
         timeout = tag.getInteger("Timeout")
     }
 
     override fun writeToNBT(tag: NBTTagCompound) {
+        super.writeToNBT(tag)
         quicksort.writeToNBT(tag)
         tag.setInteger("Timeout", timeout)
+    }
+
+    override fun finishInit() {
+        super.finishInit()
+        quicksort.finishInit()
     }
 
     override fun receivePassive(): Boolean = false

@@ -7,18 +7,7 @@
 
 package logisticspipes.pipes.basic;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.PriorityBlockingQueue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,6 +25,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.text.TextComponentTranslation;
 
+import kotlin.Unit;
 import lombok.Getter;
 
 import logisticspipes.LPConstants;
@@ -46,28 +36,11 @@ import logisticspipes.asm.ModDependentMethod;
 import logisticspipes.asm.te.ILPTEInformation;
 import logisticspipes.blocks.LogisticsSecurityTileEntity;
 import logisticspipes.config.Configs;
-import logisticspipes.interfaces.IClientState;
-import logisticspipes.interfaces.ILPPositionProvider;
-import logisticspipes.interfaces.IPipeServiceProvider;
-import logisticspipes.interfaces.IPipeUpgradeManager;
-import logisticspipes.interfaces.IQueueCCEvent;
-import logisticspipes.interfaces.ISecurityProvider;
-import logisticspipes.interfaces.ISlotUpgradeManager;
-import logisticspipes.interfaces.ISubSystemPowerProvider;
-import logisticspipes.interfaces.IWatchingHandler;
-import logisticspipes.interfaces.IWorldProvider;
-import logisticspipes.interfaces.routing.IAdditionalTargetInformation;
-import logisticspipes.interfaces.routing.IFilter;
-import logisticspipes.interfaces.routing.IRequestItems;
-import logisticspipes.interfaces.routing.IRequireReliableFluidTransport;
-import logisticspipes.interfaces.routing.IRequireReliableTransport;
+import logisticspipes.interfaces.*;
+import logisticspipes.interfaces.routing.*;
 import logisticspipes.items.ItemPipeSignCreator;
-import logisticspipes.logisticspipes.IRoutedItem;
+import logisticspipes.logisticspipes.*;
 import logisticspipes.logisticspipes.IRoutedItem.TransportMode;
-import logisticspipes.logisticspipes.ITrackStatistics;
-import logisticspipes.logisticspipes.PipeTransportLayer;
-import logisticspipes.logisticspipes.RouteLayer;
-import logisticspipes.logisticspipes.TransportLayer;
 import logisticspipes.modules.LogisticsModule;
 import logisticspipes.modules.LogisticsModule.ModulePositionType;
 import logisticspipes.network.GuiIDs;
@@ -107,12 +80,7 @@ import logisticspipes.textures.Textures;
 import logisticspipes.textures.Textures.TextureType;
 import logisticspipes.transport.LPTravelingItem.LPTravelingItemServer;
 import logisticspipes.transport.PipeTransportLogistics;
-import logisticspipes.utils.CacheHolder;
-import logisticspipes.utils.EnumFacingUtil;
-import logisticspipes.utils.FluidIdentifierStack;
-import logisticspipes.utils.OrientationsUtil;
-import logisticspipes.utils.PlayerCollectionList;
-import logisticspipes.utils.SinkReply;
+import logisticspipes.utils.*;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
 import logisticspipes.utils.tuples.Pair;
@@ -121,6 +89,8 @@ import network.rs485.logisticspipes.connection.Adjacent;
 import network.rs485.logisticspipes.connection.AdjacentFactory;
 import network.rs485.logisticspipes.connection.NoAdjacent;
 import network.rs485.logisticspipes.module.Gui;
+import network.rs485.logisticspipes.property.PropertyHolder;
+import network.rs485.logisticspipes.property.UtilKt;
 import network.rs485.logisticspipes.util.LPDataInput;
 import network.rs485.logisticspipes.util.LPDataOutput;
 import network.rs485.logisticspipes.world.DoubleCoordinates;
@@ -706,9 +676,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 		hasQueuedParticles = false;
 	}
 
-	protected boolean isPowerProvider(EnumFacing ori) {
-		TileEntity tilePipe = container.getTile(ori);
-		if (tilePipe == null || !container.canPipeConnect(tilePipe, ori)) {
+	protected boolean isPowerProvider(@Nullable EnumFacing direction) {
+		if (direction == null) return false;
+		TileEntity tilePipe = container.getTile(direction);
+		if (tilePipe == null || !container.canPipeConnect(tilePipe, direction)) {
 			return false;
 		}
 
@@ -776,6 +747,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 				nbttagcompound.setBoolean("PipeSign_" + i, false);
 			}
 		}
+
+		if (this instanceof PropertyHolder) {
+			PropertyHolder.writeToNBT(nbttagcompound, (PropertyHolder) this);
+		}
 	}
 
 	@Override
@@ -817,6 +792,10 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 					throw new RuntimeException(e);
 				}
 			}
+		}
+
+		if (this instanceof PropertyHolder) {
+			PropertyHolder.readFromNBT(nbttagcompound, (PropertyHolder) this);
 		}
 	}
 
@@ -1698,8 +1677,19 @@ public abstract class CoreRoutedPipe extends CoreUnroutedPipe
 	@Override
 	public void finishInit() {
 		super.finishInit();
-		if (getLogisticsModule() != null) {
-			getLogisticsModule().finishInit();
+		if (isInitialized()) {
+			MainProxy.runOnServer(getWorld(), () -> () -> {
+				if (this instanceof PropertyHolder) {
+					UtilKt.addObserver(((PropertyHolder) this).getProperties(), (prop) -> {
+						markTileDirty();
+						return Unit.INSTANCE;
+					});
+				}
+			});
+
+			if (getLogisticsModule() != null) {
+				getLogisticsModule().finishInit();
+			}
 		}
 	}
 }

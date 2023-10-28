@@ -1,14 +1,11 @@
 package logisticspipes.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
@@ -20,7 +17,6 @@ import logisticspipes.LogisticsPipes;
 import logisticspipes.interfaces.IPipeServiceProvider;
 import logisticspipes.interfaces.ISlotUpgradeManager;
 import logisticspipes.interfaces.IWorldProvider;
-import network.rs485.logisticspipes.IStore;
 import logisticspipes.proxy.MainProxy;
 import logisticspipes.proxy.computers.interfaces.CCCommand;
 import logisticspipes.proxy.computers.interfaces.CCType;
@@ -29,6 +25,7 @@ import logisticspipes.proxy.computers.objects.CCSinkResponder;
 import logisticspipes.utils.SinkReply;
 import logisticspipes.utils.item.ItemIdentifier;
 import logisticspipes.utils.item.ItemIdentifierStack;
+import network.rs485.logisticspipes.IStore;
 import network.rs485.logisticspipes.module.Gui;
 import network.rs485.logisticspipes.property.Property;
 import network.rs485.logisticspipes.property.PropertyHolder;
@@ -109,6 +106,16 @@ public abstract class LogisticsModule implements IStore, ILPCCTypeHolder, Proper
 
 	public int getPositionInt() {
 		return this.positionInt;
+	}
+
+	@Override
+	public void readFromNBT(@Nonnull NBTTagCompound tag) {
+		PropertyHolder.readFromNBT(tag, this);
+	}
+
+	@Override
+	public void writeToNBT(@Nonnull NBTTagCompound tag) {
+		PropertyHolder.writeToNBT(tag, this);
 	}
 
 	/**

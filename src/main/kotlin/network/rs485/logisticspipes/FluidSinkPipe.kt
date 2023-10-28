@@ -37,10 +37,12 @@
 
 package network.rs485.logisticspipes
 
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
+import network.rs485.logisticspipes.property.Property
+import network.rs485.logisticspipes.property.PropertyHolder
 import logisticspipes.interfaces.routing.IFluidSink
 import logisticspipes.pipes.PipeFluidUtil.getAdjacentTanks
 import logisticspipes.pipes.basic.fluid.FluidRoutedPipe
-import logisticspipes.proxy.MainProxy
 import logisticspipes.transport.PipeFluidTransportLogistics
 import logisticspipes.utils.FluidIdentifier
 import logisticspipes.utils.FluidIdentifierStack
@@ -49,15 +51,10 @@ import logisticspipes.utils.PlayerCollectionList
 import logisticspipes.utils.item.ItemIdentifierInventory
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.Item
-import net.minecraft.nbt.NBTTagCompound
-import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
-import network.rs485.logisticspipes.property.Property
-import network.rs485.logisticspipes.property.PropertyHolder
-import network.rs485.logisticspipes.property.addObserver
 
 abstract class FluidSinkPipe(
     item: Item, inventoryName: String, inventorySize: Int
-) : FluidRoutedPipe(item), IFluidSink, PropertyHolder {
+) : FluidRoutedPipe(item), IFluidSink, PropertyHolder, IStore {
 
     private val guiOpenedBy = PlayerCollectionList()
 
@@ -67,25 +64,6 @@ abstract class FluidSinkPipe(
     override val properties: List<Property<*>> = listOf(sinkInv)
 
     abstract val priority: FluidSinkReply.FixedFluidPriority
-
-    override fun readFromNBT(tag: NBTTagCompound) {
-        super<FluidRoutedPipe>.readFromNBT(tag)
-        super<PropertyHolder>.readFromNBT(tag)
-    }
-
-    override fun writeToNBT(tag: NBTTagCompound) {
-        super<FluidRoutedPipe>.writeToNBT(tag)
-        super<PropertyHolder>.writeToNBT(tag)
-    }
-
-    override fun finishInit() {
-        super.finishInit()
-        MainProxy.runOnServer(world) {
-            Runnable {
-                properties.addObserver { markTileDirty() }
-            }
-        }
-    }
 
     override fun sinkAmount(stack: FluidIdentifierStack): FluidSinkReply? {
         if (!guiOpenedBy.isEmpty) {

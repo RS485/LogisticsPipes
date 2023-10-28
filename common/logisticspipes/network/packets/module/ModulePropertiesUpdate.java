@@ -71,7 +71,7 @@ public class ModulePropertiesUpdate extends ModuleCoordinatesPacket {
 	@Nonnull
 	public static ModuleCoordinatesPacket fromPropertyHolder(PropertyHolder holder) {
 		final ModulePropertiesUpdate packet = PacketHandler.getPacket(ModulePropertiesUpdate.class);
-		holder.writeToNBT(packet.tag);
+		PropertyHolder.writeToNBT(packet.tag, holder);
 		return packet;
 	}
 

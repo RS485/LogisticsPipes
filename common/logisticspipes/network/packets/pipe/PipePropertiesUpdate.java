@@ -62,7 +62,7 @@ public class PipePropertiesUpdate extends CoordinatesPacket {
 	@Nonnull
 	public static PipePropertiesUpdate fromPropertyHolder(PropertyHolder holder) {
 		final PipePropertiesUpdate packet = PacketHandler.getPacket(PipePropertiesUpdate.class);
-		holder.writeToNBT(packet.tag);
+		PropertyHolder.writeToNBT(packet.tag, holder);
 		return packet;
 	}
 

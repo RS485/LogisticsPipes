@@ -37,22 +37,23 @@
 
 package network.rs485.logisticspipes.proxy
 
-import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawer
-import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerGroup
+import network.rs485.logisticspipes.inventory.ProviderMode
+import network.rs485.logisticspipes.util.equalsWithNBT
 import logisticspipes.LPConstants
 import logisticspipes.proxy.specialinventoryhandler.SpecialInventoryHandler
 import logisticspipes.utils.item.ItemIdentifier
-import net.minecraft.item.ItemStack
-import net.minecraft.tileentity.TileEntity
-import net.minecraft.util.EnumFacing
+import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawer
+import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerAttributes
+import com.jaquadro.minecraft.storagedrawers.api.storage.IDrawerGroup
 import net.minecraftforge.common.capabilities.Capability
 import net.minecraftforge.common.capabilities.CapabilityInject
 import net.minecraftforge.fml.common.Loader
 import net.minecraftforge.fml.common.versioning.ArtifactVersion
 import net.minecraftforge.fml.common.versioning.DefaultArtifactVersion
 import net.minecraftforge.fml.common.versioning.VersionRange
-import network.rs485.logisticspipes.inventory.ProviderMode
-import network.rs485.logisticspipes.util.equalsWithNBT
+import net.minecraft.item.ItemStack
+import net.minecraft.tileentity.TileEntity
+import net.minecraft.util.EnumFacing
 import kotlin.math.min
 
 class StorageDrawersProxyImpl : SpecialInventoryHandler.Factory {
@@ -61,6 +62,10 @@ class StorageDrawersProxyImpl : SpecialInventoryHandler.Factory {
         @JvmStatic
         @CapabilityInject(IDrawerGroup::class)
         val drawerGroupCapability: Capability<IDrawerGroup>? = null
+
+        @JvmStatic
+        @CapabilityInject(IDrawerAttributes::class)
+        val drawerAttributesCapability: Capability<IDrawerAttributes>? = null
     }
 
     override fun isType(tile: TileEntity, dir: EnumFacing?): Boolean = tile.hasCapability(drawerGroupCapability!!, dir)
@@ -71,9 +76,10 @@ class StorageDrawersProxyImpl : SpecialInventoryHandler.Factory {
         mode: ProviderMode
     ): SpecialInventoryHandler? =
         drawerGroupCapability?.let {
-            StorageDrawersInventoryHandler(
-                tile.getCapability(drawerGroupCapability, direction)!!, mode
-            )
+            val drawerAttributes = drawerAttributesCapability?.let { tile.getCapability(it, direction) }
+            tile.getCapability(drawerGroupCapability, direction)?.let { drawerGroup ->
+                StorageDrawersInventoryHandler(drawerGroup, drawerAttributes, mode)
+            }
         }
 
     override fun init(): Boolean =
@@ -89,10 +95,11 @@ class StorageDrawersProxyImpl : SpecialInventoryHandler.Factory {
 
 class StorageDrawersInventoryHandler(
     private val drawerGroup: IDrawerGroup,
+    private val drawerAttributes: IDrawerAttributes?,
     private val mode: ProviderMode,
 ) : SpecialInventoryHandler() {
 
-    private fun checkSlot(slot: Int) = slot in mode.cropStart until (drawerGroup.drawerCount - mode.cropEnd)
+    private fun checkSlot(slot: Int): Boolean = slot in mode.cropStart until (drawerGroup.drawerCount - mode.cropEnd)
 
     private fun <T> fullDrawerApply(slot: Int, apply: (IDrawer) -> T) =
         drawerGroup.getDrawer(slot).takeIf { it.isEnabled && !it.isEmpty }?.let(apply)
@@ -127,10 +134,14 @@ class StorageDrawersInventoryHandler(
 
     override fun decrStackSize(slot: Int, amount: Int): ItemStack =
         if (amount <= 0) ItemStack.EMPTY else getStackInSlot(slot).let { slotStack ->
-            if (slotStack.isEmpty) slotStack else slotStack.copy().also {
-                it.grow((-min(amount, slotStack.count.hideSinglePerTypeOrStack())).apply {
-                    drawerGroup.getDrawer(slot).adjustStoredItemCount(this)
-                })
+            if (slotStack.isEmpty) slotStack else slotStack.copy().also { stackCopy ->
+                if (drawerAttributes?.isUnlimitedStorage == true || drawerAttributes?.isUnlimitedVending == true) {
+                    stackCopy.count = amount
+                } else {
+                    val wantToDecrease = -min(amount, slotStack.count.hideSinglePerTypeOrStack())
+                    val toDecrease = drawerGroup.getDrawer(slot).adjustStoredItemCount(wantToDecrease)
+                    stackCopy.grow(toDecrease)
+                }
             }
         }
 

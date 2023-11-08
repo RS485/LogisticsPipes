@@ -37,26 +37,23 @@
 
 package network.rs485.logisticspipes.module
 
+import network.rs485.grow.Coroutines
+import logisticspipes.LogisticsPipes
+import logisticspipes.modules.LogisticsModule
+import net.minecraft.client.Minecraft
+import net.minecraft.tileentity.TileEntity
+import java.time.Duration
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.time.withTimeout
-import logisticspipes.LogisticsPipes
-import logisticspipes.modules.LogisticsModule
-import net.minecraft.client.Minecraft
-import net.minecraft.tileentity.TileEntity
-import network.rs485.grow.Coroutines
-import java.time.Duration
 
 abstract class AsyncModule<S, C> : LogisticsModule() {
-    private var currentTick: Int = 0
-    private var currentTask: Deferred<C?>? = null
-    private val lock: Any = object {}
+    private var currentJob: Deferred<C?>? = null
 
     /**
-     * Represents the wait time in ticks until the next asynchronous
-     * tick is started.
+     * Represents the wait time in ticks until the next job is started.
      */
     open val everyNthTick: Int = 20
 
@@ -70,19 +67,22 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
 
     @ExperimentalCoroutinesApi
     override fun tick() {
-        when {
-            currentTask?.isActive == true -> runSyncWork()
-            currentTask?.isCompleted == true -> {
+        val currentJobTemp = currentJob
+        if (currentJobTemp?.isActive == true) {
+            runSyncWork()
+        } else {
+            if (currentJobTemp?.isCompleted == true) {
                 try {
                     runSyncWork()
-                    completeTick(currentTask!!)
+                    completeJob(currentJobTemp)
                 } finally {
-                    currentTask = null
+                    currentJob = null
                 }
             }
-            else -> if (_service?.isNthTick(everyNthTick) == true) {
-                val setup = tickSetup()
-                currentTask = Coroutines.asynchronousScope.async {
+
+            if (_service?.isNthTick(everyNthTick) == true) {
+                val setup = jobSetup()
+                currentJob = Coroutines.asynchronousScope.async {
                     try {
                         return@async withTimeout(Duration.ofSeconds(90)) {
                             tickAsync(setup)
@@ -105,27 +105,27 @@ abstract class AsyncModule<S, C> : LogisticsModule() {
      *
      * @return setup object S which is passed to [tickAsync].
      */
-    abstract fun tickSetup(): S
+    abstract fun jobSetup(): S
 
     /**
      * Completion function that is run after every successful module
      * tick and all asynchronous work is done.
      *
-     * @param task the [Deferred] of the asynchronous work.
+     * @param deferred the [Deferred] of the asynchronous work.
      */
-    abstract fun completeTick(task: Deferred<C?>)
+    abstract fun completeJob(deferred: Deferred<C?>)
 
     /**
      * Asynchronous tick function that is run with a timeout. Takes the
-     * setup object and returns an object for [completeTick].
+     * setup object and returns an object for [completeJob].
      *
-     * @param setupObject the setup object from [tickSetup].
-     * @return a completion object for [completeTick].
+     * @param setupObject the setup object from [jobSetup].
+     * @return a completion object for [completeJob].
      */
     abstract suspend fun tickAsync(setupObject: S): C
 
     /**
-     * Runs every tick while the [current async task][currentTask] is active.
+     * Runs every tick while the [current async task][currentJob] is active.
      */
     abstract fun runSyncWork()
 }

@@ -37,20 +37,22 @@
 
 package network.rs485.logisticspipes.module
 
-import kotlin.math.min
+import logisticspipes.config.Configs
 
 /**
- * [Iterable] of slots to look at. Minds possible change of inventory size.
+ * Checks inventory size, everyNthTick and configuration values
+ * to determine the number of slot accesses per tick.
  *
- * @param current the current slot index, should be last + 1 on the first call.
- * @param last the last slot index to look at. May be -1 as a special case.
- * @param size the size of the inventory to never violate. May change for each call.
- * @return a range-checked sequence over slots to work on.
+ * @param inventorySize the size of the connected inventory.
+ * @return 0, if no work can be done and a value greater zero otherwise.
  */
-fun sloterator(current: Int, last: Int, size: Int): Iterable<Int> = when {
-    // sequence with turnaround: [..., size-2, size-1, 0, 1, ...]
-    current > last -> (current until size).plus(0 until min(size, last + 1))
-
-    // sequence until last possible element
-    else -> current until min(size, last + 1)
+fun determineSlotsPerTick(everyNthTick: Int, inventorySize: Int): Int {
+    var slotsPerTick = 0
+    if (inventorySize > 0) {
+        slotsPerTick = (inventorySize / everyNthTick).coerceAtLeast(Configs.MINIMUM_INVENTORY_SLOT_ACCESS_PER_TICK)
+    }
+    if (Configs.MAXIMUM_INVENTORY_SLOT_ACCESS_PER_TICK > 0) {
+        slotsPerTick = slotsPerTick.coerceAtMost(Configs.MAXIMUM_INVENTORY_SLOT_ACCESS_PER_TICK)
+    }
+    return slotsPerTick
 }

@@ -37,8 +37,6 @@
 
 package network.rs485.logisticspipes.module
 
-import network.rs485.grow.ChunkedChannel
-import network.rs485.grow.Coroutines
 import network.rs485.logisticspipes.logistics.LogisticsManager
 import network.rs485.logisticspipes.property.NullableEnumProperty
 import network.rs485.logisticspipes.property.Property
@@ -59,34 +57,127 @@ import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.proxy.MainProxy
 import logisticspipes.routing.AsyncRouting
+import logisticspipes.routing.AsyncRouting.needsRoutingTableUpdate
+import logisticspipes.routing.AsyncRouting.updateServerRouterLsa
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.PlayerCollectionList
-import logisticspipes.utils.SinkReply
 import logisticspipes.utils.item.ItemIdentifier
+import logisticspipes.utils.item.ItemIdentifierStack
 import net.minecraftforge.fml.client.FMLClientHandler
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import java.util.*
-import java.util.concurrent.TimeUnit
+import kotlin.math.min
 import kotlin.math.pow
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.consumeAsFlow
 
-data class ExtractorAsyncResult(
-    val slot: Int,
-    val itemid: ItemIdentifier,
-    val destRouterId: Int,
-    val sinkReply: SinkReply,
-)
+class ExtractorJob(private val module: AsyncExtractorModule, private val inventoryGetter: () -> IInventoryUtil?) {
+    private var inventorySize = inventoryGetter()?.sizeInventory ?: 0
+    private val slotsPerTick: Int = determineSlotsPerTick(module.everyNthTick, inventorySize)
+    private val slotStartIter =
+        if (slotsPerTick == 0) emptyList<Int>().iterator()
+        else IntProgression.fromClosedRange(0, inventorySize - 1, slotsPerTick).iterator()
+    private var itemsLeft = module.itemsToExtract
+    private var stacksLeft = module.stacksToExtract
+    private val updateRoutingTableMsgChannel: Channel<Unit> = Channel(Channel.CONFLATED)
+    private val slotItemsToExtract: MutableMap<Int, ItemIdentifierStack> = HashMap()
+
+    fun runSyncWork() {
+        try {
+            val serverRouter = module.serverRouter
+            val inventory = inventoryGetter()
+            if (slotsPerTick == 0 || !slotStartIter.hasNext() || serverRouter == null || inventory == null) {
+                updateRoutingTableMsgChannel.close()
+                return
+            }
+            inventorySize = inventory.sizeInventory
+            val startSlot = slotStartIter.next()
+            val stopSlot = if (slotStartIter.hasNext()) {
+                min(inventorySize, startSlot + slotsPerTick)
+            } else inventorySize
+
+            val slotRange = startSlot until stopSlot
+            for (slot in slotRange) {
+                val stack = inventory.getStackInSlot(slot)
+                if (module.inverseFilter(stack)) continue // filters the stack out by the given filter method
+                val toExtract = min(itemsLeft, stack.count)
+                itemsLeft -= toExtract
+                --stacksLeft
+                slotItemsToExtract[slot] = ItemIdentifierStack(ItemIdentifier.get(stack), toExtract)
+                if (itemsLeft < 1) break
+                if (stacksLeft < 1) break
+            }
+            serverRouter.updateServerRouterLsa()
+            if (serverRouter.needsRoutingTableUpdate()) {
+                updateRoutingTableMsgChannel.trySend(Unit)
+            } else {
+                extractAndSend(serverRouter, inventory)
+            }
+            if (!slotStartIter.hasNext()) {
+                updateRoutingTableMsgChannel.close()
+            }
+        } catch (error: Exception) {
+            updateRoutingTableMsgChannel.close(error)
+            throw error
+        }
+    }
+
+    suspend fun runAsyncWork() {
+        if (!Configs.DISABLE_ASYNC_WORK) {
+            updateRoutingTableMsgChannel.consumeAsFlow().collect {
+                module.serverRouter?.also { serverRouter ->
+                    AsyncRouting.updateRoutingTable(serverRouter)
+                }
+            }
+        }
+    }
+
+    fun extractAndSend(serverRouter: ServerRouter, inventory: IInventoryUtil) {
+        slotItemsToExtract.forEach { (slot, itemIdStack) ->
+            extractAndSendStack(serverRouter, inventory, slot, itemIdStack)
+        }
+        slotItemsToExtract.clear()
+    }
+
+    private fun extractAndSendStack(
+        serverRouter: ServerRouter,
+        inventory: IInventoryUtil,
+        slot: Int,
+        itemIdStack: ItemIdentifierStack,
+    ) {
+        val service = module.service ?: return
+        val pointedOrientation = service.pointedOrientation ?: return
+        val stack = inventory.getStackInSlot(slot)
+        if (!itemIdStack.item.equalsWithNBT(stack)) return
+        var sourceStackLeft = itemIdStack.stackSize
+        val validDestinationSequence = LogisticsManager.allDestinations(
+            stack = stack,
+            itemid = ItemIdentifier.get(stack),
+            canBeDefault = true,
+            sourceRouter = serverRouter,
+        ) { sourceStackLeft > 0 }
+        validDestinationSequence.forEach { (destRouterId, sinkReply) ->
+            var extract = getExtractionMax(stack.count, sourceStackLeft, sinkReply)
+            if (extract < 1) return@forEach
+            while (!service.useEnergy(module.energyPerItem * extract)) {
+                service.spawnParticle(Particles.OrangeParticle, 2)
+                if (extract < 2) break
+                extract /= 2
+            }
+            val toSend = inventory.decrStackSize(slot, extract)
+            if (toSend.isEmpty) return@forEach
+            service.sendStack(toSend, destRouterId, sinkReply, module.itemSendMode, pointedOrientation)
+            sourceStackLeft -= toSend.count
+        }
+    }
+}
 
 class AsyncExtractorModule(
     val inverseFilter: (ItemStack) -> Boolean = { stack -> stack.isEmpty },
-) : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), Gui, SneakyDirection,
+) : AsyncModule<ExtractorJob, Unit>(), Gui, SneakyDirection,
     IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver {
 
     companion object {
@@ -107,16 +198,20 @@ class AsyncExtractorModule(
                 PacketHandler.getPacket(SneakyModuleDirectionUpdate::class.java)
                     .setDirection(sneakyDirection)
                     .setModulePos(this),
-                localModeWatchers
+                localModeWatchers,
             )
         }
 
-    private var nextChannelWork: (() -> Unit)? = null
     private val hudRenderer: IHUDModuleRenderer = HUDAsyncExtractor(this)
-    private var currentSlot = 0
     val localModeWatchers = PlayerCollectionList()
-
     override val module = this
+    private var currentJob: ExtractorJob? = null
+
+    internal val serverRouter: ServerRouter?
+        get() = _service?.router as? ServerRouter
+
+    internal val service: IPipeServiceProvider?
+        get() = _service
 
     override val pipeGuiProvider: ModuleCoordinatesGuiProvider
         get() =
@@ -125,209 +220,50 @@ class AsyncExtractorModule(
     override val inHandGuiProvider: ModuleInHandGuiProvider
         get() =
             NewGuiHandler.getGui(SneakyModuleInHandGuiProvider::class.java)
-    override val everyNthTick: Int
-        get() = (80 / upgradeManager.let { 2.0.pow(it.actionSpeedUpgrade) }).toInt().coerceAtLeast(2)
 
-    private val stacksToExtract: Int
+    override val everyNthTick: Int
+        get() = (80 / upgradeManager.let { 2.0.pow(it.actionSpeedUpgrade) }).toInt() + Configs.MINIMUM_JOB_TICK_LENGTH
+
+    val stacksToExtract: Int
         get() = 1 + upgradeManager.itemStackExtractionUpgrade
-    private val itemsToExtract: Int
-        get() = upgradeManager.let { 2.0.pow(it.itemExtractionUpgrade) }.toInt()
-    private val energyPerItem: Int
+
+    val itemsToExtract: Int
+        get() = upgradeManager.let { 4 * it.itemExtractionUpgrade + 64 * upgradeManager.itemStackExtractionUpgrade }
+            .coerceAtLeast(1)
+
+    internal val energyPerItem: Int
         get() = upgradeManager.let {
             5 * 1.1.pow(it.itemExtractionUpgrade) * 1.2.pow(it.itemStackExtractionUpgrade)
-        }
-            .toInt()
-    private val itemSendMode: CoreRoutedPipe.ItemSendMode
+        }.toInt()
+
+    internal val itemSendMode: CoreRoutedPipe.ItemSendMode
         get() = upgradeManager.let { um ->
             CoreRoutedPipe.ItemSendMode.Fast.takeIf { um.itemExtractionUpgrade > 0 }
-        }
-            ?: CoreRoutedPipe.ItemSendMode.Normal
+        } ?: CoreRoutedPipe.ItemSendMode.Normal
+
     private val connectedInventory: IInventoryUtil?
         get() = _service?.availableSneakyInventories(sneakyDirection)?.firstOrNull()
 
     override fun getLPName(): String = name
 
-    @ExperimentalCoroutinesApi
-    override fun tickSetup(): Channel<Pair<Int, ItemStack>>? =
-        // run item sequence as far as possible and return the channel
-        connectedInventory?.let { ChunkedItemChannel(::connectedInventory).also(::channelWork).channel }
-
-    private fun <T, O> channelWork(chunkedChannel: ChunkedChannel<T, O>) {
-        if (chunkedChannel.get()) {
-            // if the chunked channel asks for a re-run
-            nextChannelWork = { channelWork(chunkedChannel) }
-        }
+    override fun jobSetup(): ExtractorJob = ExtractorJob(this) { connectedInventory }.also {
+        currentJob = it
+        it.runSyncWork()
     }
 
     override fun runSyncWork() {
-        val task = nextChannelWork
-        nextChannelWork = null
-        task?.invoke()
+        currentJob?.runSyncWork()
     }
 
-    private data class InventorySession(val serverRouter: ServerRouter, val inventory: IInventoryUtil)
-
-    private inner class ChunkedItemChannel(private val inventoryGetter: () -> IInventoryUtil?) :
-        ChunkedChannel<Pair<Int, ItemStack>, InventorySession?>(Channel(Channel.UNLIMITED)) {
-        private var hasNext: Boolean = true
-        private val timeLimit = TimeUnit.MILLISECONDS.toNanos(1)
-        private val lastIndex = currentSlot - 1
-        private var itemsLeft = itemsToExtract
-        private var stacksLeft = stacksToExtract
-
-        private fun sloterator(session: InventorySession) = sloterator(
-            current = currentSlot,
-            last = lastIndex,
-            size = session.inventory.sizeInventory
-        )
-
-        override fun newSession(): InventorySession? = (_service?.router as? ServerRouter)?.let { serverRouter ->
-            inventoryGetter()?.let { inventory ->
-                InventorySession(serverRouter, inventory)
-            }
-        }
-
-        @ExperimentalCoroutinesApi
-        override fun hasWork(session: InventorySession?): Boolean = (
-                hasNext
-                        && !channel.isClosedForReceive
-                        && stacksLeft > 0
-                        && itemsLeft > 0
-                        && session != null
-                        && sloterator(session).any()
-                )
-
-        @ExperimentalCoroutinesApi
-        override fun nextChunk(session: InventorySession?): List<Pair<Int, ItemStack>> {
-            if (!hasWork(session)) return emptyList()
-            session!! // as checked in hasWork
-
-            return if (ServerRouter.getBiggestSimpleID() > Configs.ASYNC_THRESHOLD
-                || AsyncRouting.routingTableNeedsUpdate(session.serverRouter)
-            ) {
-                // fall through to async
-                val list: ArrayList<Pair<Int, ItemStack>> = ArrayList()
-                iterateSlots(session) { slot, stack -> list.add(slot to stack) }
-                list
-            } else {
-                iterateSlots(session) { slot, stack -> sendNow(stack, session, slot) }
-                emptyList()
-            }
-        }
-
-        private fun iterateSlots(
-            session: InventorySession,
-            slotStackConsumer: (slot: Int, stack: ItemStack) -> Unit,
-        ) {
-            val startTime = System.nanoTime()
-            for (slot in sloterator(session)) {
-                if (System.nanoTime() - startTime > timeLimit || stacksLeft < 1) break
-                currentSlot = slot
-                val stack = session.inventory.getStackInSlot(slot)
-                if (inverseFilter(stack)) continue // filters the stack out by the given filter method
-                slotStackConsumer.invoke(slot, stack)
-                --stacksLeft
-                // reset item count for next stack
-                itemsLeft = itemsToExtract
-            }
-            // we're through all available slots
-            hasNext = false
-        }
-
-        private fun sendNow(stack: ItemStack, session: InventorySession, slot: Int) {
-            // find destinations and send stacks now
-            var sourceStackLeft = stack.count
-            LogisticsManager.allDestinations(
-                stack = stack,
-                itemid = ItemIdentifier.get(stack),
-                canBeDefault = true,
-                sourceRouter = session.serverRouter
-            ) { itemsLeft > 0 && sourceStackLeft > 0 }
-                .forEach { pair ->
-                    extractAndSend(
-                        slot = slot,
-                        count = sourceStackLeft,
-                        inventory = session.inventory,
-                        destRouterId = pair.first,
-                        sinkReply = pair.second,
-                        itemsLeft = itemsLeft
-                    ).also {
-                        itemsLeft -= it
-                        sourceStackLeft -= it
-                    }
-                }
-        }
+    override suspend fun tickAsync(setupObject: ExtractorJob) {
+        setupObject.runAsyncWork()
     }
 
-    @FlowPreview
-    @ExperimentalCoroutinesApi
-    override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? {
-        setupObject ?: return null
-        var itemsLeft = itemsToExtract
-        return setupObject.consumeAsFlow().flatMapConcat { pair ->
-            if (itemsLeft <= 0) return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
-            val serverRouter =
-                this._service?.router as? ServerRouter
-                    ?: return@flatMapConcat emptyFlow<ExtractorAsyncResult>()
-            var stackLeft = pair.second.count
-            val itemid = ItemIdentifier.get(pair.second)
-            AsyncRouting.updateRoutingTable(serverRouter)
-            withContext(Coroutines.serverScope.coroutineContext) {
-                LogisticsManager.allDestinations(pair.second, itemid, true, serverRouter) { itemsLeft > 0 && stackLeft > 0 }
-                    .map { reply ->
-                        val maxExtraction = getExtractionMax(stackLeft, itemsLeft, reply.second)
-                        stackLeft -= maxExtraction
-                        itemsLeft -= maxExtraction
-                        ExtractorAsyncResult(pair.first, itemid, reply.first, reply.second)
-                    }.asFlow()
-            }
-        }.toList()
-    }
-
-    @ExperimentalCoroutinesApi
-    override fun completeTick(task: Deferred<List<ExtractorAsyncResult>?>) {
-        // always get result, fast exit if it is null or throw on error
-        val result = task.getCompleted() ?: return
+    override fun completeJob(deferred: Deferred<Unit?>) {
+        val serverRouter = module.serverRouter ?: return
         val inventory = connectedInventory ?: return
-        var itemsLeft = itemsToExtract
-        result.filter { it.slot < inventory.sizeInventory }
-            .asSequence()
-            .takeWhile { itemsLeft > 0 }
-            .forEach {
-                val stack = inventory.getStackInSlot(it.slot)
-                if (it.itemid.equalsWithNBT(stack)) {
-                    itemsLeft -= extractAndSend(
-                        slot = it.slot,
-                        count = stack.count,
-                        inventory = inventory,
-                        destRouterId = it.destRouterId,
-                        sinkReply = it.sinkReply,
-                        itemsLeft = itemsLeft,
-                    )
-                }
-            }
-    }
-
-    private fun extractAndSend(
-        slot: Int,
-        count: Int,
-        inventory: IInventoryUtil,
-        destRouterId: Int,
-        sinkReply: SinkReply,
-        itemsLeft: Int,
-    ): Int {
-        val service = this._service ?: return 0
-        var extract = getExtractionMax(count, itemsLeft, sinkReply)
-        if (extract < 1) return 0
-        while (!service.useEnergy(energyPerItem * extract)) {
-            service.spawnParticle(Particles.OrangeParticle, 2)
-            if (extract < 2) return 0
-            extract /= 2
-        }
-        val toSend = inventory.decrStackSize(slot, extract)
-        if (toSend.isEmpty) return 0
-        service.sendStack(toSend, destRouterId, sinkReply, itemSendMode, service.pointedOrientation)
-        return toSend.count
+        serverRouter.ensureLatestRoutingTable()
+        currentJob?.extractAndSend(serverRouter, inventory)
     }
 
     override fun receivePassive(): Boolean = false
@@ -343,7 +279,7 @@ class AsyncExtractorModule(
 
     override fun stopHUDWatching() {
         MainProxy.sendPacketToServer(
-            PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java).setModulePos(this)
+            PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java).setModulePos(this),
         )
     }
 
@@ -351,7 +287,7 @@ class AsyncExtractorModule(
 
     override fun startHUDWatching() {
         MainProxy.sendPacketToServer(
-            PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java).setModulePos(this)
+            PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java).setModulePos(this),
         )
     }
 

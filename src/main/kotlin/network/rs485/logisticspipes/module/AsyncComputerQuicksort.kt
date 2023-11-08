@@ -108,13 +108,13 @@ class AsyncComputerQuicksort : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsync
         quicksort.registerPosition(slot, positionInt)
     }
 
-    override fun tickSetup(): Pair<Int, ItemStack>? = quicksort.tickSetup()
+    override fun jobSetup(): Pair<Int, ItemStack>? = quicksort.jobSetup()
 
     override suspend fun tickAsync(setupObject: Pair<Int, ItemStack>?): QuicksortAsyncResult? =
         quicksort.tickAsync(setupObject)
 
     @ExperimentalCoroutinesApi
-    override fun completeTick(task: Deferred<QuicksortAsyncResult?>) = quicksort.completeTick(task)
+    override fun completeJob(deferred: Deferred<QuicksortAsyncResult?>) = quicksort.completeJob(deferred)
 
     override fun runSyncWork() = quicksort.runSyncWork()
 

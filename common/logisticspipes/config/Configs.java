@@ -15,7 +15,7 @@ import logisticspipes.LogisticsPipes;
 public class Configs {
 
 	public static final String CATEGORY_MULTITHREAD = "multithread";
-	public static final String CATEGORY_ASYNC = "async";
+	public static final String CATEGORY_PERFORMANCE = "performance";
 
 	private static Configuration CONFIGURATION;
 
@@ -51,7 +51,12 @@ public class Configs {
 	// MultiThread
 	public static int MULTI_THREAD_NUMBER = 4;
 	public static int MULTI_THREAD_PRIORITY = Thread.NORM_PRIORITY;
-	public static int ASYNC_THRESHOLD = 100;
+
+	// Performance
+	public static boolean DISABLE_ASYNC_WORK = false;
+	public static int MINIMUM_INVENTORY_SLOT_ACCESS_PER_TICK = 10;
+	public static int MAXIMUM_INVENTORY_SLOT_ACCESS_PER_TICK = 0;
+	public static int MINIMUM_JOB_TICK_LENGTH = 1;
 
 	public static boolean CHECK_FOR_UPDATES = true;
 
@@ -169,9 +174,22 @@ public class Configs {
 					"Priority of the multiThread Threads. 10 is highest, 5 normal, 1 lowest").set(Integer
 							.toString(Thread.NORM_PRIORITY));
 		}
-		Configs.ASYNC_THRESHOLD = Configs.CONFIGURATION.get(Configs.CATEGORY_ASYNC, "threshold", Configs.ASYNC_THRESHOLD,
-				"Threshold for running asynchronous code. A lower value will make async calls with small networks where the impact is low. Low values might hurt performance").getInt();
 
+		Configs.DISABLE_ASYNC_WORK = Configs.CONFIGURATION.get(CATEGORY_PERFORMANCE, "disableAsyncWork",
+			Configs.DISABLE_ASYNC_WORK,
+			"Disables asynchronous work (currently Extractor and QuickSort modules)").getBoolean();
+		Configs.MINIMUM_INVENTORY_SLOT_ACCESS_PER_TICK = Configs.CONFIGURATION.get(CATEGORY_PERFORMANCE, "minSlotsPerTick",
+			Configs.MINIMUM_INVENTORY_SLOT_ACCESS_PER_TICK,
+			"Minimum slots to access per tick for asynchronous modules (currently Extractor and QuickSort modules)",
+			1, 1024).getInt();
+		Configs.MAXIMUM_INVENTORY_SLOT_ACCESS_PER_TICK = Configs.CONFIGURATION.get(CATEGORY_PERFORMANCE, "maxSlotsPerTick",
+			Configs.MAXIMUM_INVENTORY_SLOT_ACCESS_PER_TICK,
+			"Maximum slots to access per tick (0 means infinite) for asynchronous modules (currently Extractor and QuickSort modules)",
+			0, 1024).getInt();
+		Configs.MINIMUM_JOB_TICK_LENGTH = Configs.CONFIGURATION.get(CATEGORY_PERFORMANCE, "minJobTicks",
+			Configs.MINIMUM_JOB_TICK_LENGTH,
+			"Minimum ticks to split work on within a job of asynchronous modules (currently Extractor and QuickSort modules)",
+			1, 1200).getInt();
 
 		Configs.POWER_USAGE_MULTIPLIER = Configs.CONFIGURATION.get(
 				Configuration.CATEGORY_GENERAL, "powerUsageMultiplyer",

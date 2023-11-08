@@ -42,7 +42,7 @@ import network.rs485.logisticspipes.logistics.LogisticsManager
 import network.rs485.logisticspipes.property.Property
 import network.rs485.logisticspipes.util.equalsWithNBT
 import network.rs485.logisticspipes.util.getExtractionMax
-import logisticspipes.config.Configs.ASYNC_THRESHOLD
+import logisticspipes.config.Configs
 import logisticspipes.interfaces.IInventoryUtil
 import logisticspipes.network.PacketHandler
 import logisticspipes.network.packets.modules.QuickSortState
@@ -50,6 +50,8 @@ import logisticspipes.pipefxhandlers.Particles
 import logisticspipes.pipes.basic.CoreRoutedPipe
 import logisticspipes.proxy.MainProxy
 import logisticspipes.routing.AsyncRouting
+import logisticspipes.routing.AsyncRouting.needsRoutingTableUpdate
+import logisticspipes.routing.AsyncRouting.updateServerRouterLsa
 import logisticspipes.routing.ServerRouter
 import logisticspipes.utils.PlayerCollectionList
 import logisticspipes.utils.SinkReply
@@ -96,7 +98,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
 
     override fun getLPName(): String = name
 
-    override fun tickSetup(): Pair<Int, ItemStack>? {
+    override fun jobSetup(): Pair<Int, ItemStack>? {
         val serverRouter = this._service?.router as? ServerRouter ?: return null
         val inventory = _service?.availableInventories()?.firstOrNull() ?: return null
         if (inventory.sizeInventory == 0) return null
@@ -105,9 +107,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         val stack = inventory.getStackInSlot(slot)
         if (!stalled && slot == stallSlot) stalled = true
         if (stack.isEmpty) return null
-        if (ServerRouter.getBiggestSimpleID() > (ASYNC_THRESHOLD * 2) || AsyncRouting.routingTableNeedsUpdate(
-                serverRouter)
-        ) {
+        serverRouter.updateServerRouterLsa()
+        if (!Configs.DISABLE_ASYNC_WORK && serverRouter.needsRoutingTableUpdate()) {
             // go async
             return slot to stack
         }
@@ -129,8 +130,8 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
     }
 
     @ExperimentalCoroutinesApi
-    override fun completeTick(task: Deferred<QuicksortAsyncResult?>) {
-        val result = task.getCompleted() ?: return
+    override fun completeJob(deferred: Deferred<QuicksortAsyncResult?>) {
+        val result = deferred.getCompleted() ?: return
         val inventory = _service?.availableInventories()?.firstOrNull() ?: return
         if (result.slot >= inventory.sizeInventory) return
         val stack = inventory.getStackInSlot(result.slot)
@@ -147,6 +148,7 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         sinkReply: SinkReply,
     ) {
         val service = _service ?: return
+        val pointedOrientation = service.pointedOrientation ?: return
         val toExtract = getExtractionMax(stack.count, stack.maxStackSize, sinkReply)
         if (toExtract <= 0) return
         if (!service.useEnergy(energyPerStack)) return
@@ -154,11 +156,13 @@ class AsyncQuicksortModule : AsyncModule<Pair<Int, ItemStack>?, QuicksortAsyncRe
         stallSlot = slot
         val extracted = inventory.decrStackSize(slot, toExtract)
         if (extracted.isEmpty) return
-        service.sendStack(extracted,
+        service.sendStack(
+            extracted,
             destRouterId,
             sinkReply,
             CoreRoutedPipe.ItemSendMode.Fast,
-            service.pointedOrientation)
+            pointedOrientation,
+        )
         service.spawnParticle(Particles.OrangeParticle, 8)
     }
 

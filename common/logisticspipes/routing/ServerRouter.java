@@ -8,22 +8,8 @@
 package logisticspipes.routing;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.BitSet;
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NavigableSet;
-import java.util.PriorityQueue;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -351,7 +337,7 @@ public class ServerRouter implements IRouter, Comparable<ServerRouter> {
 		}
 	}
 
-	void ensureLatestRoutingTable() {
+	public void ensureLatestRoutingTable() {
 		if (connectionNeedsChecking != 0) {
 			boolean blockNeedsUpdate = checkAdjacentUpdate();
 			if (blockNeedsUpdate) {

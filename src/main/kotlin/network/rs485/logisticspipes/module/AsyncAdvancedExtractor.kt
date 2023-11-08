@@ -37,10 +37,11 @@
 
 package network.rs485.logisticspipes.module
 
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
-import kotlinx.coroutines.channels.Channel
+import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
+import network.rs485.logisticspipes.property.BooleanProperty
+import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
+import network.rs485.logisticspipes.property.Property
+import network.rs485.logisticspipes.util.matchingSequence
 import logisticspipes.gui.hud.modules.HUDAdvancedExtractor
 import logisticspipes.interfaces.*
 import logisticspipes.network.NewGuiHandler
@@ -60,19 +61,15 @@ import logisticspipes.utils.item.ItemIdentifierInventory
 import logisticspipes.utils.item.ItemIdentifierStack
 import net.minecraft.entity.player.EntityPlayer
 import net.minecraft.inventory.IInventory
-import net.minecraft.item.ItemStack
 import net.minecraft.util.EnumFacing
 import net.minecraft.world.IBlockAccess
-import network.rs485.logisticspipes.inventory.IItemIdentifierInventory
-import network.rs485.logisticspipes.property.BooleanProperty
-import network.rs485.logisticspipes.property.ItemIdentifierInventoryProperty
-import network.rs485.logisticspipes.property.Property
-import network.rs485.logisticspipes.util.matchingSequence
+import kotlinx.coroutines.Deferred
 
 
-class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<ExtractorAsyncResult>?>(), SimpleFilter,
-    SneakyDirection, IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive,
+class AsyncAdvancedExtractor : AsyncModule<ExtractorJob, Unit>(), SimpleFilter, SneakyDirection,
+    IClientInformationProvider, IHUDModuleHandler, IModuleWatchReciver, IModuleInventoryReceive,
     ISimpleInventoryEventHandler, Gui {
+
     companion object {
         @JvmStatic
         val name: String = "extractor_advanced"
@@ -84,9 +81,11 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         get() = extractor.properties + listOf(filterInventory, itemsIncluded)
 
     private val hud = HUDAdvancedExtractor(this)
-    private val extractor = AsyncExtractorModule(inverseFilter = {
-        it.isEmpty || itemsIncluded.value != filterInventory.matchingSequence(it).any()
-    })
+    private val extractor = AsyncExtractorModule(
+        inverseFilter = {
+            it.isEmpty || itemsIncluded.value != filterInventory.matchingSequence(it).any()
+        },
+    )
 
     override var sneakyDirection: EnumFacing?
         get() = extractor.sneakyDirection
@@ -138,9 +137,6 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
         extractor.registerPosition(slot, positionInt)
     }
 
-    @ExperimentalCoroutinesApi
-    override fun tickSetup(): Channel<Pair<Int, ItemStack>>? = extractor.tickSetup()
-
     override fun receivePassive(): Boolean = false
 
     override fun hasGenericInterests(): Boolean = false
@@ -149,13 +145,11 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
 
     override fun interestedInAttachedInventory(): Boolean = false
 
-    @ExperimentalCoroutinesApi
-    override fun completeTick(task: Deferred<List<ExtractorAsyncResult>?>) = extractor.completeTick(task)
+    override fun jobSetup(): ExtractorJob = extractor.jobSetup()
 
-    @ExperimentalCoroutinesApi
-    @FlowPreview
-    override suspend fun tickAsync(setupObject: Channel<Pair<Int, ItemStack>>?): List<ExtractorAsyncResult>? =
-        extractor.tickAsync(setupObject)
+    override fun completeJob(deferred: Deferred<Unit?>) = extractor.completeJob(deferred)
+
+    override suspend fun tickAsync(setupObject: ExtractorJob) = extractor.tickAsync(setupObject)
 
     override fun runSyncWork() = extractor.runSyncWork()
 
@@ -174,7 +168,7 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
                     PacketHandler.getPacket(ModuleInventory::class.java)
                         .setIdentList(ItemIdentifierStack.getListFromInventory(inventory))
                         .setModulePos(this),
-                    extractor.localModeWatchers
+                    extractor.localModeWatchers,
                 )
             }
         }
@@ -207,15 +201,17 @@ class AsyncAdvancedExtractor : AsyncModule<Channel<Pair<Int, ItemStack>>?, List<
     override fun stopWatching(player: EntityPlayer?) = extractor.stopWatching(player)
 
     override fun startHUDWatching() {
-        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java)
-            .setModulePos(this))
+        MainProxy.sendPacketToServer(
+            PacketHandler.getPacket(HUDStartModuleWatchingPacket::class.java).setModulePos(this),
+        )
     }
 
     override fun getHUDRenderer(): IHUDModuleRenderer = hud
 
     override fun stopHUDWatching() {
-        MainProxy.sendPacketToServer(PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java)
-            .setModulePos(this))
+        MainProxy.sendPacketToServer(
+            PacketHandler.getPacket(HUDStopModuleWatchingPacket::class.java).setModulePos(this),
+        )
     }
 
 }
